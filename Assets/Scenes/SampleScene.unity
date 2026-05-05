@@ -205,6 +205,7 @@ MonoBehaviour:
   uiManager: {fileID: 20406404}
   enemyAIController: {fileID: 20406403}
   mctsController: {fileID: 20406402}
+  cardDatabase: {fileID: 11400000, guid: 359b8a3fb1d53f74a829c130e2555161, type: 2}
   drawCount: 5
   enemyActionDelay: 1
 --- !u!4 &20406407

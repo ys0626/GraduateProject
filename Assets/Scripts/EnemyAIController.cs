@@ -1,4 +1,4 @@
-// EnemyAIController.cs
+
 using UnityEngine;
 
 public class EnemyAIController : MonoBehaviour

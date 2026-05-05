@@ -1,7 +1,15 @@
-// Entity.cs
+
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum EffectType
+{
+    Burn, //발화
+    Vulnerable, //취약
+    Weak, //약화
+    Strength, //힘
+    LoseHealth, //턴마다 체력 감소
+}
 public class Entity
 {
     public int currentHP;

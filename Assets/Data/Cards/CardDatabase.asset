@@ -13,13 +13,188 @@ MonoBehaviour:
   m_Name: CardDatabase
   m_EditorClassIdentifier: Assembly-CSharp::CardDatabase
   cards:
-  - cardId: 
-    cardName: 
+  - cardId: A1
+    cardName: "\uACA9\uB3CC"
     cost: 0
     cardType: 0
-    description: 
-  - cardId: 
-    cardName: 
+    description: "\uC190\uC5D0 \uC788\uB294 \uCE74\uB4DC\uAC00 \uC804\uBD80 \uACF5\uACA9
+      \uCE74\uB4DC\uC77C \uB54C\uB9CC \uC0AC\uC6A9\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4.\uD53C\uD574\uB97C
+      14 \uC90D\uB2C8\uB2E4.\r\n"
+    bestCard: 
+  - cardId: A2
+    cardName: "\uBD84\uB178"
     cost: 0
     cardType: 0
-    description: 
+    description: "\uD53C\uD574\uB97C 6 \uC90D\uB2C8\uB2E4.\uC774 \uCE74\uB4DC\uB97C
+      1\uC7A5 \uBCF5\uC0AC\uD574 \uBC84\uB9B0 \uCE74\uB4DC \uB354\uBBF8\uC5D0 \uC11E\uC5B4
+      \uB123\uC2B5\uB2C8\uB2E4.\r\n"
+    bestCard: 
+  - cardId: A3
+    cardName: "\uD0C0\uACA9"
+    cost: 1
+    cardType: 0
+    description: "\uD53C\uD574\uB97C 6 \uC90D\uB2C8\uB2E4."
+    bestCard: 
+  - cardId: A4
+    cardName: "\uCCA0\uC758 \uD30C\uB3D9"
+    cost: 1
+    cardType: 0
+    description: "\uBC29\uC5B4\uB3C4\uB97C 5 \uC5BB\uC2B5\uB2C8\uB2E4.\uD53C\uD574\uB97C
+      5 \uC90D\uB2C8\uB2E4.\r\n"
+    bestCard: 
+  - cardId: A5
+    cardName: "\uC5F0\uD0C0"
+    cost: 1
+    cardType: 0
+    description: "\uD53C\uD574\uB97C 2 \uB9CC\uD07C 4 \uBC88 \uC90D\uB2C8\uB2E4.\uC18C\uBA78.\r\n"
+    bestCard: 
+  - cardId: A6
+    cardName: "\uBD80\uBA54\uB791 \uCE7C\uB0A0"
+    cost: 1
+    cardType: 0
+    description: "\uBB34\uC791\uC704 \uC801\uB4E4\uC5D0\uAC8C \uD53C\uD574\uB97C
+      3 \uB9CC\uD07C 3 \uBC88 \uC90D\uB2C8\uB2E4."
+    bestCard: 
+  - cardId: A7
+    cardName: "\uCC9C\uB465"
+    cost: 1
+    cardType: 0
+    description: "\uC801 \uC804\uCCB4\uC5D0\uAC8C \uD53C\uD574\uB97C 4 \uC8FC\uACE0
+      \uCDE8\uC57D\uC744 1 \uBD80\uC5EC\uD569\uB2C8\uB2E4."
+    bestCard: 
+  - cardId: A8
+    cardName: "\uC808\uB2E8"
+    cost: 1
+    cardType: 0
+    description: "\uC801 \uC804\uCCB4\uC5D0\uAC8C \uD53C\uD574\uB97C 8 \uC90D\uB2C8\uB2E4."
+    bestCard: 
+  - cardId: A9
+    cardName: "\uAC15\uD0C0"
+    cost: 2
+    cardType: 0
+    description: "\uD53C\uD574\uB97C 8 \uC90D\uB2C8\uB2E4.\uCDE8\uC57D\uC744 2 \uBD80\uC5EC\uD569\uB2C8\uB2E4.\r\n"
+    bestCard: 
+  - cardId: A10
+    cardName: "\uD0DC\uC6B0\uAE30"
+    cost: 2
+    cardType: 0
+    description: "\uD53C\uD574 2\uB97C \uC90D\uB2C8\uB2E4. \uBC1C\uD654 3\uC744 \uBD80\uC5EC\uD569\uB2C8\uB2E4."
+    bestCard: 
+  - cardId: S1
+    cardName: "\uBAB8 \uD480\uAE30"
+    cost: 0
+    cardType: 1
+    description: "\uD798\uC744 2 \uC5BB\uC2B5\uB2C8\uB2E4.\uD134\uC774 \uB05D\uB0A0
+      \uB54C \uD798\uC744 2 \uC783\uC2B5\uB2C8\uB2E4."
+    bestCard: 
+  - cardId: S2
+    cardName: "\uC0AC\uD608"
+    cost: 0
+    cardType: 1
+    description: "\uC5D0\uB108\uC9C0 2\uAC1C\uB97C \uC5BB\uC2B5\uB2C8\uB2E4.\uCCB4\uB825\uC744
+      3 \uC783\uC2B5\uB2C8\uB2E4.\r\n"
+    bestCard: 
+  - cardId: S3
+    cardName: "\uC704\uC555"
+    cost: 0
+    cardType: 1
+    description: "\uC801 \uC804\uCCB4\uC5D0\uAC8C \uC57D\uD654\uB97C 1 \uBD80\uC5EC\uD569\uB2C8\uB2E4.\uC18C\uBA78. "
+    bestCard: 
+  - cardId: S4
+    cardName: "\uC218\uBE44"
+    cost: 1
+    cardType: 1
+    description: "\uBC29\uC5B4\uB3C4\uB97C 5 \uC5BB\uC2B5\uB2C8\uB2E4."
+    bestCard: 
+  - cardId: S5
+    cardName: "\uD758\uB824\uBCF4\uB0B4\uAE30"
+    cost: 1
+    cardType: 1
+    description: "\uBC29\uC5B4\uB3C4\uB97C 8 \uC5BB\uC2B5\uB2C8\uB2E4.\uCE74\uB4DC\uB97C
+      1\uC7A5 \uBF51\uC2B5\uB2C8\uB2E4.\r\n"
+    bestCard: 
+  - cardId: S6
+    cardName: "\uBB34\uC7A5 \uD574\uC81C"
+    cost: 1
+    cardType: 1
+    description: "\uC801\uC758 \uD798\uC744 2 \uAC10\uC18C\uC2DC\uD0B5\uB2C8\uB2E4.\uC18C\uBA78. "
+    bestCard: 
+  - cardId: S7
+    cardName: "\uC9C4\uC815\uD55C \uB048\uAE30"
+    cost: 1
+    cardType: 1
+    description: "\uBC29\uC5B4\uB3C4\uB97C 7 \uC5BB\uC2B5\uB2C8\uB2E4.\uBB34\uC791\uC704
+      \uCE74\uB4DC\uB97C 1\uC7A5 \uC18C\uBA78\uC2DC\uD0B5\uB2C8\uB2E4.\r\n"
+    bestCard: 
+  - cardId: S8
+    cardName: "\uC5F0\uC0AC"
+    cost: 1
+    cardType: 1
+    description: "\uC774\uBC88 \uD134 \uB3D9\uC548 \uB2E4\uC74C\uC5D0 \uC0AC\uC6A9\uD558\uB294
+      \uACF5\uACA9 \uCE74\uB4DC\uAC00 \uB450 \uBC88 \uC0AC\uC6A9\uB429\uB2C8\uB2E4."
+    bestCard: 
+  - cardId: S9
+    cardName: "\uD55C\uACC4\uB3CC\uD30C"
+    cost: 1
+    cardType: 1
+    description: "\uD798\uD798\uC774 2\uBC30\uB85C \uC99D\uAC00\uD569\uB2C8\uB2E4.\uC18C\uBA78.\r\n"
+    bestCard: 
+  - cardId: S10
+    cardName: "\uBB34\uC801"
+    cost: 2
+    cardType: 1
+    description: "\uBC29\uC5B4\uB3C4\uB97C 30 \uC5BB\uC2B5\uB2C8\uB2E4.\uC18C\uBA78."
+    bestCard: 
+  - cardId: P1
+    cardName: "\uAD11\uD3ED\uD654"
+    cost: 0
+    cardType: 2
+    description: "\uCDE8\uC57D\uC744 2 \uBC1B\uC2B5\uB2C8\uB2E4.\uB9E4 \uD134\uB9C8\uB2E4
+      \uC5D0\uB108\uC9C0 1\uAC1C\uB97C \uCD94\uAC00\uB85C \uC5BB\uC2B5\uB2C8\uB2E4."
+    bestCard: 
+  - cardId: P2
+    cardName: "\uC794\uD639\uC131"
+    cost: 0
+    cardType: 2
+    description: "\uD134 \uC2DC\uC791 \uC2DC \uCCB4\uB825\uC744 1 \uC783\uACE0 \uCE74\uB4DC\uB97C
+      1\uC7A5 \uBF51\uC2B5\uB2C8\uB2E4."
+    bestCard: 
+  - cardId: P3
+    cardName: "\uAE08\uC18D\uD654"
+    cost: 1
+    cardType: 2
+    description: "\uD134 \uC885\uB8CC\uC2DC \uBC29\uC5B4\uB3C4\uB97C 3 \uC5BB\uC2B5\uB2C8\uB2E4."
+    bestCard: 
+  - cardId: P4
+    cardName: "\uBC1C\uD654"
+    cost: 1
+    cardType: 2
+    description: "\uD798\uC744 2 \uC5BB\uC2B5\uB2C8\uB2E4."
+    bestCard: 
+  - cardId: P5
+    cardName: "\uC5F0\uC18C"
+    cost: 1
+    cardType: 2
+    description: "\uD134 \uC885\uB8CC\uC2DC \uCCB4\uB825\uC744 1 \uC783\uACE0 \uC801
+      \uC804\uCCB4\uC5D0\uAC8C \uD53C\uD574\uB97C 5 \uC90D\uB2C8\uB2E4."
+    bestCard: 
+  - cardId: P6
+    cardName: "\uD30C\uC5F4"
+    cost: 1
+    cardType: 2
+    description: "\uCE74\uB4DC\uC758 \uD6A8\uACFC\uB85C \uCCB4\uB825\uC744 \uC783\uC744
+      \uB54C\uB9C8\uB2E4, \uD798\uC744 1 \uC5BB\uC2B5\uB2C8\uB2E4."
+    bestCard: 
+  - cardId: P7
+    cardName: "\uC808\uB300\uC801\uC778 \uD798"
+    cost: 2
+    cardType: 2
+    description: "\uBC29\uC5B4\uB3C4\uB97C \uC5BB\uC744 \uB54C\uB9C8\uB2E4 \uBB34\uC791\uC704
+      \uC801\uC5D0\uAC8C 5\uC758 \uD53C\uD574\uB97C \uC90D\uB2C8\uB2E4."
+    bestCard: 
+  - cardId: P8
+    cardName: "\uC545\uB9C8\uC758\uD615\uC0C1"
+    cost: 3
+    cardType: 2
+    description: "\uB9E4 \uD134 \uC2DC\uC791\uC2DC \uD798\uC744 2 \uC5BB\uC2B5\uB2C8\uB2E4."
+    bestCard: 

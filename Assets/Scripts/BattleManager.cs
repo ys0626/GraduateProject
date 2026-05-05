@@ -28,6 +28,9 @@ public class BattleManager : MonoBehaviour
     [SerializeField] private EnemyAIController enemyAIController; // 노말 모드 적
     [SerializeField] private MCTSController mctsController; // MCTS 알고리즘 담당
 
+    [Header("Database")]
+    [SerializeField] private CardDatabase cardDatabase;
+
     // ─── 상태 ──────────────────────────────────
     public GameState CurrentState { get; private set; }
     public BattlePhase CurrentPhase { get; private set; }
@@ -51,16 +54,16 @@ public class BattleManager : MonoBehaviour
     // ─────────────────────────────────────────────
     // 전투 시작
     // ─────────────────────────────────────────────
-    public void StartBattle(Entity player, Entity enemy, List<Card> playerDeck)
+    public void StartBattle(Entity player, Entity enemy, List<CardDatabase.CardEntry> playerDeck)
     {
         // 초기 GameState 구성
         CurrentState = new GameState
         {
             player = player,
             enemy = enemy,
-            deck = new List<Card>(playerDeck),
-            hand = new List<Card>(),
-            discardPile = new List<Card>(),
+            deck = playerDeck,
+            hand = new List<CardDatabase.CardEntry>(),
+            discardPile = new List<CardDatabase.CardEntry>(),
             currentEnergy = 3,
             maxEnergy = 3,
             turnCount = 0,
@@ -144,7 +147,7 @@ public class BattleManager : MonoBehaviour
     // ─────────────────────────────────────────────
     // 플레이어 카드 사용 (UI에서 호출)
     // ─────────────────────────────────────────────
-    public void PlayerUseCard(Card card)
+    public void PlayerUseCard(CardDatabase.CardEntry card)
     {
         // 유효성 검사
         if (CurrentPhase != BattlePhase.PlayerTurn)
@@ -153,7 +156,7 @@ public class BattleManager : MonoBehaviour
             return;
         }
 
-        if (card.energyCost > CurrentState.currentEnergy)
+        if (card.cost > CurrentState.currentEnergy)
         {
             Debug.LogWarning("에너지가 부족합니다.");
             uiManager.ShowNotEnoughEnergy();
@@ -227,7 +230,7 @@ public class BattleManager : MonoBehaviour
         uiManager.ShowEnemyThinking();  // "생각 중..." 같은 UI
 
         // MCTS 실행 (비동기)
-        Card bestCard = null;
+        CardDatabase.CardEntry bestCard = null;
         bool isDone = false;
 
         mctsController.GetBestAction(

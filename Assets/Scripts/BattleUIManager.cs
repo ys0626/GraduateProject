@@ -1,4 +1,4 @@
-// BattleUIManager.cs
+
 using UnityEngine;
 
 public class BattleUIManager : MonoBehaviour
