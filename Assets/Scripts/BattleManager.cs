@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEngine.EventSystems.EventTrigger;
 
 public enum BattlePhase
 {
@@ -14,7 +13,7 @@ public enum BattlePhase
     BattleEnd       // ÀüÅõ Á¾·á
 }
 
-public enum BattleMode { Normal, Hard } // ³ë¸», ÇÏµå ¸ðµå ±¸ºÐ
+public enum BattleMode { Normal, Hard }
 
 public class BattleManager : MonoBehaviour
 {
@@ -24,10 +23,10 @@ public class BattleManager : MonoBehaviour
     [SerializeField] private BattleMode battleMode;
 
     [Header("Managers")]
-    [SerializeField] private GameStateManager gameStateManager; // GameState °ü·Ã ·ÎÁ÷ ´ã´ç
-    [SerializeField] private BattleUIManager uiManager; // UI ¾÷µ¥ÀÌÆ® ´ã´ç
-    [SerializeField] private EnemyAIController enemyAIController; // ³ë¸» ¸ðµå Àû
-    [SerializeField] private MCTSController mctsController; // MCTS ¾Ë°í¸®Áò ´ã´ç
+    [SerializeField] private GameStateManager gameStateManager;
+    [SerializeField] private UIManager uiManager;
+    [SerializeField] private EnemyController enemyController;
+    [SerializeField] private MCTSController mctsController;
 
     // ¦¡¦¡¦¡ »óÅÂ ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡
     public GameState CurrentState { get; private set; }
@@ -36,46 +35,49 @@ public class BattleManager : MonoBehaviour
     // ¦¡¦¡¦¡ ÀÌº¥Æ® ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡
     public event Action<BattlePhase> OnPhaseChanged;
     public event Action<GameState> OnStateUpdated;
-    public event Action<bool> OnBattleEnd;  // true = ÇÃ·¹ÀÌ¾î ½Â¸®
+    public event Action<bool> OnBattleEnd;   // true = ÇÃ·¹ÀÌ¾î ½Â¸®
 
     // ¦¡¦¡¦¡ ¼³Á¤ ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡
     [Header("Battle Settings")]
     [SerializeField] private int drawCount = 5;
-    [SerializeField] private float enemyActionDelay = 1.0f;  // Àû Çàµ¿ µô·¹ÀÌ
+    [SerializeField] private float enemyActionDelay = 1.0f;
 
     private void Awake()
     {
         if (Instance == null) Instance = this;
-        else Destroy(gameObject);
+        else
+        {
+            Destroy(gameObject);
+            return;
+        }
     }
 
     // ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡
     // ÀüÅõ ½ÃÀÛ
     // ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡
-    public void StartBattle(Entity player, Entity enemy, List<Card> playerDeck)
+    public void StartBattle(Entity player, Entity enemy, List<CardInstance> playerDeck)
     {
-        // ÃÊ±â GameState ±¸¼º
         CurrentState = new GameState
         {
             player = player,
             enemy = enemy,
-            deck = new List<Card>(playerDeck),
-            hand = new List<Card>(),
-            discardPile = new List<Card>(),
-            currentEnergy = 3,
-            maxEnergy = 3,
+            deck = new List<CardInstance>(playerDeck),
+            hand = new List<CardInstance>(),
+            discardPile = new List<CardInstance>(),
+            exhaustPile = new List<CardInstance>(),
+            // DBTest °ª »ç¿ë (ÇÏµåÄÚµù Á¦°Å)
+            currentEnergy = DBTest.instance.MaxEnergy,
+            maxEnergy = DBTest.instance.MaxEnergy,
             turnCount = 0,
             isPlayerTurn = true
         };
 
-        // µ¦ ¼ÅÇÃ
         gameStateManager.ShuffleDeck(CurrentState.deck);
-
         ChangePhase(BattlePhase.BattleStart);
     }
 
     // ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡
-    // ÆäÀÌÁî ÀüÈ¯ (ÇÙ½É Èå¸§ Á¦¾î)
+    // ÆäÀÌÁî ÀüÈ¯
     // ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡
     private void ChangePhase(BattlePhase newPhase)
     {
@@ -84,21 +86,11 @@ public class BattleManager : MonoBehaviour
 
         switch (newPhase)
         {
-            case BattlePhase.BattleStart:
-                HandleBattleStart();
-                break;
-            case BattlePhase.PlayerTurn:
-                HandlePlayerTurnStart();
-                break;
-            case BattlePhase.EnemyTurn:
-                HandleEnemyTurn();
-                break;
-            case BattlePhase.TurnEnd:
-                HandleTurnEnd();
-                break;
-            case BattlePhase.BattleEnd:
-                HandleBattleEnd();
-                break;
+            case BattlePhase.BattleStart: HandleBattleStart(); break;
+            case BattlePhase.PlayerTurn: HandlePlayerTurnStart(); break;
+            case BattlePhase.EnemyTurn: HandleEnemyTurn(); break;
+            case BattlePhase.TurnEnd: HandleTurnEnd(); break;
+            case BattlePhase.BattleEnd: HandleBattleEnd(); break;
         }
     }
 
@@ -108,14 +100,13 @@ public class BattleManager : MonoBehaviour
     private void HandleBattleStart()
     {
         Debug.Log("ÀüÅõ ½ÃÀÛ!");
-        // ÃÊ±â µå·Î¿ì
+
+        // Ã¹ µå·Î¿ì´Â BattleStart¿¡¼­¸¸
         CurrentState = gameStateManager.DrawCards(CurrentState, drawCount);
         UpdateUI();
 
-        if (battleMode == BattleMode.Normal) // ³ë¸» ¸ðµå¿¡¼­´Â Ã¹ ÅÏºÎÅÍ Àû Çàµ¿ ¹Ì¸® º¸¿©ÁÖ±â
-        {
-            enemyAIController.PrepareNextAction(CurrentState);
-        }
+        if (battleMode == BattleMode.Normal)
+            enemyController.PrepareNextAction(CurrentState);
 
         ChangePhase(BattlePhase.PlayerTurn);
     }
@@ -133,47 +124,38 @@ public class BattleManager : MonoBehaviour
         // ¹æ¾îµµ ÃÊ±âÈ­
         CurrentState.player.block = 0;
 
-        if (battleMode == BattleMode.Normal) // ³ë¸» ¸ðµå¿¡¼­´Â ´ÙÀ½ Àû Çàµ¿ ¹Ì¸® º¸¿©ÁÖ±â
-        {
-            uiManager.ShowEnemyIntent(enemyAIController.NextIntent);
-        }
+        if (battleMode == BattleMode.Normal)
+            uiManager.ShowEnemyIntent(enemyController.NextIntent);
 
         UpdateUI();
-        // ÀÌÈÄ ÇÃ·¹ÀÌ¾î ÀÔ·Â ´ë±â (UI¿¡¼­ Ä«µå Å¬¸¯)
+        // ÀÌÈÄ ÇÃ·¹ÀÌ¾î ÀÔ·Â ´ë±â
     }
 
     // ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡
     // ÇÃ·¹ÀÌ¾î Ä«µå »ç¿ë (UI¿¡¼­ È£Ãâ)
     // ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡
-    public void PlayerUseCard(Card card)
+    public void PlayerUseCard(CardInstance card)
     {
-        // À¯È¿¼º °Ë»ç
         if (CurrentPhase != BattlePhase.PlayerTurn)
         {
             Debug.LogWarning("ÇÃ·¹ÀÌ¾î ÅÏÀÌ ¾Æ´Õ´Ï´Ù.");
             return;
         }
 
-        if (card.energyCost > CurrentState.currentEnergy)
+        if (card.data.cost > CurrentState.currentEnergy)
         {
             Debug.LogWarning("¿¡³ÊÁö°¡ ºÎÁ·ÇÕ´Ï´Ù.");
-            uiManager.ShowNotEnoughEnergy();
+            uiManager.ShowEnergyWarning();
             return;
         }
 
-        Debug.Log($"ÇÃ·¹ÀÌ¾î°¡ [{card.cardName}] »ç¿ë");
+        Debug.Log($"ÇÃ·¹ÀÌ¾î°¡ [{card.data.cardName}] »ç¿ë");
 
-        // »óÅÂ ¾÷µ¥ÀÌÆ®
         CurrentState = gameStateManager.ApplyAction(CurrentState, card);
-        OnStateUpdated?.Invoke(CurrentState);
         UpdateUI();
 
-        // ÀüÅõ Á¾·á Ã¼Å©
         if (CurrentState.IsTerminal())
-        {
             ChangePhase(BattlePhase.BattleEnd);
-            return;
-        }
     }
 
     // ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡
@@ -188,7 +170,7 @@ public class BattleManager : MonoBehaviour
     }
 
     // ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡
-    // Àû ÅÏ Ã³¸® (MCTS È£Ãâ)
+    // Àû ÅÏ Ã³¸®
     // ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡
     private void HandleEnemyTurn()
     {
@@ -205,13 +187,11 @@ public class BattleManager : MonoBehaviour
     // ³ë¸» ¸ðµå: ÆÐÅÏ AI
     private IEnumerator NormalEnemyTurnCoroutine()
     {
-        uiManager.ShowEnemyAction(enemyAIController.NextIntent); // Àû Çàµ¿ ¿¬Ãâ?
+        uiManager.ShowEnemyAction(enemyController.NextIntent);
         yield return new WaitForSeconds(enemyActionDelay);
 
-        // Çàµ¿ ½ÇÇà
-        CurrentState = enemyAIController.ExecuteAction(CurrentState);
-        OnStateUpdated?.Invoke(CurrentState);
-        UpdateUI();
+        CurrentState = enemyController.ExecuteAction(CurrentState);
+        UpdateUI(); // OnStateUpdated Áßº¹ È£Ãâ Á¦°Å (UpdateUI ³»ºÎ¿¡¼­ Ã³¸®)
 
         if (CurrentState.IsTerminal())
         {
@@ -222,30 +202,24 @@ public class BattleManager : MonoBehaviour
         ChangePhase(BattlePhase.TurnEnd);
     }
 
-
+    // ÇÏµå ¸ðµå: MCTS AI
     private IEnumerator HardEnemyTurnCoroutine()
     {
-        uiManager.ShowEnemyThinking();  // "»ý°¢ Áß..." °°Àº UI
-
-        // MCTS ½ÇÇà (ºñµ¿±â)
-        Card bestCard = null;
+        CardInstance bestCard = null;
         bool isDone = false;
 
         mctsController.GetBestAction(
             CurrentState,
-            result => {
+            result =>
+            {
                 bestCard = result;
                 isDone = true;
             }
         );
 
-        // MCTS ¿Ï·á ´ë±â
         yield return new WaitUntil(() => isDone);
-        yield return new WaitForSeconds(enemyActionDelay);  // ¿¬Ãâ¿ë µô·¹ÀÌ
+        yield return new WaitForSeconds(enemyActionDelay);
 
-        uiManager.HideEnemyThinking();
-
-        // »ç¿ëÇÒ Ä«µå°¡ ¾øÀ¸¸é ÅÏ Á¾·á
         if (bestCard == null)
         {
             Debug.Log("Àû: »ç¿ëÇÒ Ä«µå ¾øÀ½, ÅÏ Á¾·á");
@@ -253,17 +227,14 @@ public class BattleManager : MonoBehaviour
             yield break;
         }
 
-        // Àû Ä«µå »ç¿ë
-        Debug.Log($"ÀûÀÌ [{bestCard.cardName}] »ç¿ë");
-        uiManager.ShowEnemyAction(bestCard);  // Àû Çàµ¿ ¿¬Ãâ
+        Debug.Log($"ÀûÀÌ [{bestCard.data.cardName}] »ç¿ë");
+        uiManager.ShowEnemyAction(bestCard);
 
         yield return new WaitForSeconds(0.5f);
 
         CurrentState = gameStateManager.ApplyAction(CurrentState, bestCard);
-        OnStateUpdated?.Invoke(CurrentState);
-        UpdateUI();
+        UpdateUI(); // OnStateUpdated Áßº¹ È£Ãâ Á¦°Å
 
-        // ÀüÅõ Á¾·á Ã¼Å©
         if (CurrentState.IsTerminal())
         {
             ChangePhase(BattlePhase.BattleEnd);
@@ -278,10 +249,18 @@ public class BattleManager : MonoBehaviour
     // ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡
     private void HandleTurnEnd()
     {
-        // »óÅÂÀÌ»ó Ã³¸® (µ¶, È­»ó µî)
+        // ¼ÕÆÐ ¡æ discardPile·Î ÀÌµ¿
+        foreach (CardInstance card in CurrentState.hand)
+            CurrentState.discardPile.Add(card);
+        CurrentState.hand.Clear();
+
+        // »óÅÂÀÌ»ó Ã³¸®
         ApplyStatusEffects();
 
-        if (CurrentState.IsTerminal()) // »óÅÂÀÌ»óÀ¸·Î ÀÎÇØ ÀüÅõ Á¾·áµÉ ¼ö ÀÖÀ½
+        // »óÅÂÀÌ»ó Ã³¸® ÈÄ UI µ¿±âÈ­
+        UpdateUI();
+
+        if (CurrentState.IsTerminal())
         {
             ChangePhase(BattlePhase.BattleEnd);
             return;
@@ -302,8 +281,6 @@ public class BattleManager : MonoBehaviour
     {
         ApplyBurnEffect(CurrentState.player);
         ApplyBurnEffect(CurrentState.enemy);
-
-        // µ¶ÀÌ¶û È­»ó »óÅÂÀÌ»ó °í¹Î Áß, µÑÀÌ ºñ½ÁÇÑ È¿°ú¶ó¸é ±×³É ÇÏ³ª¸¸ ÇÏ´Â °Ô ³´Áö ¾ÊÀ»±î ½ÍÀ½
     }
 
     private void ApplyBurnEffect(Entity entity)
@@ -326,14 +303,14 @@ public class BattleManager : MonoBehaviour
         bool playerWin = CurrentState.enemy.currentHP <= 0;
         Debug.Log(playerWin ? "ÇÃ·¹ÀÌ¾î ½Â¸®!" : "ÇÃ·¹ÀÌ¾î ÆÐ¹è...");
 
-        StopAllCoroutines(); // È¤½Ã ³²¾ÆÀÖ´Â Àû Çàµ¿ ÄÚ·çÆ¾ÀÌ ÀÖ´Ù¸é ÁßÁö
+        StopAllCoroutines();
 
         OnBattleEnd?.Invoke(playerWin);
         uiManager.ShowBattleResult(playerWin);
     }
 
     // ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡
-    // UI ¾÷µ¥ÀÌÆ®
+    // UI ¾÷µ¥ÀÌÆ® (OnStateUpdated ÀÌº¥Æ® + UIManager µ¿½Ã Ã³¸®)
     // ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡
     private void UpdateUI()
     {
