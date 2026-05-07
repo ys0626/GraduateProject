@@ -1,14 +1,13 @@
-
 using System.Collections.Generic;
 using UnityEngine;
 
 public enum EffectType
 {
-    Burn, //¹ßÈ­
-    Vulnerable, //Ãë¾à
-    Weak, //¾àÈ­
-    Strength, //Èû
-    LoseHealth, //ÅÏ¸¶´Ù Ã¼·Â °¨¼Ò
+    Burn, //ë°œí™”
+    Vulnerable, //ì·¨ì•½
+    Weak, //ì•½í™”
+    Strength, //í˜
+    LoseHealth, //í„´ë§ˆë‹¤ ì²´ë ¥ ê°ì†Œ
 }
 public class Entity
 {
@@ -22,5 +21,19 @@ public class Entity
         int absorbed = Mathf.Min(block, amount);
         block -= absorbed;
         currentHP -= (amount - absorbed);
+
+        block = Mathf.Max(0, block);
+        currentHP = Mathf.Max(0, currentHP);
+    }
+
+    public Entity Clone()
+    {
+        return new Entity
+        {
+            currentHP = this.currentHP,
+            maxHP = this.maxHP,
+            block = this.block,
+            statusEffects = new Dictionary<EffectType, int>(this.statusEffects)
+        };
     }
 }

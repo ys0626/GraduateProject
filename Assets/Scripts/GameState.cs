@@ -7,15 +7,33 @@ public class GameState
     public List<CardDatabase.CardEntry> deck;
     public List<CardDatabase.CardEntry> hand;
     public List<CardDatabase.CardEntry> discardPile;
+    public List<CardDatabase.CardEntry> exhaustPile;
     public int currentEnergy;
     public int maxEnergy;
     public int turnCount;
     public bool isPlayerTurn;
 
-
-    //ÇÃ·¹ÀÌ¾î³ª Àû µÑ Áß ÇÏ³ª Á×À¸¸é 1 ¹İÈ¯ÇÏ´Â ÇÔ¼ö
+    // í”Œë ˆì´ì–´ë‚˜ ì  ë‘˜ ì¤‘ í•˜ë‚˜ ì£½ìœ¼ë©´ true ë°˜í™˜
     public bool IsTerminal()
     {
         return player.currentHP <= 0 || enemy.currentHP <= 0;
+    }
+
+    // MCTSìš© ê²Œì„ ìƒíƒœ ë³µì‚¬
+    public GameState Clone()
+    {
+        return new GameState
+        {
+            player = player.Clone(),
+            enemy = enemy.Clone(),
+            deck = new List<CardInstance>(deck),
+            hand = new List<CardInstance>(hand),
+            discardPile = new List<CardInstance>(discardPile),
+            exhaustPile = new List<CardInstance>(exhaustPile),
+            currentEnergy = this.currentEnergy,
+            maxEnergy = this.maxEnergy,
+            turnCount = this.turnCount,
+            isPlayerTurn = this.isPlayerTurn
+        };
     }
 }

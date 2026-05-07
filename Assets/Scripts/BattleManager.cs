@@ -5,15 +5,15 @@ using UnityEngine;
 
 public enum BattlePhase
 {
-    Idle,           // ´ë±â
-    BattleStart,    // ÀüÅõ ½ÃÀÛ
-    PlayerTurn,     // ÇÃ·¹ÀÌ¾î ÅÏ
-    EnemyTurn,      // Àû ÅÏ
-    TurnEnd,        // ÅÏ Á¾·á Ã³¸®
-    BattleEnd       // ÀüÅõ Á¾·á
+    Idle,           // ëŒ€ê¸°
+    BattleStart,    // ì „íˆ¬ ì‹œì‘
+    PlayerTurn,     // í”Œë ˆì´ì–´ í„´
+    EnemyTurn,      // ì  í„´
+    TurnEnd,        // í„´ ì¢…ë£Œ ì²˜ë¦¬
+    BattleEnd       // ì „íˆ¬ ì¢…ë£Œ
 }
 
-public enum BattleMode { Normal, Hard } // ³ë¸», ÇÏµå ¸ğµå ±¸ºĞ
+public enum BattleMode { Normal, Hard }
 
 public class BattleManager : MonoBehaviour
 {
@@ -23,40 +23,43 @@ public class BattleManager : MonoBehaviour
     [SerializeField] private BattleMode battleMode;
 
     [Header("Managers")]
-    [SerializeField] private GameStateManager gameStateManager; // GameState °ü·Ã ·ÎÁ÷ ´ã´ç
-    [SerializeField] private BattleUIManager uiManager; // UI ¾÷µ¥ÀÌÆ® ´ã´ç
-    [SerializeField] private EnemyAIController enemyAIController; // ³ë¸» ¸ğµå Àû
-    [SerializeField] private MCTSController mctsController; // MCTS ¾Ë°í¸®Áò ´ã´ç
+    [SerializeField] private GameStateManager gameStateManager;
+    [SerializeField] private UIManager uiManager;
+    [SerializeField] private EnemyController enemyController;
+    [SerializeField] private MCTSController mctsController;
 
     [Header("Database")]
     [SerializeField] private CardDatabase cardDatabase;
 
-    // ¦¡¦¡¦¡ »óÅÂ ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡
+    // â”€â”€â”€ ìƒíƒœ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     public GameState CurrentState { get; private set; }
     public BattlePhase CurrentPhase { get; private set; }
 
-    // ¦¡¦¡¦¡ ÀÌº¥Æ® ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡
+    // â”€â”€â”€ ì´ë²¤íŠ¸ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     public event Action<BattlePhase> OnPhaseChanged;
     public event Action<GameState> OnStateUpdated;
-    public event Action<bool> OnBattleEnd;  // true = ÇÃ·¹ÀÌ¾î ½Â¸®
+    public event Action<bool> OnBattleEnd;   // true = í”Œë ˆì´ì–´ ìŠ¹ë¦¬
 
-    // ¦¡¦¡¦¡ ¼³Á¤ ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡
+    // â”€â”€â”€ ì„¤ì • â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     [Header("Battle Settings")]
     [SerializeField] private int drawCount = 5;
-    [SerializeField] private float enemyActionDelay = 1.0f;  // Àû Çàµ¿ µô·¹ÀÌ
+    [SerializeField] private float enemyActionDelay = 1.0f;
 
     private void Awake()
     {
         if (Instance == null) Instance = this;
-        else Destroy(gameObject);
+        else
+        {
+            Destroy(gameObject);
+            return;
+        }
     }
 
-    // ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡
-    // ÀüÅõ ½ÃÀÛ
-    // ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡
+    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ì „íˆ¬ ì‹œì‘
+    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     public void StartBattle(Entity player, Entity enemy, List<CardDatabase.CardEntry> playerDeck)
     {
-        // ÃÊ±â GameState ±¸¼º
         CurrentState = new GameState
         {
             player = player,
@@ -64,21 +67,21 @@ public class BattleManager : MonoBehaviour
             deck = playerDeck,
             hand = new List<CardDatabase.CardEntry>(),
             discardPile = new List<CardDatabase.CardEntry>(),
+            
+            //GameStateì—ì„œ ê°€ì ¸ì™€ì•¼í•˜ì§€ì•Šì„ê¹Œ?
             currentEnergy = 3,
             maxEnergy = 3,
             turnCount = 0,
             isPlayerTurn = true
         };
 
-        // µ¦ ¼ÅÇÃ
         gameStateManager.ShuffleDeck(CurrentState.deck);
-
         ChangePhase(BattlePhase.BattleStart);
     }
 
-    // ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡
-    // ÆäÀÌÁî ÀüÈ¯ (ÇÙ½É Èå¸§ Á¦¾î)
-    // ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡
+    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // í˜ì´ì¦ˆ ì „í™˜
+    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     private void ChangePhase(BattlePhase newPhase)
     {
         CurrentPhase = newPhase;
@@ -86,117 +89,97 @@ public class BattleManager : MonoBehaviour
 
         switch (newPhase)
         {
-            case BattlePhase.BattleStart:
-                HandleBattleStart();
-                break;
-            case BattlePhase.PlayerTurn:
-                HandlePlayerTurnStart();
-                break;
-            case BattlePhase.EnemyTurn:
-                HandleEnemyTurn();
-                break;
-            case BattlePhase.TurnEnd:
-                HandleTurnEnd();
-                break;
-            case BattlePhase.BattleEnd:
-                HandleBattleEnd();
-                break;
+            case BattlePhase.BattleStart: HandleBattleStart(); break;
+            case BattlePhase.PlayerTurn: HandlePlayerTurnStart(); break;
+            case BattlePhase.EnemyTurn: HandleEnemyTurn(); break;
+            case BattlePhase.TurnEnd: HandleTurnEnd(); break;
+            case BattlePhase.BattleEnd: HandleBattleEnd(); break;
         }
     }
 
-    // ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡
-    // ÀüÅõ ½ÃÀÛ Ã³¸®
-    // ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡
+    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ì „íˆ¬ ì‹œì‘ ì²˜ë¦¬
+    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     private void HandleBattleStart()
     {
-        Debug.Log("ÀüÅõ ½ÃÀÛ!");
-        // ÃÊ±â µå·Î¿ì
+        Debug.Log("ì „íˆ¬ ì‹œì‘!");
+
+        // ì²« ë“œë¡œìš°ëŠ” BattleStartì—ì„œë§Œ
         CurrentState = gameStateManager.DrawCards(CurrentState, drawCount);
         UpdateUI();
 
-        if (battleMode == BattleMode.Normal) // ³ë¸» ¸ğµå¿¡¼­´Â Ã¹ ÅÏºÎÅÍ Àû Çàµ¿ ¹Ì¸® º¸¿©ÁÖ±â
-        {
-            enemyAIController.PrepareNextAction(CurrentState);
-        }
+        if (battleMode == BattleMode.Normal)
+            enemyController.PrepareNextAction(CurrentState);
 
         ChangePhase(BattlePhase.PlayerTurn);
     }
 
-    // ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡
-    // ÇÃ·¹ÀÌ¾î ÅÏ ½ÃÀÛ
-    // ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡
+    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // í”Œë ˆì´ì–´ í„´ ì‹œì‘
+    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     private void HandlePlayerTurnStart()
     {
-        Debug.Log($"[ÅÏ {CurrentState.turnCount}] ÇÃ·¹ÀÌ¾î ÅÏ ½ÃÀÛ");
+        Debug.Log($"[í„´ {CurrentState.turnCount}] í”Œë ˆì´ì–´ í„´ ì‹œì‘");
 
-        // ¿¡³ÊÁö ÃæÀü
+        // ì—ë„ˆì§€ ì¶©ì „
         CurrentState.currentEnergy = CurrentState.maxEnergy;
 
-        // ¹æ¾îµµ ÃÊ±âÈ­
+        // ë°©ì–´ë„ ì´ˆê¸°í™”
         CurrentState.player.block = 0;
 
-        if (battleMode == BattleMode.Normal) // ³ë¸» ¸ğµå¿¡¼­´Â ´ÙÀ½ Àû Çàµ¿ ¹Ì¸® º¸¿©ÁÖ±â
-        {
-            uiManager.ShowEnemyIntent(enemyAIController.NextIntent);
-        }
+        if (battleMode == BattleMode.Normal)
+            uiManager.ShowEnemyIntent(enemyController.NextIntent);
 
         UpdateUI();
-        // ÀÌÈÄ ÇÃ·¹ÀÌ¾î ÀÔ·Â ´ë±â (UI¿¡¼­ Ä«µå Å¬¸¯)
+        // ì´í›„ í”Œë ˆì´ì–´ ì…ë ¥ ëŒ€ê¸°
     }
 
-    // ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡
-    // ÇÃ·¹ÀÌ¾î Ä«µå »ç¿ë (UI¿¡¼­ È£Ãâ)
-    // ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡
+    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // í”Œë ˆì´ì–´ ì¹´ë“œ ì‚¬ìš© (UIì—ì„œ í˜¸ì¶œ)
+    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     public void PlayerUseCard(CardDatabase.CardEntry card)
     {
-        // À¯È¿¼º °Ë»ç
         if (CurrentPhase != BattlePhase.PlayerTurn)
         {
-            Debug.LogWarning("ÇÃ·¹ÀÌ¾î ÅÏÀÌ ¾Æ´Õ´Ï´Ù.");
+            Debug.LogWarning("í”Œë ˆì´ì–´ í„´ì´ ì•„ë‹™ë‹ˆë‹¤.");
             return;
         }
 
         if (card.cost > CurrentState.currentEnergy)
         {
-            Debug.LogWarning("¿¡³ÊÁö°¡ ºÎÁ·ÇÕ´Ï´Ù.");
-            uiManager.ShowNotEnoughEnergy();
+            Debug.LogWarning("ì—ë„ˆì§€ê°€ ë¶€ì¡±í•©ë‹ˆë‹¤.");
+            uiManager.ShowEnergyWarning();
             return;
         }
 
-        Debug.Log($"ÇÃ·¹ÀÌ¾î°¡ [{card.cardName}] »ç¿ë");
+        Debug.Log($"í”Œë ˆì´ì–´ê°€ [{card.data.cardName}] ì‚¬ìš©");
 
-        // »óÅÂ ¾÷µ¥ÀÌÆ®
         CurrentState = gameStateManager.ApplyAction(CurrentState, card);
-        OnStateUpdated?.Invoke(CurrentState);
         UpdateUI();
 
-        // ÀüÅõ Á¾·á Ã¼Å©
         if (CurrentState.IsTerminal())
-        {
             ChangePhase(BattlePhase.BattleEnd);
-            return;
-        }
     }
 
-    // ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡
-    // ÇÃ·¹ÀÌ¾î ÅÏ Á¾·á (¹öÆ°¿¡¼­ È£Ãâ)
-    // ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡
+    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // í”Œë ˆì´ì–´ í„´ ì¢…ë£Œ (ë²„íŠ¼ì—ì„œ í˜¸ì¶œ)
+    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     public void PlayerEndTurn()
     {
         if (CurrentPhase != BattlePhase.PlayerTurn) return;
 
-        Debug.Log("ÇÃ·¹ÀÌ¾î ÅÏ Á¾·á");
+        Debug.Log("í”Œë ˆì´ì–´ í„´ ì¢…ë£Œ");
         ChangePhase(BattlePhase.EnemyTurn);
     }
 
-    // ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡
-    // Àû ÅÏ Ã³¸® (MCTS È£Ãâ)
-    // ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡
+    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ì  í„´ ì²˜ë¦¬
+    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     private void HandleEnemyTurn()
     {
-        Debug.Log("Àû ÅÏ ½ÃÀÛ");
+        Debug.Log("ì  í„´ ì‹œì‘");
 
-        // Àû ¹æ¾îµµ ÃÊ±âÈ­
+        // ì  ë°©ì–´ë„ ì´ˆê¸°í™”
         CurrentState.enemy.block = 0;
 
         StartCoroutine(battleMode == BattleMode.Normal
@@ -204,16 +187,14 @@ public class BattleManager : MonoBehaviour
             : HardEnemyTurnCoroutine());
     }
 
-    // ³ë¸» ¸ğµå: ÆĞÅÏ AI
+    // ë…¸ë§ ëª¨ë“œ: íŒ¨í„´ AI
     private IEnumerator NormalEnemyTurnCoroutine()
     {
-        uiManager.ShowEnemyAction(enemyAIController.NextIntent); // Àû Çàµ¿ ¿¬Ãâ?
+        uiManager.ShowEnemyAction(enemyController.NextIntent);
         yield return new WaitForSeconds(enemyActionDelay);
 
-        // Çàµ¿ ½ÇÇà
-        CurrentState = enemyAIController.ExecuteAction(CurrentState);
-        OnStateUpdated?.Invoke(CurrentState);
-        UpdateUI();
+        CurrentState = enemyController.ExecuteAction(CurrentState);
+        UpdateUI(); // OnStateUpdated ì¤‘ë³µ í˜¸ì¶œ ì œê±° (UpdateUI ë‚´ë¶€ì—ì„œ ì²˜ë¦¬)
 
         if (CurrentState.IsTerminal())
         {
@@ -224,48 +205,42 @@ public class BattleManager : MonoBehaviour
         ChangePhase(BattlePhase.TurnEnd);
     }
 
-
+    // í•˜ë“œ ëª¨ë“œ: MCTS AI
     private IEnumerator HardEnemyTurnCoroutine()
     {
-        uiManager.ShowEnemyThinking();  // "»ı°¢ Áß..." °°Àº UI
+        uiManager.ShowEnemyThinking();  // "ìƒê° ì¤‘..." ê°™ì€ UI
 
-        // MCTS ½ÇÇà (ºñµ¿±â)
+        // MCTS ì‹¤í–‰ (ë¹„ë™ê¸°)
         CardDatabase.CardEntry bestCard = null;
         bool isDone = false;
 
         mctsController.GetBestAction(
             CurrentState,
-            result => {
+            result =>
+            {
                 bestCard = result;
                 isDone = true;
             }
         );
 
-        // MCTS ¿Ï·á ´ë±â
         yield return new WaitUntil(() => isDone);
-        yield return new WaitForSeconds(enemyActionDelay);  // ¿¬Ãâ¿ë µô·¹ÀÌ
+        yield return new WaitForSeconds(enemyActionDelay);
 
-        uiManager.HideEnemyThinking();
-
-        // »ç¿ëÇÒ Ä«µå°¡ ¾øÀ¸¸é ÅÏ Á¾·á
         if (bestCard == null)
         {
-            Debug.Log("Àû: »ç¿ëÇÒ Ä«µå ¾øÀ½, ÅÏ Á¾·á");
+            Debug.Log("ì : ì‚¬ìš©í•  ì¹´ë“œ ì—†ìŒ, í„´ ì¢…ë£Œ");
             ChangePhase(BattlePhase.TurnEnd);
             yield break;
         }
 
-        // Àû Ä«µå »ç¿ë
-        Debug.Log($"ÀûÀÌ [{bestCard.cardName}] »ç¿ë");
-        uiManager.ShowEnemyAction(bestCard);  // Àû Çàµ¿ ¿¬Ãâ
+        Debug.Log($"ì ì´ [{bestCard.data.cardName}] ì‚¬ìš©");
+        uiManager.ShowEnemyAction(bestCard);
 
         yield return new WaitForSeconds(0.5f);
 
         CurrentState = gameStateManager.ApplyAction(CurrentState, bestCard);
-        OnStateUpdated?.Invoke(CurrentState);
-        UpdateUI();
+        UpdateUI(); // OnStateUpdated ì¤‘ë³µ í˜¸ì¶œ ì œê±°
 
-        // ÀüÅõ Á¾·á Ã¼Å©
         if (CurrentState.IsTerminal())
         {
             ChangePhase(BattlePhase.BattleEnd);
@@ -275,21 +250,29 @@ public class BattleManager : MonoBehaviour
         ChangePhase(BattlePhase.TurnEnd);
     }
 
-    // ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡
-    // ÅÏ Á¾·á Ã³¸®
-    // ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡
+    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // í„´ ì¢…ë£Œ ì²˜ë¦¬
+    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     private void HandleTurnEnd()
     {
-        // »óÅÂÀÌ»ó Ã³¸® (µ¶, È­»ó µî)
+        // ì†íŒ¨ â†’ discardPileë¡œ ì´ë™
+        foreach (CardInstance card in CurrentState.hand)
+            CurrentState.discardPile.Add(card);
+        CurrentState.hand.Clear();
+
+        // ìƒíƒœì´ìƒ ì²˜ë¦¬
         ApplyStatusEffects();
 
-        if (CurrentState.IsTerminal()) // »óÅÂÀÌ»óÀ¸·Î ÀÎÇØ ÀüÅõ Á¾·áµÉ ¼ö ÀÖÀ½
+        // ìƒíƒœì´ìƒ ì²˜ë¦¬ í›„ UI ë™ê¸°í™”
+        UpdateUI();
+
+        if (CurrentState.IsTerminal())
         {
             ChangePhase(BattlePhase.BattleEnd);
             return;
         }
 
-        // µå·Î¿ì
+        // ë“œë¡œìš°
         CurrentState = gameStateManager.DrawCards(CurrentState, drawCount);
         CurrentState.turnCount++;
 
@@ -297,15 +280,13 @@ public class BattleManager : MonoBehaviour
         ChangePhase(BattlePhase.PlayerTurn);
     }
 
-    // ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡
-    // »óÅÂÀÌ»ó Ã³¸®
-    // ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡
+    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ìƒíƒœì´ìƒ ì²˜ë¦¬
+    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     private void ApplyStatusEffects()
     {
         ApplyBurnEffect(CurrentState.player);
         ApplyBurnEffect(CurrentState.enemy);
-
-        // µ¶ÀÌ¶û È­»ó »óÅÂÀÌ»ó °í¹Î Áß, µÑÀÌ ºñ½ÁÇÑ È¿°ú¶ó¸é ±×³É ÇÏ³ª¸¸ ÇÏ´Â °Ô ³´Áö ¾ÊÀ»±î ½ÍÀ½
     }
 
     private void ApplyBurnEffect(Entity entity)
@@ -313,30 +294,30 @@ public class BattleManager : MonoBehaviour
         if (entity.statusEffects.TryGetValue(EffectType.Burn, out int burnValue))
         {
             entity.TakeDamage(burnValue);
-            // ÅÏ¸¶´Ù °¨¼Ò½ÃÅ°·Á¸é ¾Æ·¡ ÁÖ¼® ÇØÁ¦
+            // í„´ë§ˆë‹¤ ê°ì†Œì‹œí‚¤ë ¤ë©´ ì•„ë˜ ì£¼ì„ í•´ì œ
             // entity.statusEffects[EffectType.Burn]--;
             // if (entity.statusEffects[EffectType.Burn] <= 0)
             //     entity.statusEffects.Remove(EffectType.Burn);
         }
     }
 
-    // ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡
-    // ÀüÅõ Á¾·á
-    // ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡
+    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ì „íˆ¬ ì¢…ë£Œ
+    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     private void HandleBattleEnd()
     {
         bool playerWin = CurrentState.enemy.currentHP <= 0;
-        Debug.Log(playerWin ? "ÇÃ·¹ÀÌ¾î ½Â¸®!" : "ÇÃ·¹ÀÌ¾î ÆĞ¹è...");
+        Debug.Log(playerWin ? "í”Œë ˆì´ì–´ ìŠ¹ë¦¬!" : "í”Œë ˆì´ì–´ íŒ¨ë°°...");
 
-        StopAllCoroutines(); // È¤½Ã ³²¾ÆÀÖ´Â Àû Çàµ¿ ÄÚ·çÆ¾ÀÌ ÀÖ´Ù¸é ÁßÁö
+        StopAllCoroutines();
 
         OnBattleEnd?.Invoke(playerWin);
         uiManager.ShowBattleResult(playerWin);
     }
 
-    // ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡
-    // UI ¾÷µ¥ÀÌÆ®
-    // ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡
+    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // UI ì—…ë°ì´íŠ¸ (OnStateUpdated ì´ë²¤íŠ¸ + UIManager ë™ì‹œ ì²˜ë¦¬)
+    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     private void UpdateUI()
     {
         OnStateUpdated?.Invoke(CurrentState);
