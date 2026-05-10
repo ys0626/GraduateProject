@@ -1,11 +1,23 @@
+
+using UnityEditor;
+
+/// <summary>
+/// 실제 런타임 중 게임에서 사용되는 카드 객체
+/// </summary>
+[System.Serializable]
 public class CardInstance
 {
     public CardData data;
 
     public int currentCost;
 
+    //강화 여부
     public bool upgraded;
+    
+    //사용 시 소멸되는 지 
     public bool exhaust;
+
+    //휘발성인 지 
     public bool ethereal;
 
     public CardInstance(CardData cardData)
@@ -22,13 +34,12 @@ public class CardInstance
     }
 
     /// <summary>
-    /// 배틀 씬에 처음 입장했을 때 덱에 있는 카드들을 드로우 파일에 넣을 때 사용
+    /// CardInstance의 복사본을 생성
     /// </summary>
     /// <param name="original"></param>
     public CardInstance(CardInstance original)
     {
         data = original.data;
-
         currentCost = original.currentCost;
         upgraded = original.upgraded;
         exhaust = original.exhaust;
