@@ -7,6 +7,18 @@ using UnityEditor;
 [System.Serializable]
 public class CardInstance
 {
+    // =====================================================
+    // 카드 인스턴스의 고유 ID
+    // =====================================================
+
+    private static int nextID = 0;
+
+    public int instanceID;
+
+    // =====================================================
+    // 카드 정보
+    // =====================================================
+
     public CardData data;
 
     public int currentCost;
@@ -20,8 +32,14 @@ public class CardInstance
     //휘발성인 지 
     public bool ethereal;
 
+    // =====================================================
+    // 생성자
+    // =====================================================
+
     public CardInstance(CardData cardData)
     {
+        instanceID = nextID++;  //카드 인스턴스에 고유 ID 발급
+
         data = cardData;
 
         currentCost = data.cost;
@@ -39,10 +57,21 @@ public class CardInstance
     /// <param name="original"></param>
     public CardInstance(CardInstance original)
     {
+        instanceID = original.instanceID;
         data = original.data;
         currentCost = original.currentCost;
         upgraded = original.upgraded;
         exhaust = original.exhaust;
         ethereal = original.ethereal;
+    }
+
+
+
+    // =====================================================
+    // MCTS에서 사용
+    // =====================================================
+    public CardInstance Clone()
+    {
+        return new CardInstance(this);
     }
 }

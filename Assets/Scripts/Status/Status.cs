@@ -28,7 +28,7 @@ public abstract class Status
     }
 
     // 턴 종료 시 호출
-    public virtual void OnTurnEnd(Entity owner)
+    public virtual void OnTurnEnd(IBattleEntity owner)
     {
 
     }
@@ -38,4 +38,6 @@ public abstract class Status
     {
         return Value <= 0;
     }
+
+    public abstract Status Clone();
 }

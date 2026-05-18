@@ -19,6 +19,9 @@ public static class CardEffectFactory
 
             case CardEffectType.Strike:
                 return new StrikeEffect(card);
+
+            case CardEffectType.SwordBoomerang:
+                return new SwordBoomerangEffect(card);
             
             case CardEffectType.Uppercut:
                 return new UppercutEffect(card);

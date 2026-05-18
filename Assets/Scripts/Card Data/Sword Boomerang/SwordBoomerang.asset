@@ -10,17 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0449c7d05e32ebb409b263d234c09d38, type: 3}
-  m_Name: Uppercut
+  m_Name: SwordBoomerang
   m_EditorClassIdentifier: Assembly-CSharp::CardData
-  cardName: Uppercut
-  description: 'Deal 13 damage.
-
-    Apply 1 Weak.
-
-    Apply 1 Vulnerable'
-  artwork: {fileID: -3970379528606528002, guid: 45db21a05cdb60a40b3ca3c02e838dfc, type: 3}
-  cost: 2
+  cardName: Sword Boomerang
+  description: Deal 3 damage 5 times.
+  artwork: {fileID: 3413321609958997834, guid: afedae6b2078e6c4ea80d7308b4ae546, type: 3}
+  cost: 1
   cardType: 0
-  rarity: 1
+  rarity: 0
   targetType: 1
-  cardEffectType: 6
+  cardEffectType: 5

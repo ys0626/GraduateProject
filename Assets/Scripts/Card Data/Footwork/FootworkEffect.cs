@@ -13,10 +13,8 @@ public class FootworkEffect : ICardEffect
     /// <summary>
     /// 카드 사용 시의 효과
     /// </summary>
-    public void Execute()
+    public void Execute(IBattleEntity cardUser, IBattleEntity cardTarget)
     {
-        Entity cardTarget = BattleManager.instance.GetCardTarget(card);
-
         //업그레이드에 따른 수치
         int dexterity = card.upgraded ? 3 : 2;
 

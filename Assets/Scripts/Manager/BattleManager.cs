@@ -122,10 +122,10 @@ public class BattleManager : MonoBehaviour
     private void InitializeControllers()
     {
         playerController =
-            CreateController(GameManager.instance.PlayerControllerType);
+            CreateController(SimulationManager.instance.PlayerControllerType);
 
         enemyController =
-            CreateController(GameManager.instance.EnemyControllerType);
+            CreateController(SimulationManager.instance.EnemyControllerType);
     }
 
     /// <summary>
@@ -411,7 +411,11 @@ public class BattleManager : MonoBehaviour
 
         StopAllCoroutines();
 
-        restartButton.SetActive(true);
+        // 자동 시뮬레이션 아닐 때만 버튼 표시
+        if (!SimulationManager.instance.AutoSimulation)
+        {
+            restartButton.SetActive(true);
+        }
 
         if (playerWin)
         {
@@ -422,6 +426,9 @@ public class BattleManager : MonoBehaviour
         {
             Debug.Log("플레이어 패배...");
         }
+
+        // 시뮬레이션 결과 기록
+        SimulationManager.instance.OnBattleEnded(playerWin);
     }
 
     private void OnPlayerDead()
@@ -492,11 +499,12 @@ public class BattleManager : MonoBehaviour
         // =====================================================
         // 카드 효과 실행
         // =====================================================
-        
-        ICardEffect effect =
-            CardEffectFactory.Create(card);
 
-        effect?.Execute();
+        ICardEffect effect = CardEffectFactory.Create(card);
+
+        Entity target = GetCardTarget(card);
+
+        effect?.Execute(user, target);
 
         // =====================================================
         // 카드 처리
@@ -564,7 +572,7 @@ public class BattleManager : MonoBehaviour
     /// <summary>
     /// 카드의 타겟 Entity를 리턴
     /// </summary>
-    public Entity GetCardTarget(CardInstance card)
+    private Entity GetCardTarget(CardInstance card)
     {
         switch (card.data.targetType)
         {

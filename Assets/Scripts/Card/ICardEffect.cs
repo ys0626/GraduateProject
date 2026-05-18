@@ -1,4 +1,4 @@
 public interface ICardEffect
 {
-    void Execute();
+    void Execute(IBattleEntity user, IBattleEntity target);
 }

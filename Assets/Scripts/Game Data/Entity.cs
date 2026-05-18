@@ -6,7 +6,7 @@ using UnityEngine;
 /// 플레이어 또는 적의 정보들을 저장하는 class
 /// </summary>
 [System.Serializable]
-public class Entity
+public class Entity : IBattleEntity
 {
     // =====================================================
     // Entity가 저장하는 정보들
@@ -141,7 +141,8 @@ public class Entity
 
 
     // 현재 보유한 버프, 디버프들
-    public List<Status> statuses = new List<Status>();
+    public List<Status> statuses { get; private set; }
+    = new List<Status>();
 
     public event Action OnStatusesChanged;
 
@@ -149,15 +150,20 @@ public class Entity
 
 
     // 덱, 손패, 뽑을 카드 더미, 버린 카드 더미, 소멸된 카드 더미
-    public List<CardInstance> deck = new List<CardInstance>();
+    public List<CardInstance> deck { get; private set; }
+    = new List<CardInstance>();
 
-    public List<CardInstance> hand = new List<CardInstance>();
+    public List<CardInstance> hand { get; private set; }
+    = new List<CardInstance>();
 
-    public List<CardInstance> drawPile = new List<CardInstance>();
+    public List<CardInstance> drawPile { get; private set; }
+        = new List<CardInstance>();
 
-    public List<CardInstance> discardPile = new List<CardInstance>();
+    public List<CardInstance> discardPile { get; private set; }
+        = new List<CardInstance>();
 
-    public List<CardInstance> exhaustPile = new List<CardInstance>();
+    public List<CardInstance> exhaustPile { get; private set; }
+        = new List<CardInstance>();
 
 
 

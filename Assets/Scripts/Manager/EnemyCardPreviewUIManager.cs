@@ -22,6 +22,17 @@ public class EnemyCardPreviewUIManager : MonoBehaviour
         else Destroy(gameObject);
     }
 
+    private void OnDestroy()
+    {
+        if (currentCard != null)
+        {
+            currentCard.transform.DOKill();
+        }
+    }
+
+    /// <summary>
+    /// 카드 프리뷰 표시
+    /// </summary>
     public void Show(CardInstance card)
     {
         Hide();
@@ -41,21 +52,40 @@ public class EnemyCardPreviewUIManager : MonoBehaviour
         rt.localScale = Vector3.zero;
 
         rt.DOScale(0.75f, 0.25f)
-            .SetEase(Ease.OutBack);
+            .SetEase(Ease.OutBack)
+            .SetLink(currentCard);
     }
 
+    /// <summary>
+    /// 카드 프리뷰 제거
+    /// </summary>
     public void Hide()
     {
         if (currentCard == null) return;
 
         RectTransform rt = currentCard.GetComponent<RectTransform>();
 
+        // 이미 Destroy 중일 수 있으므로 체크
+        if (rt == null)
+        {
+            currentCard = null;
+
+            return;
+        }
+
+        // 기존 Tween 제거
+        rt.DOKill();
+
         rt.DOScale(0f, 0.15f)
             .SetEase(Ease.InBack)
+            .SetLink(currentCard)
             .OnComplete(() =>
             {
-                Destroy(currentCard);
-                currentCard = null;
+                if (currentCard != null)
+                {
+                    Destroy(currentCard);
+                    currentCard = null;
+                }
             });
     }
 }

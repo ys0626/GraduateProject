@@ -14,4 +14,13 @@ public class WeakStatus : Debuff
     {
 
     }
+
+    /// <summary>
+    /// 시뮬레이션에서 사용
+    /// </summary>
+    /// <returns></returns>
+    public override Status Clone()
+    {
+        return new WeakStatus(Value);
+    }
 }

@@ -11,7 +11,7 @@ public abstract class Debuff : Status
 
     }
 
-    public override void OnTurnEnd(Entity owner)
+    public override void OnTurnEnd(IBattleEntity owner)
     {
         Value--;
     }

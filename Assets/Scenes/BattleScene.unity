@@ -3356,6 +3356,81 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &776499464
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 776499466}
+  - component: {fileID: 776499465}
+  m_Layer: 0
+  m_Name: Simulation Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &776499465
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 776499464}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4e9fb6ed626b1c4cabb7f165225041e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SimulationManager
+  playerStarterDeck:
+  - {fileID: 11400000, guid: 99fc643c6a5dd494189cada6ba2df985, type: 2}
+  - {fileID: 11400000, guid: 413bd878af68d9b459409356d62c452b, type: 2}
+  - {fileID: 11400000, guid: 45f5720786ba1974192c501cf5d9917d, type: 2}
+  - {fileID: 11400000, guid: 0aae2a385a56bab448a3da0a34b44cea, type: 2}
+  - {fileID: 11400000, guid: 80f95a1809369e146a9e7e6517abb2ca, type: 2}
+  - {fileID: 11400000, guid: 80f95a1809369e146a9e7e6517abb2ca, type: 2}
+  - {fileID: 11400000, guid: 80f95a1809369e146a9e7e6517abb2ca, type: 2}
+  - {fileID: 11400000, guid: 1c4839203dbb9bd40b6c9973b78ce344, type: 2}
+  - {fileID: 11400000, guid: 1c4839203dbb9bd40b6c9973b78ce344, type: 2}
+  - {fileID: 11400000, guid: 1c4839203dbb9bd40b6c9973b78ce344, type: 2}
+  playerMaxHP: 100
+  playerMaxEnergy: 3
+  enemyStarterDeck:
+  - {fileID: 11400000, guid: 99fc643c6a5dd494189cada6ba2df985, type: 2}
+  - {fileID: 11400000, guid: 413bd878af68d9b459409356d62c452b, type: 2}
+  - {fileID: 11400000, guid: 45f5720786ba1974192c501cf5d9917d, type: 2}
+  - {fileID: 11400000, guid: 0aae2a385a56bab448a3da0a34b44cea, type: 2}
+  - {fileID: 11400000, guid: 80f95a1809369e146a9e7e6517abb2ca, type: 2}
+  - {fileID: 11400000, guid: 80f95a1809369e146a9e7e6517abb2ca, type: 2}
+  - {fileID: 11400000, guid: 80f95a1809369e146a9e7e6517abb2ca, type: 2}
+  - {fileID: 11400000, guid: 1c4839203dbb9bd40b6c9973b78ce344, type: 2}
+  - {fileID: 11400000, guid: 1c4839203dbb9bd40b6c9973b78ce344, type: 2}
+  - {fileID: 11400000, guid: 1c4839203dbb9bd40b6c9973b78ce344, type: 2}
+  enemyMaxHP: 100
+  enemyMaxEnergy: 3
+  playerControllerType: 2
+  enemyControllerType: 2
+  autoSimulation: 1
+  totalBattleCount: 100
+  timeScale: 100
+--- !u!4 &776499466
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 776499464}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 940.23706, y: 601.284, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &778675177
 GameObject:
   m_ObjectHideFlags: 0
@@ -3421,34 +3496,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d66c3d8b9a993f54f8616e66dee3539f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
-  playerStarterDeck:
-  - {fileID: 11400000, guid: 45f5720786ba1974192c501cf5d9917d, type: 2}
-  - {fileID: 11400000, guid: 0aae2a385a56bab448a3da0a34b44cea, type: 2}
-  - {fileID: 11400000, guid: 99fc643c6a5dd494189cada6ba2df985, type: 2}
-  - {fileID: 11400000, guid: 413bd878af68d9b459409356d62c452b, type: 2}
-  - {fileID: 11400000, guid: 80f95a1809369e146a9e7e6517abb2ca, type: 2}
-  - {fileID: 11400000, guid: 80f95a1809369e146a9e7e6517abb2ca, type: 2}
-  - {fileID: 11400000, guid: 80f95a1809369e146a9e7e6517abb2ca, type: 2}
-  - {fileID: 11400000, guid: 1c4839203dbb9bd40b6c9973b78ce344, type: 2}
-  - {fileID: 11400000, guid: 1c4839203dbb9bd40b6c9973b78ce344, type: 2}
-  - {fileID: 11400000, guid: 1c4839203dbb9bd40b6c9973b78ce344, type: 2}
-  playerMaxHP: 40
-  playerMaxEnergy: 4
-  enemyStarterDeck:
-  - {fileID: 11400000, guid: 45f5720786ba1974192c501cf5d9917d, type: 2}
-  - {fileID: 11400000, guid: 0aae2a385a56bab448a3da0a34b44cea, type: 2}
-  - {fileID: 11400000, guid: 99fc643c6a5dd494189cada6ba2df985, type: 2}
-  - {fileID: 11400000, guid: 413bd878af68d9b459409356d62c452b, type: 2}
-  - {fileID: 11400000, guid: 80f95a1809369e146a9e7e6517abb2ca, type: 2}
-  - {fileID: 11400000, guid: 80f95a1809369e146a9e7e6517abb2ca, type: 2}
-  - {fileID: 11400000, guid: 80f95a1809369e146a9e7e6517abb2ca, type: 2}
-  - {fileID: 11400000, guid: 1c4839203dbb9bd40b6c9973b78ce344, type: 2}
-  - {fileID: 11400000, guid: 1c4839203dbb9bd40b6c9973b78ce344, type: 2}
-  - {fileID: 11400000, guid: 1c4839203dbb9bd40b6c9973b78ce344, type: 2}
-  enemyMaxHP: 40
-  enemyMaxEnergy: 4
-  playerControllerType: 0
-  enemyControllerType: 1
 --- !u!4 &804931616
 Transform:
   m_ObjectHideFlags: 0
@@ -5434,12 +5481,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BattleManager
   restartButton: {fileID: 20647957}
-  currentTurnEntity:
-    deck: []
-    hand: []
-    drawPile: []
-    discardPile: []
-    exhaustPile: []
   battlePhase: 0
   drawPerTurn: 5
   turnCount: 1
@@ -6876,18 +6917,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3918ac6ea2ff72344a954ace6fdd0754, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DBTest
-  player:
-    deck: []
-    hand: []
-    drawPile: []
-    discardPile: []
-    exhaustPile: []
-  enemy:
-    deck: []
-    hand: []
-    drawPile: []
-    discardPile: []
-    exhaustPile: []
 --- !u!4 &2082158678
 Transform:
   m_ObjectHideFlags: 0
@@ -6968,6 +6997,7 @@ SceneRoots:
   - {fileID: 1615103633}
   - {fileID: 804931616}
   - {fileID: 355246458}
+  - {fileID: 776499466}
   - {fileID: 447818840}
   - {fileID: 976261522}
   - {fileID: 2082158678}

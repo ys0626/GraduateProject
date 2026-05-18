@@ -8,6 +8,7 @@ public enum CardEffectType
     Footwork,
     Inflame,
     Strike,
+    SwordBoomerang,
     Uppercut,
 }
 
