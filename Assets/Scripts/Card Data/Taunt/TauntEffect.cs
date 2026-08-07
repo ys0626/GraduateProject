@@ -1,8 +1,8 @@
-public class DefendEffect : ICardEffect
+public class TauntEffect : ICardEffect
 {
     private CardInstance card;
 
-    public DefendEffect(CardInstance card)
+    public TauntEffect(CardInstance card)
     {
         this.card = card;
     }
@@ -13,10 +13,14 @@ public class DefendEffect : ICardEffect
     public void Execute(IBattleEntity cardUser, IBattleEntity cardTarget)
     {
         //업그레이드에 따른 수치
-        int block = card.upgraded ? 8 : 5;
+        int block = card.upgraded ? 8 : 7;
+        int vulnerableTurns = card.upgraded ? 2 : 1;
 
-        //Gain 5(8) Block
+        //Gain 7(8) Block
         block = cardUser.CalculateBlock(block);
         cardUser.GetBlock(block);
+
+        //Apply 1(2) Vulnerable
+        cardTarget.AddStatus(new VulnerableStatus(vulnerableTurns));
     }
 }

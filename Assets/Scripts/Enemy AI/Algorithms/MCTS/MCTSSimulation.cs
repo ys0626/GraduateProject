@@ -1,6 +1,6 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
-using static UnityEngine.Rendering.DebugUI;
 
 /// <summary>
 /// MCTS의 3. Simulation 단계
@@ -12,7 +12,7 @@ public static class MCTSSimulation
     /// </summary>
     public static float Simulate(
         SimGameState state,
-        int maxDepth = 50)
+        int maxDepth = 20)
     {
         // =================================================
         // 원본 상태 복사
@@ -33,14 +33,9 @@ public static class MCTSSimulation
             // 종료 체크
             // =============================================
 
-            if (sim.self.CurrentHP <= 0)
+            if (sim.self.CurrentHP <= 0 || sim.opponent.CurrentHP <= 0)
             {
-                return -0.8f;
-            }
-
-            if (sim.opponent.CurrentHP <= 0)
-            {
-                return +1f;
+                return Evaluate(sim);
             }
 
             // =============================================
@@ -78,14 +73,15 @@ public static class MCTSSimulation
             }
 
             // =============================================
-            // 랜덤 카드 선택
+            // 롤아웃 정책에 따라 카드 선택
             // =============================================
 
             CardInstance selectedCard =
-                playableCards[
-                    Random.Range(
-                        0,
-                        playableCards.Count)];
+                SelectWeightedCard(
+                    playableCards,
+                    current,
+                    target,
+                    sim);
 
             // =============================================
             // 카드 사용
@@ -183,23 +179,35 @@ public static class MCTSSimulation
     }
 
 
+
+
+
     /// <summary>
     /// 평가 함수
     /// </summary>
-    public static float Evaluate(SimGameState state)
+    private static float Evaluate(SimGameState state)
     {
-        if (state.self.CurrentHP <= 0)
-            return -1f;
+        // 승리
+        if (state.opponent.CurrentHP <= 0) return 0.05f;
 
-        if (state.opponent.CurrentHP <= 0)
-            return 1f;
-        
-        float score = (state.self.CurrentHP - state.opponent.CurrentHP) * 0.03f;
-        score += (state.self.Block - state.opponent.Block) * 0.01f;
-        score += state.self.GetStatusValue(StatusType.Strength) * 0.1f;
-        score += state.self.GetStatusValue(StatusType.Dexterity) * 0.1f;
-        score += state.opponent.GetStatusValue(StatusType.Weak) * 0.05f;
-        score += state.opponent.GetStatusValue(StatusType.Vulnerable) * 0.05f;
+        // 패배
+        if (state.self.CurrentHP <= 0) return -0.05f;
+
+
+        float score = 0f;
+
+        // HP 차이
+        score += (state.self.CurrentHP - state.opponent.CurrentHP) * 0.01f;
+
+        // Block 차이
+        score += (state.self.Block - state.opponent.Block) * 0.008f;
+
+        // 상태 이상 가치
+        score += state.self.GetStatusValue(StatusType.Strength) * 0.05f;
+        score += state.self.GetStatusValue(StatusType.Dexterity) * 0.05f;
+
+        score += state.opponent.GetStatusValue(StatusType.Weak) * 0.01f;
+        score += state.opponent.GetStatusValue(StatusType.Vulnerable) * 0.01f;
 
         return Tanh(score);
     }
@@ -209,5 +217,100 @@ public static class MCTSSimulation
         float ePos = Mathf.Exp(x);
         float eNeg = Mathf.Exp(-x);
         return (ePos - eNeg) / (ePos + eNeg);
+    }
+
+
+
+
+    /// <summary>
+    /// heuristic 기반 weighted random 선택
+    /// </summary>
+    private static CardInstance SelectWeightedCard(
+        List<CardInstance> playableCards,
+        SimEntity self,
+        SimEntity target,
+        SimGameState sim)
+    {
+        // =====================================
+        // 각 카드 score 계산
+        // =====================================
+
+        List<float> scores =
+            new List<float>();
+
+        float totalScore = 0f;
+
+        foreach (CardInstance card in playableCards)
+        {
+            float score =
+                GetCardScore(
+                    card,
+                    self,
+                    target,
+                    sim);
+
+            // 최소값 보장
+            score = Mathf.Max(1f, score);
+
+            scores.Add(score);
+
+            totalScore += score;
+        }
+
+        // =====================================
+        // weighted random
+        // =====================================
+
+        float randomValue =
+            Random.Range(0f, totalScore);
+
+        float cumulative = 0f;
+
+        for (int i = 0;
+             i < playableCards.Count;
+             i++)
+        {
+            cumulative += scores[i];
+
+            if (randomValue <= cumulative)
+            {
+                return playableCards[i];
+            }
+        }
+
+        // fallback
+        return playableCards[0];
+    }
+
+
+    /// <summary>
+    /// 카드 heuristic score
+    /// </summary>
+    private static float GetCardScore(
+        CardInstance card,
+        SimEntity self,
+        SimEntity target,
+        SimGameState sim)
+    {
+        float score = 1f;
+
+        // =====================================
+        // 카드 타입 우선순위
+        // =====================================
+
+        switch (card.data.cardType)
+        {
+            case CardType.Power:
+                score += 100f;
+
+                // 초반일수록 Power 가치 증가
+                score += Mathf.Max(
+                    0,
+                    20 - sim.turnCount);
+
+                break;
+        }
+
+        return score;
     }
 }

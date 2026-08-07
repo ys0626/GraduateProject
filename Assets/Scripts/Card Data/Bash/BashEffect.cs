@@ -1,5 +1,3 @@
-using UnityEngine;
-
 public class BashEffect : ICardEffect
 {
     private CardInstance card;
@@ -18,7 +16,7 @@ public class BashEffect : ICardEffect
         int damage = card.upgraded ? 10 : 8;
         int vulnerableTurns = card.upgraded ? 3 : 2;
 
-        //Deal 8(10) Damage
+        //Deal 8(10) damage
         damage = cardUser.CalculateDamage(damage);
         cardTarget.TakeDamage(damage);
 

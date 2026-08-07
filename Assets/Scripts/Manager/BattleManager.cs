@@ -139,11 +139,17 @@ public class BattleManager : MonoBehaviour
             case ControllerType.MCTS:
                 return new MCTSController();
 
-            case ControllerType.Random:
-                return new RandomController();
-
+            case ControllerType.AlphaBeta:
+                return new AlphaBetaController();
+            
             case ControllerType.Greedy:
                 return new GreedyController();
+
+            case ControllerType.Minimax:
+                return new MinimaxController();
+
+            case ControllerType.Random:
+                return new RandomController();
 
             case ControllerType.Human:
             default:

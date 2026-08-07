@@ -4,11 +4,16 @@
 public enum CardEffectType
 {
     Bash,
+    BodySlam,
+    Dash,
     Defend,
+    Entrench,
     Footwork,
     Inflame,
     Strike,
     SwordBoomerang,
+    Taunt,
+    TwinStrike,
     Uppercut,
 }
 

@@ -1,6 +1,3 @@
-using UnityEngine;
-using static BattleManager;
-
 public class StrikeEffect : ICardEffect
 {
     private CardInstance card;
@@ -18,7 +15,7 @@ public class StrikeEffect : ICardEffect
         //업그레이드에 따른 수치
         int damage = card.upgraded ? 9 : 6;
         
-        //Deal 6(9) Damage
+        //Deal 6(9) damage
         damage = cardUser.CalculateDamage(damage);
         cardTarget.TakeDamage(damage);
     }

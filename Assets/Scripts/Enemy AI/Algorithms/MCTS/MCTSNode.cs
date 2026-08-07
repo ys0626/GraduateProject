@@ -81,16 +81,25 @@ public class MCTSNode
     // UCT 선택
     // =====================================================
 
-    public MCTSNode GetBestUCTChild(float explorationConstant = 0.5f)
+    public MCTSNode GetBestUCTChild(float explorationConstant = 1f)
     {
+        if (children == null || children.Count == 0)
+            return null;
+
+        List<MCTSNode> unvisited =
+            children.FindAll(c => c.visitCount == 0);
+
+        if (unvisited.Count > 0)
+        {
+            return unvisited[
+                Random.Range(0, unvisited.Count)];
+        }
+
         MCTSNode bestChild = null;
         float bestUCT = float.MinValue;
 
         foreach (MCTSNode child in children)
         {
-            if (child.visitCount == 0)
-                return child;
-
             float exploitation =
                 child.totalReward / child.visitCount;
 
