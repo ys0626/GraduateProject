@@ -1,8 +1,8 @@
-public class SwordBoomerangEffect : ICardEffect
+public class TwinStrikeEffect : ICardEffect
 {
     private CardInstance card;
 
-    public SwordBoomerangEffect(CardInstance card)
+    public TwinStrikeEffect(CardInstance card)
     {
         this.card = card;
     }
@@ -13,14 +13,14 @@ public class SwordBoomerangEffect : ICardEffect
     public void Execute(IBattleEntity cardUser, IBattleEntity cardTarget)
     {
         //업그레이드에 따른 수치
-        int damage = 3;
-        int hitTimes = card.upgraded ? 7 : 5;
+        int damage = card.upgraded ? 7 : 5;
+        int hitTimes = 2;
 
-        //5(7)times
+        //twice
         for (int i = 0; i < hitTimes; i++) 
         {
-            //Deal 3 Damage
-            damage = 3;
+            //Deal 5(7) Damage
+            damage = card.upgraded ? 7 : 5;
             damage = cardUser.CalculateDamage(damage);
             cardTarget.TakeDamage(damage);
         }

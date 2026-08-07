@@ -1,6 +1,3 @@
-using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
-
 public class InflameEffect : ICardEffect
 {
     private CardInstance card;
@@ -18,7 +15,7 @@ public class InflameEffect : ICardEffect
         //업그레이드에 따른 수치
         int strength = card.upgraded ? 3 : 2;
 
-        //Gain 2 Strength
-        cardTarget.AddStatus(new StrengthStatus(strength));
+        //Gain 2(3) Strength
+        cardUser.AddStatus(new StrengthStatus(strength));
     }
 }

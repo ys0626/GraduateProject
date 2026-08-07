@@ -1,8 +1,8 @@
-public class DefendEffect : ICardEffect
+public class BodySlamEffect : ICardEffect
 {
     private CardInstance card;
 
-    public DefendEffect(CardInstance card)
+    public BodySlamEffect(CardInstance card)
     {
         this.card = card;
     }
@@ -13,10 +13,10 @@ public class DefendEffect : ICardEffect
     public void Execute(IBattleEntity cardUser, IBattleEntity cardTarget)
     {
         //업그레이드에 따른 수치
-        int block = card.upgraded ? 8 : 5;
+        int damage = cardUser.Block;
 
-        //Gain 5(8) Block
-        block = cardUser.CalculateBlock(block);
-        cardUser.GetBlock(block);
+        //Deal damage equal to your Block
+        damage = cardUser.CalculateDamage(damage);
+        cardTarget.TakeDamage(damage);
     }
 }

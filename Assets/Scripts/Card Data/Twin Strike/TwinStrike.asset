@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0449c7d05e32ebb409b263d234c09d38, type: 3}
-  m_Name: Inflame
+  m_Name: TwinStrike
   m_EditorClassIdentifier: Assembly-CSharp::CardData
-  cardName: Inflame
-  description: Gain 2 Strength
-  artwork: {fileID: -6932747087132080230, guid: b1533dd18973e394399c83e38c4ddebb, type: 3}
+  cardName: Twin Strike
+  description: Deal 5 damage twice
+  artwork: {fileID: 4718382371988010224, guid: 58619616279ddea47a460320887bee41, type: 3}
   cost: 1
-  cardType: 2
-  rarity: 1
-  targetType: 0
-  cardEffectType: 6
+  cardType: 0
+  rarity: 0
+  targetType: 1
+  cardEffectType: 10

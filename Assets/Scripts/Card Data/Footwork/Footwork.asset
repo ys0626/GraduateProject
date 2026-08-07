@@ -19,4 +19,4 @@ MonoBehaviour:
   cardType: 2
   rarity: 1
   targetType: 0
-  cardEffectType: 2
+  cardEffectType: 5

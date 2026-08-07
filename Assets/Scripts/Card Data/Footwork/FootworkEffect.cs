@@ -1,6 +1,3 @@
-using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
-
 public class FootworkEffect : ICardEffect
 {
     private CardInstance card;
@@ -18,7 +15,7 @@ public class FootworkEffect : ICardEffect
         //업그레이드에 따른 수치
         int dexterity = card.upgraded ? 3 : 2;
 
-        //Gain 2 Dexterity
-        cardTarget.AddStatus(new DexterityStatus(dexterity));
+        //Gain 2(3) Dexterity
+        cardUser.AddStatus(new DexterityStatus(dexterity));
     }
 }

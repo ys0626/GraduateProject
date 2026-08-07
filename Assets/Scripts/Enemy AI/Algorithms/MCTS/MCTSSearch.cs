@@ -61,20 +61,26 @@ public static class MCTSSearch
             MCTSNode selected =
                 MCTSSelection.Select(root);
 
+            if (selected == null || selected.state == null)
+                continue;
+
             // 2. Expansion
             MCTSNode expanded =
                 MCTSExpansion.Expand(selected);
 
-            if (expanded == null)
+            // 3. Simulation
+            MCTSNode simulationNode =
+                expanded ?? selected;
+
+            if (simulationNode == null || simulationNode.state == null)
                 continue;
 
-            // 3. Simulation
             float reward =
-                MCTSSimulation.Simulate(expanded.state);
+                MCTSSimulation.Simulate(simulationNode.state);
 
             // 4. Backpropagation
             MCTSBackpropagation.Backpropagate(
-                expanded,
+                simulationNode,
                 reward
             );
         }

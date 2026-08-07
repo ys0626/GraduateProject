@@ -3387,32 +3387,38 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SimulationManager
   playerStarterDeck:
   - {fileID: 11400000, guid: 99fc643c6a5dd494189cada6ba2df985, type: 2}
-  - {fileID: 11400000, guid: 413bd878af68d9b459409356d62c452b, type: 2}
-  - {fileID: 11400000, guid: 45f5720786ba1974192c501cf5d9917d, type: 2}
+  - {fileID: 11400000, guid: 99fc643c6a5dd494189cada6ba2df985, type: 2}
+  - {fileID: 11400000, guid: 13738d55e770acf40b2beca2e384e55c, type: 2}
+  - {fileID: 11400000, guid: 13738d55e770acf40b2beca2e384e55c, type: 2}
+  - {fileID: 11400000, guid: 88e2cdd1aa25c1c418927c8abdb676ec, type: 2}
+  - {fileID: 11400000, guid: 88e2cdd1aa25c1c418927c8abdb676ec, type: 2}
+  - {fileID: 11400000, guid: 80f95a1809369e146a9e7e6517abb2ca, type: 2}
+  - {fileID: 11400000, guid: 80f95a1809369e146a9e7e6517abb2ca, type: 2}
+  - {fileID: 11400000, guid: a1d7aed4f858e8840919319f7a7df8b7, type: 2}
+  - {fileID: 11400000, guid: 1c4839203dbb9bd40b6c9973b78ce344, type: 2}
+  - {fileID: 11400000, guid: 1c4839203dbb9bd40b6c9973b78ce344, type: 2}
+  - {fileID: 11400000, guid: 1c4839203dbb9bd40b6c9973b78ce344, type: 2}
   - {fileID: 11400000, guid: 0aae2a385a56bab448a3da0a34b44cea, type: 2}
-  - {fileID: 11400000, guid: 80f95a1809369e146a9e7e6517abb2ca, type: 2}
-  - {fileID: 11400000, guid: 80f95a1809369e146a9e7e6517abb2ca, type: 2}
-  - {fileID: 11400000, guid: 80f95a1809369e146a9e7e6517abb2ca, type: 2}
-  - {fileID: 11400000, guid: 1c4839203dbb9bd40b6c9973b78ce344, type: 2}
-  - {fileID: 11400000, guid: 1c4839203dbb9bd40b6c9973b78ce344, type: 2}
-  - {fileID: 11400000, guid: 1c4839203dbb9bd40b6c9973b78ce344, type: 2}
-  playerMaxHP: 100
-  playerMaxEnergy: 3
+  playerMaxHP: 150
+  playerMaxEnergy: 4
   enemyStarterDeck:
   - {fileID: 11400000, guid: 99fc643c6a5dd494189cada6ba2df985, type: 2}
-  - {fileID: 11400000, guid: 413bd878af68d9b459409356d62c452b, type: 2}
-  - {fileID: 11400000, guid: 45f5720786ba1974192c501cf5d9917d, type: 2}
+  - {fileID: 11400000, guid: 99fc643c6a5dd494189cada6ba2df985, type: 2}
+  - {fileID: 11400000, guid: 13738d55e770acf40b2beca2e384e55c, type: 2}
+  - {fileID: 11400000, guid: 13738d55e770acf40b2beca2e384e55c, type: 2}
+  - {fileID: 11400000, guid: 88e2cdd1aa25c1c418927c8abdb676ec, type: 2}
+  - {fileID: 11400000, guid: 88e2cdd1aa25c1c418927c8abdb676ec, type: 2}
+  - {fileID: 11400000, guid: 80f95a1809369e146a9e7e6517abb2ca, type: 2}
+  - {fileID: 11400000, guid: 80f95a1809369e146a9e7e6517abb2ca, type: 2}
+  - {fileID: 11400000, guid: a1d7aed4f858e8840919319f7a7df8b7, type: 2}
+  - {fileID: 11400000, guid: 1c4839203dbb9bd40b6c9973b78ce344, type: 2}
+  - {fileID: 11400000, guid: 1c4839203dbb9bd40b6c9973b78ce344, type: 2}
+  - {fileID: 11400000, guid: 1c4839203dbb9bd40b6c9973b78ce344, type: 2}
   - {fileID: 11400000, guid: 0aae2a385a56bab448a3da0a34b44cea, type: 2}
-  - {fileID: 11400000, guid: 80f95a1809369e146a9e7e6517abb2ca, type: 2}
-  - {fileID: 11400000, guid: 80f95a1809369e146a9e7e6517abb2ca, type: 2}
-  - {fileID: 11400000, guid: 80f95a1809369e146a9e7e6517abb2ca, type: 2}
-  - {fileID: 11400000, guid: 1c4839203dbb9bd40b6c9973b78ce344, type: 2}
-  - {fileID: 11400000, guid: 1c4839203dbb9bd40b6c9973b78ce344, type: 2}
-  - {fileID: 11400000, guid: 1c4839203dbb9bd40b6c9973b78ce344, type: 2}
-  enemyMaxHP: 100
-  enemyMaxEnergy: 3
-  playerControllerType: 2
-  enemyControllerType: 2
+  enemyMaxHP: 150
+  enemyMaxEnergy: 4
+  playerControllerType: 4
+  enemyControllerType: 1
   autoSimulation: 1
   totalBattleCount: 100
   timeScale: 100

@@ -5,6 +5,8 @@ public enum ControllerType
 {
     Human,
     MCTS,
-    Random,
+    AlphaBeta,
     Greedy,
+    Minimax,
+    Random,
 }

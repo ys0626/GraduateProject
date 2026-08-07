@@ -1,8 +1,8 @@
-public class DefendEffect : ICardEffect
+public class DashEffect : ICardEffect
 {
     private CardInstance card;
 
-    public DefendEffect(CardInstance card)
+    public DashEffect(CardInstance card)
     {
         this.card = card;
     }
@@ -13,10 +13,15 @@ public class DefendEffect : ICardEffect
     public void Execute(IBattleEntity cardUser, IBattleEntity cardTarget)
     {
         //업그레이드에 따른 수치
-        int block = card.upgraded ? 8 : 5;
+        int block = card.upgraded ? 13 : 10;
+        int damage = card.upgraded ? 13 : 10;
 
-        //Gain 5(8) Block
+        //Gain 10(13) Block
         block = cardUser.CalculateBlock(block);
         cardUser.GetBlock(block);
+
+        //Deal 10(13) damage
+        damage = cardUser.CalculateDamage(damage);
+        cardTarget.TakeDamage(damage);
     }
 }

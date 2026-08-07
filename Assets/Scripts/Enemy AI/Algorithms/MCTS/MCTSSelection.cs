@@ -6,21 +6,20 @@ public static class MCTSSelection
     /// <summary>
     /// Expansion할 노드를 선택
     /// </summary>
-    public static MCTSNode Select(
-        MCTSNode node)
+    public static MCTSNode Select(MCTSNode node)
     {
-        // =================================================
-        // terminal이 아니고
-        // fully expanded 상태면
-        // 계속 UCT child로 내려감
-        // =================================================
+        if (node == null) return null;
 
-        while (
-            !node.IsTerminal() &&
-            node.IsFullyExpanded() &&
-            node.children.Count > 0)
+        while (node != null &&
+               !node.IsTerminal() &&
+               node.IsFullyExpanded() &&
+               node.children != null &&
+               node.children.Count > 0)
         {
-            node = node.GetBestUCTChild();
+            MCTSNode best = node.GetBestUCTChild();
+            if (best == null) break;
+
+            node = best;
         }
 
         return node;
