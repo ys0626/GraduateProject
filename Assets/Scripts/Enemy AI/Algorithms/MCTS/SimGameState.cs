@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Unity.VisualScripting;
 
 /// <summary>
@@ -42,5 +43,24 @@ public class SimGameState
         return self == GameData.instance.player
             ? GameData.instance.enemy
             : GameData.instance.player;
+    }
+
+    // 동일 상태 판별용 해시.
+    public ulong GetStateHash()
+    {
+        //TODO: 폴리노미얼 롤링 해시 구현(각 상태를 하나의 숫자로)
+        return 0;
+    }
+
+    private static ulong HashStatuses(ulong hash, SimEntity entity)
+    {
+        //TODO: 
+        return hash;
+    }
+
+    private static ulong HashHand(ulong hash, List<CardInstance> hand)
+    {
+        //TODO: 손에 있는 패를 정렬
+        return hash;
     }
 }

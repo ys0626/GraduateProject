@@ -51,6 +51,9 @@ public static class MCTSSearch
         MCTSNode root =
             new MCTSNode(rootState);
 
+        //새 탐색 트리 시작 시 캐시 초기화
+        MCTSTranspositionTable.Clear();
+
         // =================================================
         // MCTS 반복
         // =================================================
@@ -76,7 +79,7 @@ public static class MCTSSearch
                 continue;
 
             float reward =
-                MCTSSimulation.Simulate(simulationNode.state);
+                MCTSSimulation.Simulate(simulationNode);
 
             // 4. Backpropagation
             MCTSBackpropagation.Backpropagate(

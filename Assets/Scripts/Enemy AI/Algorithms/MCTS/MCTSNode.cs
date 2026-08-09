@@ -142,4 +142,14 @@ public class MCTSNode
 
         return bestChild;
     }
+
+    //평균 보상값 계산.
+    public float AverageReward =>
+        visitCount > 0 ? totalReward / visitCount : 0f;
+
+    //30번(중심극한정리 상 1000번 반복할 때 적당(클로드 피셜)) 이상 방문한 경우 시뮬레이션을 건너뛰도록 설정
+    public bool ShouldSkipSimulation(int visitThreshold = 30)
+    {
+        return visitCount >= visitThreshold;
+    }
 }
