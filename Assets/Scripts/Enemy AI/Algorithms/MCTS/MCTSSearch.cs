@@ -30,6 +30,8 @@ public static class MCTSSearch
     private const bool USE_FIXED_ITERATIONS_FOR_TEST = false; // true로 설정하면 테스트용으로 고정된 반복 횟수를 사용, false로 설정하면 동적 반복 횟수 계산 사용
     private const int FIXED_TEST_ITERATIONS = 1000;
 
+    private const bool DISABLE_EARLY_STOP_FOR_TEST = false; // true로 설정하면 조기 종료를 사용하지 않음, 순수 반복 횟수만으로 비교할 때 사용
+
     // =====================================================
     // 외부 참조용
     // =====================================================
@@ -38,7 +40,8 @@ public static class MCTSSearch
     /// 현재 반복 횟수 계산 방식 (승패 로그 기록 시 참조)
     /// </summary>
     public static string CurrentMode
-        => USE_FIXED_ITERATIONS_FOR_TEST ? "Fixed" : "Dynamic";
+        => (USE_FIXED_ITERATIONS_FOR_TEST ? "Fixed" : "Dynamic") +
+           (DISABLE_EARLY_STOP_FOR_TEST ? "_NoEarlyStop" : "");
 
     // =====================================================
     // Search
@@ -129,7 +132,8 @@ public static class MCTSSearch
             );
 
             // 5. 조기 종료 판단
-            if (i >= MIN_ITERATIONS &&
+            if (!DISABLE_EARLY_STOP_FOR_TEST &&
+                i >= MIN_ITERATIONS &&
                 i % CONVERGENCE_CHECK_INTERVAL == 0 &&
                 IsConverged(root))
             {
@@ -151,7 +155,7 @@ public static class MCTSSearch
 
         // CSV 파일로도 기록
         MCTSLogger.LogSearch(
-            USE_FIXED_ITERATIONS_FOR_TEST ? "Fixed" : "Dynamic",
+            CurrentMode,
             playableCardCount,
             rootState.self.CurrentHP,
             rootState.opponent.CurrentHP,
