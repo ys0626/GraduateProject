@@ -2,11 +2,38 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
+
 /// <summary>
 /// MCTS의 3. Simulation 단계
 /// </summary>
 public static class MCTSSimulation
 {
+    //Simulate 오버라이드
+    public static float Simulate(MCTSNode node, int maxDepth = 20)
+    {
+        ulong hash = node.state.GetStateHash();
+
+        // 1순위: 캐시 히트 — 동일 상태 재탐색 skip
+        if (MCTSTranspositionTable.TryGet(hash, out float cached))
+        {
+            return cached;
+        }
+
+        // 2순위: 조기 종료 — 이미 충분히 방문된 노드는 통계값 재사용
+        if (node.ShouldSkipSimulation())
+        {
+            MCTSTranspositionTable.Store(hash, node.AverageReward);
+            return node.AverageReward;
+        }
+
+        // 3순위: 기존처럼 rollout 수행
+        float result = Simulate(node.state, maxDepth);
+
+        MCTSTranspositionTable.Store(hash, result);
+
+        return result;
+    }
+
     /// <summary>
     /// 현재 상태에서 랜덤 시뮬레이션 수행
     /// </summary>

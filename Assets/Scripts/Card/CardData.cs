@@ -22,5 +22,5 @@ public class CardData : ScriptableObject
 
     public CardEffectType cardEffectType;
 
-    
+    public CardTag tags;
 }
