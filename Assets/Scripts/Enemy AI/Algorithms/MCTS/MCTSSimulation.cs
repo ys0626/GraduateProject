@@ -2,59 +2,68 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-
 /// <summary>
 /// MCTS의 3. Simulation 단계
 /// </summary>
 public static class MCTSSimulation
 {
-    //Simulate 오버라이드
+    // =====================================================
+    // 진입점 1: 노드 기준 (캐싱 + 조기종료 + 이력 이어받기)
+    // =====================================================
+
     public static float Simulate(MCTSNode node, int maxDepth = 20)
     {
         ulong hash = node.state.GetStateHash();
 
-        // 1순위: 캐시 히트 — 동일 상태 재탐색 skip
         if (MCTSTranspositionTable.TryGet(hash, out float cached))
         {
             return cached;
         }
 
-        // 2순위: 조기 종료 — 이미 충분히 방문된 노드는 통계값 재사용
         if (node.ShouldSkipSimulation())
         {
             MCTSTranspositionTable.Store(hash, node.AverageReward);
             return node.AverageReward;
         }
 
-        // 3순위: 기존처럼 rollout 수행
-        float result = Simulate(node.state, maxDepth);
+        float result = Simulate(node.state, node.turnHistory, maxDepth);
 
         MCTSTranspositionTable.Store(hash, result);
 
         return result;
     }
 
-    /// <summary>
-    /// 현재 상태에서 랜덤 시뮬레이션 수행
-    /// </summary>
-    public static float Simulate(
+    // =====================================================
+    // 진입점 2: 상태만 있을 때 (이력 없이 새로 시작)
+    // =====================================================
+
+    public static float Simulate(SimGameState state, int maxDepth = 20)
+    {
+        return Simulate(state, default, maxDepth);
+    }
+
+    // =====================================================
+    // 실제 롤아웃 로직 (이력 추적 포함)
+    // =====================================================
+
+    private static float Simulate(
         SimGameState state,
-        int maxDepth = 20)
+        TurnPlayHistory initialHistory,
+        int maxDepth)
     {
         // =================================================
         // 원본 상태 복사
         // =================================================
 
-        SimGameState sim =
-            state.Clone();
+        SimGameState sim = state.Clone();
+
+        TurnPlayHistory history = initialHistory;
 
         // =================================================
         // 랜덤 플레이아웃
         // =================================================
 
-        for (int depth = 0;
-             depth < maxDepth;
-             depth++)
+        for (int depth = 0; depth < maxDepth; depth++)
         {
             // =============================================
             // 종료 체크
@@ -69,24 +78,15 @@ public static class MCTSSimulation
             // 현재 턴 Entity
             // =============================================
 
-            SimEntity current =
-                sim.selfTurn
-                ? sim.self
-                : sim.opponent;
-
-            SimEntity target =
-                sim.selfTurn
-                ? sim.opponent
-                : sim.self;
+            SimEntity current = sim.selfTurn ? sim.self : sim.opponent;
+            SimEntity target = sim.selfTurn ? sim.opponent : sim.self;
 
             // =============================================
-            // 사용 가능한 카드 찾기
+            // 사용 가능한 카드 찾기 (휴리스틱 필터 적용)
             // =============================================
 
             List<CardInstance> playableCards =
-                current.hand.FindAll(
-                    c => c.currentCost <=
-                         current.CurrentEnergy);
+                GetHeuristicPlayableCards(current, history);
 
             // =============================================
             // 플레이 가능한 카드 없음
@@ -95,7 +95,7 @@ public static class MCTSSimulation
             if (playableCards.Count == 0)
             {
                 EndTurn(sim);
-
+                history = default;
                 continue;
             }
 
@@ -104,20 +104,15 @@ public static class MCTSSimulation
             // =============================================
 
             CardInstance selectedCard =
-                SelectWeightedCard(
-                    playableCards,
-                    current,
-                    target,
-                    sim);
+                SelectWeightedCard(playableCards, current, target, sim);
 
             // =============================================
             // 카드 사용
             // =============================================
 
-            SimBattleHelper.TryUseCard(
-                current,
-                target,
-                selectedCard);
+            SimBattleHelper.TryUseCard(current, target, selectedCard);
+
+            history = history.Extend(selectedCard.data);
 
             // =============================================
             // 카드 사용 후
@@ -125,14 +120,12 @@ public static class MCTSSimulation
             // =============================================
 
             bool hasPlayableCard =
-                current.hand.Exists(
-                    c => c.currentCost <=
-                         current.CurrentEnergy);
+                GetHeuristicPlayableCards(current, history).Count > 0;
 
-            // 더 이상 플레이 불가능하면 턴 종료
             if (!hasPlayableCard)
             {
                 EndTurn(sim);
+                history = default;
             }
         }
 
@@ -143,26 +136,70 @@ public static class MCTSSimulation
         return Evaluate(sim);
     }
 
+    // =====================================================
+    // 4가지 휴리스틱 규칙 적용된 플레이 가능 카드 필터
+    // =====================================================
 
-
-    /// <summary>
-    /// 턴 종료 + 다음 턴 시작 처리
-    /// </summary>
-    private static void EndTurn(
-        SimGameState sim)
+    private static List<CardInstance> GetHeuristicPlayableCards(
+        SimEntity current,
+        TurnPlayHistory history)
     {
-        // =================================================
-        // 현재 턴 플레이어
-        // =================================================
+        List<CardInstance> result = new List<CardInstance>();
 
-        SimEntity current =
-            sim.selfTurn
-            ? sim.self
-            : sim.opponent;
+        foreach (CardInstance card in current.hand)
+        {
+            if (card.currentCost > current.CurrentEnergy)
+                continue;
 
-        // =================================================
-        // 턴 종료 처리
-        // =================================================
+            CardData data = card.data;
+
+            // 규칙 4: DoubleTap 이후엔 공격 카드만
+            if (history.hasDoubleTap && data.cardType != CardType.Attack)
+                continue;
+
+            // 규칙 2-a: 순수공격 이후 디버프 카드 배제
+            if (history.hasPlainAttack && (data.tags & CardTag.Debuff) != 0)
+                continue;
+
+            // 규칙 2-b, 3: 공격/한계돌파 이후 힘 증가 카드 배제
+            if ((history.hasAnyAttack || history.hasLimitBreak) &&
+                (data.tags & CardTag.StrengthGain) != 0)
+                continue;
+
+            // 규칙 4: 후속 공격 카드 없으면 DoubleTap 자체 배제
+            if ((data.tags & CardTag.DoubleTap) != 0 &&
+                !HasFollowUpAttack(current, card))
+                continue;
+
+            result.Add(card);
+        }
+
+        return result;
+    }
+
+    private static bool HasFollowUpAttack(SimEntity current, CardInstance doubleTapCard)
+    {
+        int remainingEnergy = current.CurrentEnergy - doubleTapCard.currentCost;
+
+        foreach (var other in current.hand)
+        {
+            if (other == doubleTapCard) continue;
+
+            if (other.data.cardType == CardType.Attack &&
+                other.currentCost <= remainingEnergy)
+                return true;
+        }
+
+        return false;
+    }
+
+    // =====================================================
+    // 턴 종료 + 다음 턴 시작 처리
+    // =====================================================
+
+    private static void EndTurn(SimGameState sim)
+    {
+        SimEntity current = sim.selfTurn ? sim.self : sim.opponent;
 
         // 남은 에너지 제거
         current.CurrentEnergy = 0;
@@ -173,45 +210,26 @@ public static class MCTSSimulation
         // 상태 감소
         current.TickStatuses();
 
-        // =================================================
         // 턴 전환
-        // =================================================
-
         sim.selfTurn = !sim.selfTurn;
-
         sim.turnCount++;
 
-        // =================================================
-        // 다음 턴 플레이어
-        // =================================================
-
-        SimEntity next =
-            sim.selfTurn
-            ? sim.self
-            : sim.opponent;
-
-        // =================================================
-        // 턴 시작 처리
-        // =================================================
+        SimEntity next = sim.selfTurn ? sim.self : sim.opponent;
 
         // Block 제거
         next.Block = 0;
 
         // 에너지 회복
-        next.CurrentEnergy =
-            next.MaxEnergy;
+        next.CurrentEnergy = next.MaxEnergy;
 
         // 카드 드로우
         next.DrawCards(5);
     }
 
+    // =====================================================
+    // 평가 함수
+    // =====================================================
 
-
-
-
-    /// <summary>
-    /// 평가 함수
-    /// </summary>
     private static float Evaluate(SimGameState state)
     {
         // 승리
@@ -219,7 +237,6 @@ public static class MCTSSimulation
 
         // 패배
         if (state.self.CurrentHP <= 0) return -0.05f;
-
 
         float score = 0f;
 
@@ -246,56 +263,33 @@ public static class MCTSSimulation
         return (ePos - eNeg) / (ePos + eNeg);
     }
 
+    // =====================================================
+    // heuristic 기반 weighted random 선택
+    // =====================================================
 
-
-
-    /// <summary>
-    /// heuristic 기반 weighted random 선택
-    /// </summary>
     private static CardInstance SelectWeightedCard(
         List<CardInstance> playableCards,
         SimEntity self,
         SimEntity target,
         SimGameState sim)
     {
-        // =====================================
-        // 각 카드 score 계산
-        // =====================================
-
-        List<float> scores =
-            new List<float>();
-
+        List<float> scores = new List<float>();
         float totalScore = 0f;
 
         foreach (CardInstance card in playableCards)
         {
-            float score =
-                GetCardScore(
-                    card,
-                    self,
-                    target,
-                    sim);
+            float score = GetCardScore(card, self, target, sim);
 
-            // 최소값 보장
             score = Mathf.Max(1f, score);
 
             scores.Add(score);
-
             totalScore += score;
         }
 
-        // =====================================
-        // weighted random
-        // =====================================
-
-        float randomValue =
-            Random.Range(0f, totalScore);
-
+        float randomValue = Random.Range(0f, totalScore);
         float cumulative = 0f;
 
-        for (int i = 0;
-             i < playableCards.Count;
-             i++)
+        for (int i = 0; i < playableCards.Count; i++)
         {
             cumulative += scores[i];
 
@@ -309,10 +303,10 @@ public static class MCTSSimulation
         return playableCards[0];
     }
 
+    // =====================================================
+    // 카드 heuristic score
+    // =====================================================
 
-    /// <summary>
-    /// 카드 heuristic score
-    /// </summary>
     private static float GetCardScore(
         CardInstance card,
         SimEntity self,
@@ -321,19 +315,12 @@ public static class MCTSSimulation
     {
         float score = 1f;
 
-        // =====================================
-        // 카드 타입 우선순위
-        // =====================================
-
         switch (card.data.cardType)
         {
             case CardType.Power:
                 score += 100f;
 
-                // 초반일수록 Power 가치 증가
-                score += Mathf.Max(
-                    0,
-                    20 - sim.turnCount);
+                score += Mathf.Max(0, 20 - sim.turnCount);
 
                 break;
         }

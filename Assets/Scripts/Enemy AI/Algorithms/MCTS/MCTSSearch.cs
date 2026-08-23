@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -47,6 +48,15 @@ public static class MCTSSearch
 
         SimGameState rootState =
             SimGameState.Create(entity);
+
+        // ===== 즉시 처치 가능 여부 우선 확인 =====
+        List<MCTSAction> lethalSequence = MCTSLethalChecker.FindLethalSequence(rootState);
+
+        if (lethalSequence != null && lethalSequence.Count > 0)
+        {
+            Debug.Log("Lethal sequence found — MCTS 탐색 skip");
+            return lethalSequence[0];
+        }
 
         MCTSNode root =
             new MCTSNode(rootState);

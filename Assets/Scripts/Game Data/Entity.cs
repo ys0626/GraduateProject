@@ -139,6 +139,27 @@ public class Entity : IBattleEntity
         }
     }
 
+    private int doubleTapCharges;
+
+    public event Action<int> OnDoubleTapChargesChanged;
+
+    public int DoubleTapCharges
+    {
+        get => doubleTapCharges;
+
+        set
+        {
+            int clampedValue = Mathf.Max(0, value);
+
+            if (doubleTapCharges == clampedValue)
+                return;
+
+            doubleTapCharges = clampedValue;
+
+            OnDoubleTapChargesChanged?.Invoke(doubleTapCharges);
+        }
+    }
+
 
     // 현재 보유한 버프, 디버프들
     public List<Status> statuses { get; private set; }
@@ -499,5 +520,7 @@ public class Entity : IBattleEntity
 
         Block += block;
     }
+
+
 
 }

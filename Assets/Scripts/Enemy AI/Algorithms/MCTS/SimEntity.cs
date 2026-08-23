@@ -21,6 +21,8 @@ public class SimEntity : IBattleEntity
 
     public int Block { get; set; }
 
+    public int DoubleTapCharges { get; set; }
+
     // =====================================================
     // 상태 이상
     // =====================================================
@@ -60,6 +62,8 @@ public class SimEntity : IBattleEntity
         clone.CurrentEnergy = iBattleEntity.CurrentEnergy;
 
         clone.Block = iBattleEntity.Block;
+
+        clone.DoubleTapCharges = iBattleEntity.DoubleTapCharges;
 
         // =====================================================
         // 상태 이상 복사

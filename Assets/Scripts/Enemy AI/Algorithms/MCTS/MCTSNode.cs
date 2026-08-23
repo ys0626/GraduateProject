@@ -33,6 +33,8 @@ public class MCTSNode
     public List<MCTSAction> untriedActions;
     public MCTSAction actionFromParent;
 
+    public TurnPlayHistory turnHistory;
+
     // =====================================================
     // 생성자
     // =====================================================
@@ -46,6 +48,10 @@ public class MCTSNode
         this.parent = parent;
         this.actionFromParent = actionFromParent;
 
+        turnHistory = parent != null
+            ? parent.turnHistory.Extend(actionFromParent.cardKey.data)
+            : default;
+
         InitializeUntriedActions();
     }
 
@@ -55,7 +61,7 @@ public class MCTSNode
 
     private void InitializeUntriedActions()
     {
-        untriedActions = MCTSActionGenerator.GetLegalActions(state);
+        untriedActions = MCTSActionGenerator.GetLegalActions(state, turnHistory);
     }
 
     // =====================================================
