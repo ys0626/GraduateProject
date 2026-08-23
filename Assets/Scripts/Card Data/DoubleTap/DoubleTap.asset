@@ -19,5 +19,5 @@ MonoBehaviour:
   cardType: 1
   rarity: 2
   targetType: 0
-  cardEffectType: 0
-  tags: 1
+  cardEffectType: 13
+  tags: 8

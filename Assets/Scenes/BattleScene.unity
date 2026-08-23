@@ -3399,6 +3399,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 1c4839203dbb9bd40b6c9973b78ce344, type: 2}
   - {fileID: 11400000, guid: 1c4839203dbb9bd40b6c9973b78ce344, type: 2}
   - {fileID: 11400000, guid: 0aae2a385a56bab448a3da0a34b44cea, type: 2}
+  - {fileID: 11400000, guid: 74a49aaad4d1f044c8fde27756b93cf2, type: 2}
+  - {fileID: 11400000, guid: 53c7444e9e1e99547ad3bbe063645680, type: 2}
   playerMaxHP: 150
   playerMaxEnergy: 4
   enemyStarterDeck:
@@ -3415,10 +3417,12 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 1c4839203dbb9bd40b6c9973b78ce344, type: 2}
   - {fileID: 11400000, guid: 1c4839203dbb9bd40b6c9973b78ce344, type: 2}
   - {fileID: 11400000, guid: 0aae2a385a56bab448a3da0a34b44cea, type: 2}
+  - {fileID: 11400000, guid: 74a49aaad4d1f044c8fde27756b93cf2, type: 2}
+  - {fileID: 11400000, guid: 53c7444e9e1e99547ad3bbe063645680, type: 2}
   enemyMaxHP: 150
   enemyMaxEnergy: 4
-  playerControllerType: 4
-  enemyControllerType: 1
+  playerControllerType: 1
+  enemyControllerType: 5
   autoSimulation: 1
   totalBattleCount: 100
   timeScale: 100

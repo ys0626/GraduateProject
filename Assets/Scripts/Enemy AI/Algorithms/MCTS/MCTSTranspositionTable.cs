@@ -1,7 +1,5 @@
-using UnityEngine;
 using System.Collections.Generic;
 
-//동일 상태 재탐색 방지를 위한 결과 캐시
 public static class MCTSTranspositionTable
 {
     private static readonly Dictionary<ulong, float> table = new Dictionary<ulong, float>();

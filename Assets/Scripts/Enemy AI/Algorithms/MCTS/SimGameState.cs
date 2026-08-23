@@ -48,19 +48,59 @@ public class SimGameState
     // 동일 상태 판별용 해시.
     public ulong GetStateHash()
     {
-        //TODO: 폴리노미얼 롤링 해시 구현(각 상태를 하나의 숫자로)
-        return 0;
+        unchecked
+        {
+            ulong hash = 17;
+
+            hash = hash * 31 + (ulong)self.CurrentHP;
+            hash = hash * 31 + (ulong)self.CurrentEnergy;
+            hash = hash * 31 + (ulong)self.Block;
+
+            hash = hash * 31 + (ulong)opponent.CurrentHP;
+            hash = hash * 31 + (ulong)opponent.CurrentEnergy;
+            hash = hash * 31 + (ulong)opponent.Block;
+
+            hash = hash * 31 + (ulong)(selfTurn ? 1 : 0);
+            hash = hash * 31 + (ulong)turnCount;
+
+            hash = HashStatuses(hash, self);
+            hash = HashStatuses(hash, opponent);
+
+            hash = HashHand(hash, self.hand);
+            hash = HashHand(hash, opponent.hand);
+
+            return hash;
+        }
     }
 
     private static ulong HashStatuses(ulong hash, SimEntity entity)
     {
-        //TODO: 
+        hash = hash * 31 + (ulong)entity.GetStatusValue(StatusType.Strength);
+        hash = hash * 31 + (ulong)entity.GetStatusValue(StatusType.Dexterity);
+        hash = hash * 31 + (ulong)entity.GetStatusValue(StatusType.Weak);
+        hash = hash * 31 + (ulong)entity.GetStatusValue(StatusType.Vulnerable);
         return hash;
     }
 
     private static ulong HashHand(ulong hash, List<CardInstance> hand)
     {
-        //TODO: 손에 있는 패를 정렬
+        var sorted = new List<CardInstance>(hand);
+        sorted.Sort((a, b) =>
+        {
+            int idA = a.data.GetHashCode();
+            int idB = b.data.GetHashCode();
+            return idA != idB ? idA.CompareTo(idB) : a.currentCost.CompareTo(b.currentCost);
+        });
+
+        foreach (var card in sorted)
+        {
+            hash = hash * 31 + (ulong)card.data.GetHashCode();
+            hash = hash * 31 + (ulong)card.currentCost;
+            hash = hash * 31 + (ulong)(card.upgraded ? 1 : 0);
+            hash = hash * 31 + (ulong)(card.exhaust ? 1 : 0);
+            hash = hash * 31 + (ulong)(card.ethereal ? 1 : 0);
+        }
+
         return hash;
     }
 }
