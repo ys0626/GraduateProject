@@ -16,7 +16,7 @@ public static class MCTSSearch
     private const int ITERATIONS_PER_ACTION = 150; // 선택지 1개당 추가 반복 횟수, 선택지가 많을수록 더 많은 반복 수행
 
     private const int CLOSE_FIGHT_MAX_BONUS = 300; // HP 차이가 0일 때 추가 반복 횟수, 접전일수록 더 많은 반복 수행
-    private const int CLOSE_FIGHT_FALLOFF = 3; // HP 차이가 1 증가할 때마다 추가 반복 횟수 감소량, 접전이 아닐수록 반복 수행 횟수 감소
+    private const float CLOSE_FIGHT_ZERO_THRESHOLD_RATIO = 0.8f; // 최대 HP 대비 이 비율만큼 차이나면 접전 보너스가 0이 됨 (기존 2/3 비율이 너무 엄격해서 0.8로 완화)
 
     private const int CONVERGENCE_CHECK_INTERVAL = 100; // 조기 종료 판단을 수행할 반복 횟수 간격, 이 횟수마다 수렴 여부를 판단
     private const float CONVERGENCE_RATIO = 2f; // 최다 방문 child가 2위 child보다 몇 배 이상 방문되었을 때 수렴한 것으로 판단
@@ -32,6 +32,12 @@ public static class MCTSSearch
 
     private const bool DISABLE_EARLY_STOP_FOR_TEST = false; // true로 설정하면 조기 종료를 사용하지 않음, 순수 반복 횟수만으로 비교할 때 사용
 
+    private const bool FORCE_GC_FOR_MEMORY_TEST = false; // true로 설정하면 매 턴 강제 GC 수행 (메모리 전용 테스트에서만 사용, 평소엔 false)
+
+    private const int MEMORY_SAMPLE_INTERVAL = 20; // 이 턴 수마다 한 번씩만 강제 GC로 정확한 메모리 측정 (해당 턴의 ElapsedMs는 왜곡되므로 시간 분석에서 제외할 것)
+
+    private static int searchCallCount = 0; // Search() 호출 횟수 누적, 메모리 샘플링 주기 판단용
+
     // =====================================================
     // 외부 참조용
     // =====================================================
@@ -41,7 +47,8 @@ public static class MCTSSearch
     /// </summary>
     public static string CurrentMode
         => (USE_FIXED_ITERATIONS_FOR_TEST ? "Fixed" : "Dynamic") +
-           (DISABLE_EARLY_STOP_FOR_TEST ? "_NoEarlyStop" : "");
+           (DISABLE_EARLY_STOP_FOR_TEST ? "_NoEarlyStop" : "") +
+           (FORCE_GC_FOR_MEMORY_TEST ? "_MemTest" : "");
 
     // =====================================================
     // Search
@@ -98,6 +105,19 @@ public static class MCTSSearch
         // MCTS 반복
         // =================================================
 
+        searchCallCount++;
+
+        bool isMemorySampleTurn =
+            FORCE_GC_FOR_MEMORY_TEST ||
+            (searchCallCount % MEMORY_SAMPLE_INTERVAL == 0);
+
+        long memoryBefore =
+            isMemorySampleTurn
+            ? System.GC.GetTotalMemory(true)
+            : System.GC.GetTotalMemory(false);
+
+        int nodeCount = 0;
+
         Stopwatch stopwatch =
             Stopwatch.StartNew();
 
@@ -118,6 +138,9 @@ public static class MCTSSearch
             MCTSNode expanded =
                 MCTSExpansion.Expand(selected);
 
+            if (expanded != null)
+                nodeCount++;
+
             // 3. Simulation
             MCTSNode simulationNode =
                 expanded ?? selected;
@@ -126,7 +149,7 @@ public static class MCTSSearch
                 continue;
 
             float reward =
-                MCTSSimulation.Simulate(simulationNode);
+                MCTSSimulation.Simulate(simulationNode.state); // 해싱 구현 전까지 캐싱 경로 비활성화
 
             // 4. Backpropagation
             MCTSBackpropagation.Backpropagate(
@@ -146,6 +169,14 @@ public static class MCTSSearch
 
         stopwatch.Stop();
 
+        long memoryAfter =
+            isMemorySampleTurn
+            ? System.GC.GetTotalMemory(true)
+            : System.GC.GetTotalMemory(false);
+
+        long memoryDeltaBytes =
+            memoryAfter - memoryBefore;
+
         // =================================================
         // 벤치마크 로그 (항상 출력)
         // =================================================
@@ -153,7 +184,10 @@ public static class MCTSSearch
         Debug.Log(
             $"[MCTS] Target: {iterations} | " +
             $"Actual: {executedIterations} | " +
-            $"Elapsed: {stopwatch.ElapsedMilliseconds}ms"
+            $"Elapsed: {stopwatch.ElapsedMilliseconds}ms | " +
+            $"Nodes: {nodeCount} | " +
+            $"MemDelta: {memoryDeltaBytes / 1024}KB" +
+            (isMemorySampleTurn ? " | [MemSample]" : "")
         );
 
         // CSV 파일로도 기록
@@ -164,7 +198,10 @@ public static class MCTSSearch
             rootState.opponent.CurrentHP,
             iterations,
             executedIterations,
-            stopwatch.ElapsedMilliseconds
+            stopwatch.ElapsedMilliseconds,
+            nodeCount,
+            memoryDeltaBytes,
+            isMemorySampleTurn
         );
 
         // =================================================
@@ -224,8 +261,18 @@ public static class MCTSSearch
         int hpDifference =
             Mathf.Abs(rootState.self.CurrentHP - rootState.opponent.CurrentHP);
 
+        // 최대 HP가 얼마든 항상 같은 비율 기준으로 접전 여부를 판단하기 위해 정규화
+        int maxHP =
+            Mathf.Max(rootState.self.MaxHP, rootState.opponent.MaxHP);
+
+        float hpDifferenceRatio =
+            maxHP > 0 ? (float)hpDifference / maxHP : 0f;
+
         int closeFightBonus =
-            Mathf.Max(0, CLOSE_FIGHT_MAX_BONUS - hpDifference * CLOSE_FIGHT_FALLOFF);
+            Mathf.RoundToInt(
+                CLOSE_FIGHT_MAX_BONUS *
+                Mathf.Max(0f, 1f - hpDifferenceRatio / CLOSE_FIGHT_ZERO_THRESHOLD_RATIO)
+            );
 
         int iterations =
             MIN_ITERATIONS + actionBonus + closeFightBonus;

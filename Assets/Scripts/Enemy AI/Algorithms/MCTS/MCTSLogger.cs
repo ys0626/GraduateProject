@@ -85,7 +85,10 @@ public static class MCTSLogger
         int opponentHP,
         int targetIterations,
         int actualIterations,
-        long elapsedMs)
+        long elapsedMs,
+        int nodeCount,
+        long memoryDeltaBytes,
+        bool isMemorySample)
     {
         bool fileExists =
             File.Exists(searchLogPath);
@@ -99,7 +102,8 @@ public static class MCTSLogger
                 writer.WriteLine(
                     "Timestamp,BattleNumber,Mode,PlayableCardCount," +
                     "SelfHP,OpponentHP,HPDifference," +
-                    "TargetIterations,ActualIterations,ElapsedMs"
+                    "TargetIterations,ActualIterations,ElapsedMs," +
+                    "NodeCount,MemoryDeltaBytes,IsMemorySample"
                 );
             }
 
@@ -119,7 +123,10 @@ public static class MCTSLogger
                 $"{hpDifference}," +
                 $"{targetIterations}," +
                 $"{actualIterations}," +
-                $"{elapsedMs}"
+                $"{elapsedMs}," +
+                $"{nodeCount}," +
+                $"{memoryDeltaBytes}," +
+                $"{isMemorySample}"
             );
         }
     }
