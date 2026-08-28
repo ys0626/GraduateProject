@@ -58,18 +58,12 @@ public class SimulationManager : MonoBehaviour
     public ControllerType EnemyControllerType
         => enemyControllerType;
 
-    public int CurrentBattle
-        => currentBattle;
-
     private void Awake()
     {
         if (instance == null)
         {
             instance = this;
             DontDestroyOnLoad(gameObject);
-
-            // 새 시뮬레이션 회차 시작
-            MCTSLogger.StartNewRun(MCTSSearch.CurrentMode);
         }
         else Destroy(gameObject);
     }
@@ -100,13 +94,6 @@ public class SimulationManager : MonoBehaviour
         {
             enemyWinCount++;
         }
-
-        // 승패 결과 CSV 기록
-        MCTSLogger.LogBattleResult(
-            currentBattle,
-            MCTSSearch.CurrentMode,
-            playerWin
-        );
 
         // 진행 상황 출력
         Debug.Log(
@@ -141,8 +128,5 @@ public class SimulationManager : MonoBehaviour
         Debug.Log(
             $"Enemy Win : {enemyWinCount} " +
             $"({(float)enemyWinCount / totalBattleCount * 100f:F2}%)");
-
-        // 시뮬레이션 회차 종료 → 최종 파일명으로 변경
-        MCTSLogger.FinishRun();
     }
 }
