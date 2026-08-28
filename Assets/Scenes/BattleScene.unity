@@ -3424,7 +3424,7 @@ MonoBehaviour:
   playerControllerType: 1
   enemyControllerType: 5
   autoSimulation: 1
-  totalBattleCount: 100
+  totalBattleCount: 300
   timeScale: 100
 --- !u!4 &776499466
 Transform:
