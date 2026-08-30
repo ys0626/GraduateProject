@@ -27,10 +27,22 @@ public class SimulationManager : MonoBehaviour
     [Header("Speed")]
     [SerializeField] private float timeScale;
 
+    [Header("MCTS Optimization")]
+    [SerializeField] private bool enableTranspositionCache = true;
+    [SerializeField] private bool enableEarlyCutoff = true;
+    [SerializeField][Range(5, 200)] private int earlyCutoffVisitThreshold = 30;
+    [SerializeField] private bool enableHeuristicPruning = true;
+    [SerializeField] private bool enableLethalCheck = true;
+
     private int currentBattle;
 
     private int playerWinCount;
     private int enemyWinCount;
+
+    private static float totalSearchTimeMs;
+    private static int searchCallCount;
+    public static float AverageSearchTimeMs =>
+    searchCallCount > 0 ? totalSearchTimeMs / searchCallCount : 0f;
 
     [Header("Getter")]
     public bool AutoSimulation => autoSimulation;
@@ -58,6 +70,18 @@ public class SimulationManager : MonoBehaviour
     public ControllerType EnemyControllerType
         => enemyControllerType;
 
+    public bool EnableTranspositionCache => enableTranspositionCache;
+    public bool EnableEarlyCutoff => enableEarlyCutoff;
+    public int EarlyCutoffVisitThreshold => earlyCutoffVisitThreshold;
+    public bool EnableHeuristicPruning => enableHeuristicPruning;
+    public bool EnableLethalCheck => enableLethalCheck;
+
+
+    public static void RecordSearchTime(float ms)
+    {
+        totalSearchTimeMs += ms;
+        searchCallCount++;
+    }
     private void Awake()
     {
         if (instance == null)
@@ -128,5 +152,13 @@ public class SimulationManager : MonoBehaviour
         Debug.Log(
             $"Enemy Win : {enemyWinCount} " +
             $"({(float)enemyWinCount / totalBattleCount * 100f:F2}%)");
+
+        Debug.Log(
+            $"Average MCTS Search Time : {AverageSearchTimeMs:F2}ms " +
+            $"(총 {searchCallCount}회 호출)");
     }
+
+    
+
+    
 }

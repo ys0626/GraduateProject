@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
 
 /// <summary>
@@ -21,6 +22,9 @@ public static class MCTSSearch
     /// </summary>
     public static MCTSAction Search(Entity entity)
     {
+
+        Stopwatch sw = Stopwatch.StartNew();
+
         // =================================================
         // 사용 가능한 카드 확인
         // =================================================
@@ -50,16 +54,19 @@ public static class MCTSSearch
             SimGameState.Create(entity);
 
         // ===== 즉시 처치 가능 여부 우선 확인 =====
-        List<MCTSAction> lethalSequence = MCTSLethalChecker.FindLethalSequence(rootState);
+        bool lethalCheckOn = SimulationManager.instance == null || SimulationManager.instance.EnableLethalCheck;
 
-        if (lethalSequence != null && lethalSequence.Count > 0)
+        if (lethalCheckOn)
         {
-            Debug.Log("Lethal sequence found — MCTS 탐색 skip");
-            return lethalSequence[0];
+            List<MCTSAction> lethalSequence = MCTSLethalChecker.FindLethalSequence(rootState);
+
+            if (lethalSequence != null && lethalSequence.Count > 0)
+            {
+                return lethalSequence[0];
+            }
         }
 
-        MCTSNode root =
-            new MCTSNode(rootState);
+        MCTSNode root = new MCTSNode(rootState);
 
         //새 탐색 트리 시작 시 캐시 초기화
         MCTSTranspositionTable.Clear();
@@ -102,7 +109,7 @@ public static class MCTSSearch
         // 최종 선택
         // =================================================
 
-        Debug.Log("===== ROOT CHILDREN STATS =====");
+        UnityEngine.Debug.Log("===== ROOT CHILDREN STATS =====");
 
         foreach (MCTSNode child in root.children)
         {
@@ -110,7 +117,7 @@ public static class MCTSSearch
                 ? child.totalReward / child.visitCount
                 : 0f;
 
-            Debug.Log(
+            UnityEngine.Debug.Log(
                 $"Action: {child.actionFromParent.cardKey.data?.name ?? "END_TURN"} | " +
                 $"Visit: {child.visitCount} | " +
                 $"Total: {child.totalReward} | " +
@@ -126,10 +133,16 @@ public static class MCTSSearch
             return default;
         }
 
+        sw.Stop();
+        UnityEngine.Debug.Log($"[MCTS] Search 소요 시간: {sw.ElapsedMilliseconds}ms");
+
         // =================================================
         // Action 반환
         // =================================================
 
+        SimulationManager.RecordSearchTime(sw.ElapsedMilliseconds);
+
         return bestChild.actionFromParent;
+ 
     }
 }

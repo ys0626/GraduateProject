@@ -13,22 +13,28 @@ public static class MCTSSimulation
 
     public static float Simulate(MCTSNode node, int maxDepth = 20)
     {
-        ulong hash = node.state.GetStateHash();
+        bool cachingOn = SimulationManager.instance == null || SimulationManager.instance.EnableTranspositionCache;
 
-        if (MCTSTranspositionTable.TryGet(hash, out float cached))
+        ulong hash = default;
+
+        if (cachingOn)
         {
-            return cached;
+            hash = node.state.GetStateHash();
+
+            if (MCTSTranspositionTable.TryGet(hash, out float cached))
+                return cached;
         }
 
         if (node.ShouldSkipSimulation())
         {
-            MCTSTranspositionTable.Store(hash, node.AverageReward);
-            return node.AverageReward;
+            float avg = node.AverageReward;
+            if (cachingOn) MCTSTranspositionTable.Store(hash, avg);
+            return avg;
         }
 
         float result = Simulate(node.state, node.turnHistory, maxDepth);
 
-        MCTSTranspositionTable.Store(hash, result);
+        if (cachingOn) MCTSTranspositionTable.Store(hash, result);
 
         return result;
     }
@@ -144,6 +150,8 @@ public static class MCTSSimulation
         SimEntity current,
         TurnPlayHistory history)
     {
+        bool pruningOn = SimulationManager.instance == null || SimulationManager.instance.EnableHeuristicPruning;
+
         List<CardInstance> result = new List<CardInstance>();
 
         foreach (CardInstance card in current.hand)
@@ -151,22 +159,24 @@ public static class MCTSSimulation
             if (card.currentCost > current.CurrentEnergy)
                 continue;
 
+            if (!pruningOn)
+            {
+                result.Add(card);
+                continue;
+            }
+
             CardData data = card.data;
 
-            // 규칙 4: DoubleTap 이후엔 공격 카드만
             if (history.hasDoubleTap && data.cardType != CardType.Attack)
                 continue;
 
-            // 규칙 2-a: 순수공격 이후 디버프 카드 배제
             if (history.hasPlainAttack && (data.tags & CardTag.Debuff) != 0)
                 continue;
 
-            // 규칙 2-b, 3: 공격/한계돌파 이후 힘 증가 카드 배제
             if ((history.hasAnyAttack || history.hasLimitBreak) &&
                 (data.tags & CardTag.StrengthGain) != 0)
                 continue;
 
-            // 규칙 4: 후속 공격 카드 없으면 DoubleTap 자체 배제
             if ((data.tags & CardTag.DoubleTap) != 0 &&
                 !HasFollowUpAttack(current, card))
                 continue;
