@@ -76,6 +76,8 @@ public class SimulationManager : MonoBehaviour
     public bool EnableHeuristicPruning => enableHeuristicPruning;
     public bool EnableLethalCheck => enableLethalCheck;
 
+    public int CurrentBattle => currentBattle;
+
 
     public static void RecordSearchTime(float ms)
     {
@@ -88,6 +90,9 @@ public class SimulationManager : MonoBehaviour
         {
             instance = this;
             DontDestroyOnLoad(gameObject);
+
+            // 새 시뮬레이션 회차 시작
+            MCTSLogger.StartNewRun(MCTSSearch.CurrentMode);
         }
         else Destroy(gameObject);
     }
@@ -108,6 +113,13 @@ public class SimulationManager : MonoBehaviour
 
         // 승리 기록
         currentBattle++;
+
+        // 승패 결과 CSV 기록
+        MCTSLogger.LogBattleResult(
+            currentBattle,
+            MCTSSearch.CurrentMode,
+            playerWin
+        );
 
         if (playerWin)
         {
@@ -156,6 +168,9 @@ public class SimulationManager : MonoBehaviour
         Debug.Log(
             $"Average MCTS Search Time : {AverageSearchTimeMs:F2}ms " +
             $"(총 {searchCallCount}회 호출)");
+
+        // 시뮬레이션 회차 종료 → 최종 파일명으로 변경
+        MCTSLogger.FinishRun();
     }
 
     
