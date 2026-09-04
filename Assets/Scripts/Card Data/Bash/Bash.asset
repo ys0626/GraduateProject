@@ -22,3 +22,4 @@ MonoBehaviour:
   rarity: 0
   targetType: 1
   cardEffectType: 0
+  tags: 1

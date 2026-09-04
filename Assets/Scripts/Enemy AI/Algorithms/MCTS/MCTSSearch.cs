@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using Stopwatch = System.Diagnostics.Stopwatch;
 
@@ -86,10 +87,25 @@ public static class MCTSSearch
         SimGameState rootState =
             SimGameState.Create(entity);
 
+        // ===== 즉시 처치 가능 여부 우선 확인 =====
+        bool lethalCheckOn =
+            SimulationManager.instance == null || SimulationManager.instance.EnableLethalCheck;
+
+        if (lethalCheckOn)
+        {
+            List<MCTSAction> lethalSequence =
+                MCTSLethalChecker.FindLethalSequence(rootState);
+
+            if (lethalSequence != null && lethalSequence.Count > 0)
+            {
+                return lethalSequence[0];
+            }
+        }
+
         MCTSNode root =
             new MCTSNode(rootState);
 
-        //새 탐색 트리 시작 시 캐시 초기화
+        // 새 탐색 트리 시작 시 캐시 초기화
         MCTSTranspositionTable.Clear();
 
         // =================================================
@@ -149,7 +165,7 @@ public static class MCTSSearch
                 continue;
 
             float reward =
-                MCTSSimulation.Simulate(simulationNode.state); // 해싱 구현 전까지 캐싱 경로 비활성화
+                MCTSSimulation.Simulate(simulationNode.state); // 해싱 검증 전까지 캐싱 경로 비활성화
 
             // 4. Backpropagation
             MCTSBackpropagation.Backpropagate(
@@ -176,6 +192,9 @@ public static class MCTSSearch
 
         long memoryDeltaBytes =
             memoryAfter - memoryBefore;
+
+        // 팀원 SimulationManager의 평균 탐색 시간 통계에도 반영
+        SimulationManager.RecordSearchTime(stopwatch.ElapsedMilliseconds);
 
         // =================================================
         // 벤치마크 로그 (항상 출력)
@@ -313,5 +332,4 @@ public static class MCTSSearch
 
         return bestVisit >= secondVisit * CONVERGENCE_RATIO;
     }
-
 }

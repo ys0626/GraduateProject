@@ -38,6 +38,12 @@ public static class SimBattleHelper
 
         effect?.Execute(user, target);
 
+        if (card.data.cardType == CardType.Attack && user.DoubleTapCharges > 0)
+        {
+            effect?.Execute(user, target);
+            user.DoubleTapCharges -= 1;
+        }
+
         // =====================================================
         // 카드 처리
         // =====================================================

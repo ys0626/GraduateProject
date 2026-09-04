@@ -33,6 +33,8 @@ public class MCTSNode
     public List<MCTSAction> untriedActions;
     public MCTSAction actionFromParent;
 
+    public TurnPlayHistory turnHistory;
+
     // =====================================================
     // 생성자
     // =====================================================
@@ -46,6 +48,10 @@ public class MCTSNode
         this.parent = parent;
         this.actionFromParent = actionFromParent;
 
+        turnHistory = parent != null
+            ? parent.turnHistory.Extend(actionFromParent.cardKey.data)
+            : default;
+
         InitializeUntriedActions();
     }
 
@@ -55,7 +61,7 @@ public class MCTSNode
 
     private void InitializeUntriedActions()
     {
-        untriedActions = MCTSActionGenerator.GetLegalActions(state);
+        untriedActions = MCTSActionGenerator.GetLegalActions(state, turnHistory);
     }
 
     // =====================================================
@@ -148,8 +154,15 @@ public class MCTSNode
         visitCount > 0 ? totalReward / visitCount : 0f;
 
     //30번(중심극한정리 상 1000번 반복할 때 적당(클로드 피셜)) 이상 방문한 경우 시뮬레이션을 건너뛰도록 설정
-    public bool ShouldSkipSimulation(int visitThreshold = 30)
+    public bool ShouldSkipSimulation()
     {
-        return visitCount >= visitThreshold;
+        if (SimulationManager.instance != null && !SimulationManager.instance.EnableEarlyCutoff)
+            return false;
+
+        int threshold = SimulationManager.instance != null
+            ? SimulationManager.instance.EarlyCutoffVisitThreshold
+            : 30;
+
+        return visitCount >= threshold;
     }
 }

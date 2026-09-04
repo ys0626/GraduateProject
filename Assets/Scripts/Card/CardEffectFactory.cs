@@ -17,6 +17,9 @@ public static class CardEffectFactory
             case CardEffectType.Defend:
                 return new DefendEffect(card);
 
+            case CardEffectType.DoubleTap:
+                return new DoubleTapEffect();
+
             case CardEffectType.Entrench:
                 return new EntrenchEffect(card);
 
@@ -25,6 +28,9 @@ public static class CardEffectFactory
 
             case CardEffectType.Inflame:
                 return new InflameEffect(card);
+
+            case CardEffectType.LimitBreak:
+                return new LimitBreakEffect();
 
             case CardEffectType.Strike:
                 return new StrikeEffect(card);

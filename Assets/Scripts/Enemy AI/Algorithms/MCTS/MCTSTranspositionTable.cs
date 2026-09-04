@@ -1,14 +1,18 @@
-using UnityEngine;
 using System.Collections.Generic;
+using static UnityEngine.Rendering.DebugUI;
 
-//동일 상태 재탐색 방지를 위한 결과 캐시
 public static class MCTSTranspositionTable
 {
     private static readonly Dictionary<ulong, float> table = new Dictionary<ulong, float>();
 
+    public static int hitCount;
+    public static int totalLookups;
     public static bool TryGet(ulong hash, out float value)
     {
-        return table.TryGetValue(hash, out value);
+        totalLookups++;
+        bool found = table.TryGetValue(hash, out value);
+        if (found) hitCount++;
+        return found;
     }
 
     public static void Store(ulong hash, float value)
@@ -19,5 +23,7 @@ public static class MCTSTranspositionTable
     public static void Clear()
     {
         table.Clear();
+        hitCount = 0;
+        totalLookups = 0;
     }
 }

@@ -16,6 +16,8 @@ public interface IBattleEntity
 
     int Block { get; set; }
 
+    int DoubleTapCharges { get; set; }
+
     // =====================================================
     // 상태 이상
     // =====================================================

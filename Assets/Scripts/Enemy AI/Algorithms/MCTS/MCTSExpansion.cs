@@ -58,7 +58,7 @@ public static class MCTSExpansion
     // Action 실행 (instance resolution 포함)
     // =====================================================
 
-    private static void ApplyAction(SimGameState state, MCTSAction action)
+    internal static void ApplyAction(SimGameState state, MCTSAction action)
     {
         // =================================================
         // CardKey → 실제 CardInstance 후보 찾기

@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0449c7d05e32ebb409b263d234c09d38, type: 3}
-  m_Name: Inflame
+  m_Name: LimitBreak
   m_EditorClassIdentifier: Assembly-CSharp::CardData
-  cardName: Inflame
-  description: Gain 2 Strength
-  artwork: {fileID: -6932747087132080230, guid: b1533dd18973e394399c83e38c4ddebb, type: 3}
+  cardName: LimitBreak
+  description: Double your Strength
+  artwork: {fileID: -7186194909302163070, guid: a3dfdbb8c2d02c54cbfb47097cbdca9b, type: 3}
   cost: 1
-  cardType: 2
-  rarity: 1
+  cardType: 1
+  rarity: 2
   targetType: 0
-  cardEffectType: 6
-  tags: 2
+  cardEffectType: 12
+  tags: 4

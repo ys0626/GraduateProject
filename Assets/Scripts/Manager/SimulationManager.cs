@@ -27,10 +27,22 @@ public class SimulationManager : MonoBehaviour
     [Header("Speed")]
     [SerializeField] private float timeScale;
 
+    [Header("MCTS Optimization")]
+    [SerializeField] private bool enableTranspositionCache = true;
+    [SerializeField] private bool enableEarlyCutoff = true;
+    [SerializeField][Range(5, 200)] private int earlyCutoffVisitThreshold = 30;
+    [SerializeField] private bool enableHeuristicPruning = true;
+    [SerializeField] private bool enableLethalCheck = true;
+
     private int currentBattle;
 
     private int playerWinCount;
     private int enemyWinCount;
+
+    private static float totalSearchTimeMs;
+    private static int searchCallCount;
+    public static float AverageSearchTimeMs =>
+    searchCallCount > 0 ? totalSearchTimeMs / searchCallCount : 0f;
 
     [Header("Getter")]
     public bool AutoSimulation => autoSimulation;
@@ -58,9 +70,20 @@ public class SimulationManager : MonoBehaviour
     public ControllerType EnemyControllerType
         => enemyControllerType;
 
-    public int CurrentBattle
-        => currentBattle;
+    public bool EnableTranspositionCache => enableTranspositionCache;
+    public bool EnableEarlyCutoff => enableEarlyCutoff;
+    public int EarlyCutoffVisitThreshold => earlyCutoffVisitThreshold;
+    public bool EnableHeuristicPruning => enableHeuristicPruning;
+    public bool EnableLethalCheck => enableLethalCheck;
 
+    public int CurrentBattle => currentBattle;
+
+
+    public static void RecordSearchTime(float ms)
+    {
+        totalSearchTimeMs += ms;
+        searchCallCount++;
+    }
     private void Awake()
     {
         if (instance == null)
@@ -91,6 +114,13 @@ public class SimulationManager : MonoBehaviour
         // 승리 기록
         currentBattle++;
 
+        // 승패 결과 CSV 기록
+        MCTSLogger.LogBattleResult(
+            currentBattle,
+            MCTSSearch.CurrentMode,
+            playerWin
+        );
+
         if (playerWin)
         {
             playerWinCount++;
@@ -100,13 +130,6 @@ public class SimulationManager : MonoBehaviour
         {
             enemyWinCount++;
         }
-
-        // 승패 결과 CSV 기록
-        MCTSLogger.LogBattleResult(
-            currentBattle,
-            MCTSSearch.CurrentMode,
-            playerWin
-        );
 
         // 진행 상황 출력
         Debug.Log(
@@ -142,7 +165,15 @@ public class SimulationManager : MonoBehaviour
             $"Enemy Win : {enemyWinCount} " +
             $"({(float)enemyWinCount / totalBattleCount * 100f:F2}%)");
 
+        Debug.Log(
+            $"Average MCTS Search Time : {AverageSearchTimeMs:F2}ms " +
+            $"(총 {searchCallCount}회 호출)");
+
         // 시뮬레이션 회차 종료 → 최종 파일명으로 변경
         MCTSLogger.FinishRun();
     }
+
+    
+
+    
 }
