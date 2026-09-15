@@ -211,6 +211,19 @@ public static class MCTSSearch
             (isMemorySampleTurn ? " | [MemSample]" : "")
         );
 
+        // CSV 파일로도 기록
+        MCTSLogger.LogSearch(
+            CurrentMode,
+            playableCardCount,
+            rootState.self.CurrentHP,
+            rootState.opponent.CurrentHP,
+            iterations,
+            executedIterations,
+            stopwatch.ElapsedMilliseconds,
+            nodeCount,
+            memoryDeltaBytes,
+            isMemorySampleTurn
+        );
         // =================================================
         // 최종 선택
         // =================================================
