@@ -135,7 +135,6 @@ public class ShopManager : MonoBehaviour
     /// </summary>
     public void ExitShop()
     {
-        // TODO: 맵 파트 완성되면 연동
-        // 예: SceneManager.LoadScene("Map");
+        SceneChanger.instance.GoToMapScene();
     }
 }
