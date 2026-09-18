@@ -104,6 +104,10 @@ public class BattleManager : MonoBehaviour
     {
         turnCount = 1;
 
+        // 캐시는 전투 단위로 유지한다. 같은 전투의 다음 턴에서는 재사용하고,
+        // 새 전투가 시작될 때만 이전 전투의 상태를 비운다.
+        MCTSTranspositionTable.Clear();
+
         GameData.instance.player.statuses.Clear();
         GameData.instance.enemy.statuses.Clear();
         

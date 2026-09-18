@@ -19,7 +19,7 @@ public static class MCTSSimulation
 
         if (cachingOn)
         {
-            hash = node.state.GetStateHash();
+            hash = node.state.GetStateHash(node.turnHistory);
 
             if (MCTSTranspositionTable.TryGet(hash, out float cached))
                 return cached;

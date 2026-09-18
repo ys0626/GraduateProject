@@ -1,18 +1,26 @@
 using UnityEngine;
 
-/// <summary>
-/// 유물 데이터
-/// 유물 파트 임시 스텁 - 실제 필드/효과는 추후 교체
-/// (상점 파트가 컴파일 가능하도록 최소한의 형태만 먼저 정의함)
-/// </summary>
-[CreateAssetMenu(menuName = "Relic/RelicData")]
+
+/// 유물의 변하지 않는 원본 데이터
+/// Unity 에셋으로 생성하며, 이름·설명·아이콘·효과 종류만 보관
+/// 런 도중 바뀌는 충전량이나 획득 순서 등은 RelicInstance에 둔다.
+
+[CreateAssetMenu(menuName = "Relic/Relic Data")]
 public class RelicData : ScriptableObject
 {
     [Header("Basic Info")]
-    public string relicName;
+    [SerializeField] private string relicId;
+    [SerializeField] private string displayName;
 
     [TextArea]
-    public string description;
+    [SerializeField] private string description;
 
-    public Sprite icon;
+    [SerializeField] private Sprite icon;
+    [SerializeField] private RelicEffectType effectType;
+
+    public string RelicId => relicId;
+    public string DisplayName => displayName;
+    public string Description => description;
+    public Sprite Icon => icon;
+    public RelicEffectType EffectType => effectType;
 }
