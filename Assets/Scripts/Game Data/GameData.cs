@@ -43,6 +43,4 @@ public class GameData : MonoBehaviour
     // =====================================================
     public Entity player = new Entity();
     public Entity enemy = new Entity();
-
-
 }

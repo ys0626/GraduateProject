@@ -105,9 +105,6 @@ public static class MCTSSearch
         MCTSNode root =
             new MCTSNode(rootState);
 
-        // 새 탐색 트리 시작 시 캐시 초기화
-        MCTSTranspositionTable.Clear();
-
         // =================================================
         // 반복 횟수 결정
         // =================================================
@@ -164,8 +161,9 @@ public static class MCTSSearch
             if (simulationNode == null || simulationNode.state == null)
                 continue;
 
+            // 노드 전체를 전달해야 상태 해시를 통한 캐시 조회/저장이 수행된다.
             float reward =
-                MCTSSimulation.Simulate(simulationNode.state); // 해싱 검증 전까지 캐싱 경로 비활성화
+                MCTSSimulation.Simulate(simulationNode);
 
             // 4. Backpropagation
             MCTSBackpropagation.Backpropagate(
@@ -205,7 +203,11 @@ public static class MCTSSearch
             $"Actual: {executedIterations} | " +
             $"Elapsed: {stopwatch.ElapsedMilliseconds}ms | " +
             $"Nodes: {nodeCount} | " +
-            $"MemDelta: {memoryDeltaBytes / 1024}KB" +
+            $"MemDelta: {memoryDeltaBytes / 1024}KB | " +
+            $"Cache: {MCTSTranspositionTable.hitCount}/" +
+            $"{MCTSTranspositionTable.totalLookups} " +
+            $"({MCTSTranspositionTable.HitRate * 100f:F1}%) | " +
+            $"Entries: {MCTSTranspositionTable.EntryCount}" +
             (isMemorySampleTurn ? " | [MemSample]" : "")
         );
 
@@ -222,7 +224,6 @@ public static class MCTSSearch
             memoryDeltaBytes,
             isMemorySampleTurn
         );
-
         // =================================================
         // 최종 선택
         // =================================================

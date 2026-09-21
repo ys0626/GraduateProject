@@ -6,10 +6,22 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
 
+    [Header("Persistent Objects")]
+    public GameObject[] persistentObjects;
+
     private void Awake()
     {
-        if (instance == null) instance = this;
-        else Destroy(gameObject);
+        if(instance != null)
+        {
+            CleanUpAndDestroy();
+            return;
+        }
+        else
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+            MarkPersistentObjects();
+        }
     }
 
     private void Start()
@@ -80,5 +92,31 @@ public class GameManager : MonoBehaviour
         // =================================================
 
         GameData.instance.Init();
+    }
+
+    /// <summary>
+    /// 씬 전환 시에 유지할 게임 오브젝트들 처리
+    /// </summary>
+    void MarkPersistentObjects()
+    {
+        foreach (GameObject obj in persistentObjects)
+        {
+            if(obj != null)
+            {
+                DontDestroyOnLoad(obj);
+            }
+        }
+    }
+
+    /// <summary>
+    ///  씬 전환 시에 게임 오브젝트들 중복 생성 방지
+    /// </summary>
+    void CleanUpAndDestroy()
+    {
+        foreach (GameObject obj in persistentObjects)
+        {
+            Destroy(obj);
+        }
+        Destroy(gameObject);
     }
 }
