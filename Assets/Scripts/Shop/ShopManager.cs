@@ -22,7 +22,7 @@ public class ShopManager : MonoBehaviour
 
     public List<ShopEntry> CardEntries { get; private set; }
 
-    public ShopEntry RelicEntry { get; private set; }
+    public List<ShopEntry> RelicEntries { get; private set; }
 
     // =====================================================
     // 초기화
@@ -39,10 +39,8 @@ public class ShopManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-    }
 
-    private void Start()
-    {
+        // ShopUIManager.Start()보다 먼저 진열이 준비되도록 Awake에서 생성
         GenerateShop();
     }
 
@@ -51,15 +49,15 @@ public class ShopManager : MonoBehaviour
     // =====================================================
 
     /// <summary>
-    /// 카드 5개, 유물 1개를 랜덤으로 뽑아 진열
+    /// 카드 5개, 유물 2개를 랜덤으로 뽑아 진열
     /// </summary>
     private void GenerateShop()
     {
         CardEntries =
             ShopGenerator.GenerateCardEntries(cardPool);
 
-        RelicEntry =
-            ShopGenerator.GenerateRelicEntry(relicPool);
+        RelicEntries =
+            ShopGenerator.GenerateRelicEntries(relicPool);
     }
 
     // =====================================================
@@ -107,14 +105,29 @@ public class ShopManager : MonoBehaviour
     /// <summary>
     /// 구매한 카드를 플레이어 덱에 추가
     /// </summary>
-    private void ApplyCardPurchase(CardData card)
+private void ApplyCardPurchase(CardData card)
     {
         Entity player =
             GameData.instance.player;
 
-        player.deck.Add(new CardInstance(card));
+        CardInstance newCard =
+            new CardInstance(card);
+
+        player.deck.Add(newCard);
 
         player.DeckCount = player.deck.Count;
+
+        bool added =
+            player.deck.Contains(newCard);
+
+        if (added)
+        {
+            Debug.Log($"[Shop] '{card.cardName}' 카드가 덱에 추가됨 (현재 덱 카드 수: {player.DeckCount})");
+        }
+        else
+        {
+            Debug.LogWarning($"[Shop] '{card.cardName}' 카드를 덱에 추가하는 데 실패함");
+        }
     }
 
     /// <summary>
@@ -135,6 +148,12 @@ public class ShopManager : MonoBehaviour
     /// </summary>
     public void ExitShop()
     {
+        if (SceneChanger.instance == null)
+        {
+            Debug.Log("[Shop] SceneChanger가 없어 맵으로 이동하지 않음 (단독 테스트 중)");
+            return;
+        }
+
         SceneChanger.instance.GoToMapScene();
     }
 }
