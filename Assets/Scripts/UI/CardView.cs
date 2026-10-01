@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using static UIManager;
+using static BattleUIManager;
 
 /// <summary>
 /// 플레이어의 손 패의 카드들의 상호작용을 관리하는 class 
@@ -190,7 +190,7 @@ public class CardView : MonoBehaviour,
             if (!success)
             {
                 // 에너지 부족 말풍선 출력
-                UIManager.instance.ShowWarning(WarningType.NotEnoughEnergy);
+                BattleUIManager.instance.ShowWarning(WarningType.NotEnoughEnergy);
 
                 // 손패로 복귀
                 transform.SetParent(startParent);
