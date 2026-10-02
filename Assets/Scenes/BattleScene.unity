@@ -2523,11 +2523,11 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 53c7444e9e1e99547ad3bbe063645680, type: 2}
   simulationEnemyMaxHP: 80
   simulationEnemyMaxEnergy: 3
-  playerControllerType: 1
-  enemyControllerType: 5
-  autoSimulation: 1
+  playerControllerType: 0
+  enemyControllerType: 1
+  autoSimulation: 0
   totalBattleCount: 300
-  timeScale: 100
+  timeScale: 1
   enableTranspositionCache: 1
   enableEarlyCutoff: 1
   earlyCutoffVisitThreshold: 30

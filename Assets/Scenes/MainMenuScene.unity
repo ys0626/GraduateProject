@@ -579,8 +579,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3918ac6ea2ff72344a954ace6fdd0754, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameData
-  playerStartHP: 12
-  playerStartGold: 12
+  playerStartHP: 20
+  playerStartGold: 100
   playerMaxEnergy: 3
   playerStartDeck:
   - {fileID: 11400000, guid: 45f5720786ba1974192c501cf5d9917d, type: 2}

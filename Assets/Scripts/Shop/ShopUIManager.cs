@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 /// <summary>
 /// 상점 씬의 UI 총괄
-/// 슬롯 생성, 클릭 처리, 골드 표시, 나가기 버튼을 관리
+/// 슬롯 생성, 클릭 처리, 나가기 버튼을 관리
 /// </summary>
 public class ShopUIManager : MonoBehaviour
 {
@@ -27,9 +27,6 @@ public class ShopUIManager : MonoBehaviour
     [SerializeField] private Transform cardSlotParent;  // 카드 앞 4장 (2x2 그리드)
     [SerializeField] private Transform lastRowParent;    // 카드 5번째 + RelicGroup (한 줄, 가운데 정렬)
     [SerializeField] private Transform relicGroupParent; // 유물 전체가 들어가는 중첩 그룹 (LastRowParent의 자식)
-
-    [Header("Gold")]
-    [SerializeField] private TMP_Text goldText;
 
     [Header("Buttons")]
     [SerializeField] private Button exitButton;
@@ -202,11 +199,7 @@ public class ShopUIManager : MonoBehaviour
 
     private void OnGoldChanged(int gold)
     {
-        if (goldText != null)
-        {
-            goldText.text = gold.ToString();
-        }
-
+        // 골드 수치 표시는 상단 Persistent UI가 담당하므로 여기선 슬롯 상태만 갱신
         RefreshAll(gold);
     }
 

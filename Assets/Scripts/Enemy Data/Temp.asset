@@ -15,7 +15,7 @@ MonoBehaviour:
   enemyName: temp
   sprite: {fileID: -990920262, guid: 933d7e717b9571349839bf2d01cb070f, type: 3}
   animatorController: {fileID: 9100000, guid: d27cfabcb9360f84fb029e648a54a89e, type: 2}
-  maxHP: 1818
+  maxHP: 10
   maxEnergy: 3
   starterDeck:
   - {fileID: 11400000, guid: 45f5720786ba1974192c501cf5d9917d, type: 2}
