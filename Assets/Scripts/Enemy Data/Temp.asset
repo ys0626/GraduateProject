@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af1b4f9afa4a82940a50d4787765d0fb, type: 3}
+  m_Name: Temp
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyData
+  enemyName: temp
+  sprite: {fileID: -990920262, guid: 933d7e717b9571349839bf2d01cb070f, type: 3}
+  animatorController: {fileID: 9100000, guid: d27cfabcb9360f84fb029e648a54a89e, type: 2}
+  maxHP: 1818
+  maxEnergy: 3
+  starterDeck:
+  - {fileID: 11400000, guid: 45f5720786ba1974192c501cf5d9917d, type: 2}
+  - {fileID: 11400000, guid: 88e2cdd1aa25c1c418927c8abdb676ec, type: 2}
+  - {fileID: 11400000, guid: a1d7aed4f858e8840919319f7a7df8b7, type: 2}
+  - {fileID: 11400000, guid: 80f95a1809369e146a9e7e6517abb2ca, type: 2}
+  - {fileID: 11400000, guid: 80f95a1809369e146a9e7e6517abb2ca, type: 2}
+  - {fileID: 11400000, guid: 80f95a1809369e146a9e7e6517abb2ca, type: 2}
+  - {fileID: 11400000, guid: 80f95a1809369e146a9e7e6517abb2ca, type: 2}
+  - {fileID: 11400000, guid: 80f95a1809369e146a9e7e6517abb2ca, type: 2}
+  - {fileID: 11400000, guid: 80f95a1809369e146a9e7e6517abb2ca, type: 2}
+  - {fileID: 11400000, guid: 80f95a1809369e146a9e7e6517abb2ca, type: 2}

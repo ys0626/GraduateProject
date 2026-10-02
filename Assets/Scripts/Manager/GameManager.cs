@@ -1,6 +1,5 @@
-using System;
-using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -9,114 +8,379 @@ public class GameManager : MonoBehaviour
     [Header("Persistent Objects")]
     public GameObject[] persistentObjects;
 
+    [Header("Scene")]
+    [SerializeField] private string battleSceneName = "BattleScene";
+
+    private bool newGameInitialized;
+
+    // =========================================================
+    // Unity
+    // =========================================================
+
     private void Awake()
     {
-        if(instance != null)
+        if (instance != null)
         {
             CleanUpAndDestroy();
             return;
         }
-        else
-        {
-            instance = this;
-            DontDestroyOnLoad(gameObject);
-            MarkPersistentObjects();
-        }
+
+        instance = this;
+
+        DontDestroyOnLoad(gameObject);
+
+        MarkPersistentObjects();
+
+        SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
     private void Start()
     {
-        //테스트용 세팅값 적용
-        InitGameData();
-
-        // 자동 시뮬레이션 아닐 때만 초기 UI 갱신
-        if (!SimulationManager.instance.AutoSimulation)
-        {
-            UIManager.instance.UpdateAll();
-        }
-
-        //배틀 시작
-        BattleManager.instance.Init();
+        InitNewGame();
     }
 
-
-    /// <summary>
-    /// 테스트용 세팅값 적용
-    /// </summary>
-    private void InitGameData()
+    private void OnDestroy()
     {
-        SimulationManager sim = SimulationManager.instance;
+        if (instance != this)
+            return;
 
-        // =================================================
-        // 플레이어 덱
-        // =================================================
-
-        foreach (CardData cardData in sim.PlayerStarterDeck)
-        {
-            GameData.instance.player.deck
-                .Add(new CardInstance(cardData));
-        }
-
-        PlayerDeckManager.instance.InitPlayerDeck();
-
-        // =================================================
-        // 적 덱
-        // =================================================
-
-        foreach (CardData cardData in sim.EnemyStarterDeck)
-        {
-            GameData.instance.enemy.deck
-                .Add(new CardInstance(cardData));
-        }
-
-        EnemyDeckManager.instance.InitEnemyDeck();
-
-        // =================================================
-        // 스탯
-        // =================================================
-
-        GameData.instance.player.MaxHP =
-            sim.PlayerMaxHP;
-
-        GameData.instance.player.MaxEnergy =
-            sim.PlayerMaxEnergy;
-
-        GameData.instance.enemy.MaxHP =
-            sim.EnemyMaxHP;
-
-        GameData.instance.enemy.MaxEnergy =
-            sim.EnemyMaxEnergy;
-
-        // =================================================
-        // 기타 초기화
-        // =================================================
-
-        GameData.instance.Init();
+        SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
-    /// <summary>
-    /// 씬 전환 시에 유지할 게임 오브젝트들 처리
-    /// </summary>
-    void MarkPersistentObjects()
+    // =========================================================
+    // New Game
+    // =========================================================
+
+    private void InitNewGame()
     {
-        foreach (GameObject obj in persistentObjects)
+        if (newGameInitialized)
+            return;
+
+        if (GameData.instance == null)
         {
-            if(obj != null)
+            Debug.LogError(
+                "[GameManager] GameData가 없습니다."
+            );
+
+            return;
+        }
+
+        GameData.instance.InitNewGame();
+
+        newGameInitialized = true;
+
+        Debug.Log(
+            "[GameManager] New Game Started"
+        );
+    }
+
+    // =========================================================
+    // Scene Loaded
+    // =========================================================
+
+    private void OnSceneLoaded(
+        Scene scene,
+        LoadSceneMode mode)
+    {
+        if (scene.name != battleSceneName)
+            return;
+
+        InitBattleScene();
+    }
+
+    // =========================================================
+    // Battle Scene
+    // =========================================================
+
+    private void InitBattleScene()
+    {
+        if (GameData.instance == null)
+        {
+            Debug.LogError(
+                "[GameManager] BattleScene에 " +
+                "GameData가 없습니다."
+            );
+
+            return;
+        }
+
+        SimulationManager simulationManager =
+            SimulationManager.instance;
+
+        if (simulationManager == null)
+        {
+            Debug.LogError(
+                "[GameManager] BattleScene에 " +
+                "SimulationManager가 없습니다."
+            );
+
+            return;
+        }
+
+        if (simulationManager.AutoSimulation)
+        {
+            InitSimulationBattle(
+                simulationManager
+            );
+
+            return;
+        }
+
+        InitNormalBattle();
+    }
+
+    // =========================================================
+    // Normal Game Battle
+    // =========================================================
+
+    private void InitNormalBattle()
+    {
+        GameData data =
+            GameData.instance;
+
+        data.InitBattle();
+
+        // -----------------------------------------
+        // Select Enemy
+        // -----------------------------------------
+
+        EnemyData enemyData =
+            data.GetRandomEnemy();
+
+        if (enemyData == null)
+        {
+            Debug.LogError(
+                "[GameManager] 일반 게임용 EnemyData를 " +
+                "선택하지 못했습니다."
+            );
+
+            return;
+        }
+
+        // -----------------------------------------
+        // Enemy Deck
+        // -----------------------------------------
+
+        if (enemyData.starterDeck != null)
+        {
+            foreach (
+                CardData cardData
+                in enemyData.starterDeck)
             {
-                DontDestroyOnLoad(obj);
+                if (cardData == null)
+                    continue;
+
+                data.enemy.deck.Add(
+                    new CardInstance(cardData)
+                );
+            }
+        }
+
+        // -----------------------------------------
+        // Enemy Stats
+        // -----------------------------------------
+
+        data.enemy.MaxHP =
+            enemyData.maxHP;
+
+        data.enemy.CurrentHP =
+            enemyData.maxHP;
+
+        data.enemy.MaxEnergy =
+            enemyData.maxEnergy;
+
+        data.enemy.CurrentEnergy =
+            enemyData.maxEnergy;
+
+        // -----------------------------------------
+        // Current Enemy Visual Data
+        // -----------------------------------------
+
+        data.SetCurrentEnemy(
+            enemyData
+        );
+
+        // -----------------------------------------
+        // Initialize Decks
+        // -----------------------------------------
+
+        PlayerDeckManager.instance
+            .InitPlayerDeck();
+
+        EnemyDeckManager.instance
+            .InitEnemyDeck();
+
+        data.UpdatePlayerPileCount();
+        data.UpdateEnemyPileCount();
+
+        Debug.Log(
+            $"[GameManager] Normal Battle Initialized - " +
+            $"Enemy : {enemyData.enemyName}, " +
+            $"Player HP : {data.player.CurrentHP}, " +
+            $"Player Gold : {data.player.Gold}, " +
+            $"Enemy HP : {data.enemy.CurrentHP}"
+        );
+
+        InitBattleManager();
+    }
+
+    // =========================================================
+    // Simulation Battle
+    // =========================================================
+
+    private void InitSimulationBattle(
+        SimulationManager simulationManager)
+    {
+        GameData data =
+            GameData.instance;
+
+        data.InitBattle();
+
+        // -----------------------------------------
+        // Simulation Player
+        // -----------------------------------------
+
+        if (simulationManager.SimulationPlayerDeck != null)
+        {
+            foreach (
+                CardData cardData
+                in simulationManager.SimulationPlayerDeck)
+            {
+                if (cardData == null)
+                    continue;
+
+                data.player.deck.Add(
+                    new CardInstance(cardData)
+                );
+            }
+        }
+
+        data.player.MaxHP =
+            simulationManager.SimulationPlayerMaxHP;
+
+        data.player.CurrentHP =
+            simulationManager.SimulationPlayerMaxHP;
+
+        data.player.MaxEnergy =
+            simulationManager.SimulationPlayerMaxEnergy;
+
+        data.player.CurrentEnergy =
+            simulationManager.SimulationPlayerMaxEnergy;
+
+        // -----------------------------------------
+        // Simulation Enemy
+        // -----------------------------------------
+
+        if (simulationManager.SimulationEnemyDeck != null)
+        {
+            foreach (
+                CardData cardData
+                in simulationManager.SimulationEnemyDeck)
+            {
+                if (cardData == null)
+                    continue;
+
+                data.enemy.deck.Add(
+                    new CardInstance(cardData)
+                );
+            }
+        }
+
+        data.enemy.MaxHP =
+            simulationManager.SimulationEnemyMaxHP;
+
+        data.enemy.CurrentHP =
+            simulationManager.SimulationEnemyMaxHP;
+
+        data.enemy.MaxEnergy =
+            simulationManager.SimulationEnemyMaxEnergy;
+
+        data.enemy.CurrentEnergy =
+            simulationManager.SimulationEnemyMaxEnergy;
+
+        // -----------------------------------------
+        // Initialize Decks
+        // -----------------------------------------
+
+        PlayerDeckManager.instance
+            .InitPlayerDeck();
+
+        EnemyDeckManager.instance
+            .InitEnemyDeck();
+
+        data.UpdatePlayerPileCount();
+        data.UpdateEnemyPileCount();
+
+        Debug.Log(
+            $"[GameManager] Simulation Battle Initialized - " +
+            $"Player HP : {data.player.CurrentHP}, " +
+            $"Enemy HP : {data.enemy.CurrentHP}"
+        );
+
+        InitBattleManager();
+    }
+
+    // =========================================================
+    // BattleManager
+    // =========================================================
+
+    private void InitBattleManager()
+    {
+        if (BattleManager.instance == null)
+        {
+            Debug.LogError(
+                "[GameManager] BattleManager가 없습니다."
+            );
+
+            return;
+        }
+
+        BattleManager.instance.Init();
+
+        SimulationManager simulationManager =
+            SimulationManager.instance;
+
+        if (simulationManager == null ||
+            !simulationManager.AutoSimulation)
+        {
+            if (BattleUIManager.instance != null)
+            {
+                BattleUIManager.instance.UpdateAll();
             }
         }
     }
 
-    /// <summary>
-    ///  씬 전환 시에 게임 오브젝트들 중복 생성 방지
-    /// </summary>
-    void CleanUpAndDestroy()
+    // =========================================================
+    // Persistent Objects
+    // =========================================================
+
+    private void MarkPersistentObjects()
     {
+        if (persistentObjects == null)
+            return;
+
         foreach (GameObject obj in persistentObjects)
         {
-            Destroy(obj);
+            if (obj == null)
+                continue;
+
+            DontDestroyOnLoad(obj);
         }
+    }
+
+    private void CleanUpAndDestroy()
+    {
+        if (persistentObjects != null)
+        {
+            foreach (GameObject obj in persistentObjects)
+            {
+                if (obj == null)
+                    continue;
+
+                Destroy(obj);
+            }
+        }
+
         Destroy(gameObject);
     }
 }
