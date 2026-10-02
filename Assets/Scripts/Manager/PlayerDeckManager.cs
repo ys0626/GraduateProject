@@ -1,5 +1,5 @@
 using UnityEngine;
-using static UIManager;
+using static BattleUIManager;
 
 /// <summary>
 /// 플레이어의 손패, 뽑을 카드 더미, 버린 카드 더미, 소멸된 카드 더미의 변화를 관리하는 class
@@ -57,7 +57,7 @@ public class PlayerDeckManager : MonoBehaviour
         // 1. 손패 최대 제한
         if (GameData.instance.player.hand.Count >= 10)
         {
-            UIManager.instance.ShowWarning(WarningType.HandFull);
+            BattleUIManager.instance.ShowWarning(WarningType.HandFull);
             return;
         }
 
@@ -67,7 +67,7 @@ public class PlayerDeckManager : MonoBehaviour
             // discard도 없으면 완전히 드로우 불가
             if (GameData.instance.player.discardPile.Count == 0)
             {
-                UIManager.instance.ShowWarning(WarningType.NoCardsToDraw);
+                BattleUIManager.instance.ShowWarning(WarningType.NoCardsToDraw);
                 return;
             }
 
@@ -77,14 +77,14 @@ public class PlayerDeckManager : MonoBehaviour
         // 3. 재구성 후에도 드로우가 없으면 종료 (안전장치)
         if (GameData.instance.player.drawPile.Count == 0)
         {
-            UIManager.instance.ShowWarning(WarningType.NoCardsToDraw);
+            BattleUIManager.instance.ShowWarning(WarningType.NoCardsToDraw);
             return;
         }
 
         // 4. 다시 손패 체크 (리셋 이후 상황 대비)
         if (GameData.instance.player.hand.Count >= 10)
         {
-            UIManager.instance.ShowWarning(WarningType.HandFull);
+            BattleUIManager.instance.ShowWarning(WarningType.HandFull);
             return;
         }
 

@@ -172,7 +172,7 @@ public class BattleManager : MonoBehaviour
         currentTurnEntity = GameData.instance.player;
 
         //UI로 턴 표시
-        UIManager.instance.ShowTurnBanner(
+        BattleUIManager.instance.ShowTurnBanner(
         turnCount,
         battlePhase);
 
@@ -254,9 +254,9 @@ public class BattleManager : MonoBehaviour
         battlePhase = BattlePhase.EnemyTurn;
 
         currentTurnEntity = GameData.instance.enemy;
-        
+
         //UI로 턴 표시
-        UIManager.instance.ShowTurnBanner(
+        BattleUIManager.instance.ShowTurnBanner(
         turnCount,
         battlePhase);
         

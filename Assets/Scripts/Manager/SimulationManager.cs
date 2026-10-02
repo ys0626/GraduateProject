@@ -5,15 +5,15 @@ public class SimulationManager : MonoBehaviour
 {
     public static SimulationManager instance;
 
-    [Header("Player Setting")]
-    [SerializeField] public CardData[] playerStarterDeck;
-    [SerializeField] public int playerMaxHP;
-    [SerializeField] public int playerMaxEnergy;
+    [Header("Auto Simulation - Player Setting")]
+    [SerializeField] private CardData[] simulationPlayerDeck;
+    [SerializeField] private int simulationPlayerMaxHP = 80;
+    [SerializeField] private int simulationPlayerMaxEnergy = 3;
 
-    [Header("Enemy Setting")]
-    [SerializeField] public CardData[] enemyStarterDeck;
-    [SerializeField] public int enemyMaxHP;
-    [SerializeField] public int enemyMaxEnergy;
+    [Header("Auto Simulation - Enemy Setting")]
+    [SerializeField] private CardData[] simulationEnemyDeck;
+    [SerializeField] private int simulationEnemyMaxHP = 80;
+    [SerializeField] private int simulationEnemyMaxEnergy = 3;
 
     [Header("Controller Setting")]
     [SerializeField] private ControllerType playerControllerType;
@@ -21,100 +21,166 @@ public class SimulationManager : MonoBehaviour
 
     [Header("Simulation")]
     [SerializeField] private bool autoSimulation;
-
-    [SerializeField] private int totalBattleCount;
+    [SerializeField] private int totalBattleCount = 100;
 
     [Header("Speed")]
-    [SerializeField] private float timeScale;
+    [SerializeField] private float timeScale = 1f;
 
     [Header("MCTS Optimization")]
     [SerializeField] private bool enableTranspositionCache = true;
     [SerializeField] private bool enableEarlyCutoff = true;
-    [SerializeField][Range(5, 200)] private int earlyCutoffVisitThreshold = 30;
+
+    [SerializeField]
+    [Range(5, 200)]
+    private int earlyCutoffVisitThreshold = 30;
+
     [SerializeField] private bool enableHeuristicPruning = true;
     [SerializeField] private bool enableLethalCheck = true;
 
-    private int currentBattle;
+    // =========================================================
+    // Static Simulation Data
+    // =========================================================
 
-    private int playerWinCount;
-    private int enemyWinCount;
+    private static int currentBattle;
+    private static int playerWinCount;
+    private static int enemyWinCount;
 
     private static float totalSearchTimeMs;
     private static int searchCallCount;
+
+    private static bool simulationStarted;
+
+    // =========================================================
+    // Properties
+    // =========================================================
+
+    public bool AutoSimulation =>
+        autoSimulation;
+
+    public CardData[] SimulationPlayerDeck =>
+        simulationPlayerDeck;
+
+    public int SimulationPlayerMaxHP =>
+        simulationPlayerMaxHP;
+
+    public int SimulationPlayerMaxEnergy =>
+        simulationPlayerMaxEnergy;
+
+    public CardData[] SimulationEnemyDeck =>
+        simulationEnemyDeck;
+
+    public int SimulationEnemyMaxHP =>
+        simulationEnemyMaxHP;
+
+    public int SimulationEnemyMaxEnergy =>
+        simulationEnemyMaxEnergy;
+
+    public ControllerType PlayerControllerType =>
+        playerControllerType;
+
+    public ControllerType EnemyControllerType =>
+        enemyControllerType;
+
+    public bool EnableTranspositionCache =>
+        enableTranspositionCache;
+
+    public bool EnableEarlyCutoff =>
+        enableEarlyCutoff;
+
+    public int EarlyCutoffVisitThreshold =>
+        earlyCutoffVisitThreshold;
+
+    public bool EnableHeuristicPruning =>
+        enableHeuristicPruning;
+
+    public bool EnableLethalCheck =>
+        enableLethalCheck;
+
+    public int CurrentBattle =>
+        currentBattle;
+
     public static float AverageSearchTimeMs =>
-    searchCallCount > 0 ? totalSearchTimeMs / searchCallCount : 0f;
+        searchCallCount > 0
+            ? totalSearchTimeMs / searchCallCount
+            : 0f;
 
-    [Header("Getter")]
-    public bool AutoSimulation => autoSimulation;
-    public CardData[] PlayerStarterDeck
-    => playerStarterDeck;
+    // =========================================================
+    // Unity
+    // =========================================================
 
-    public int PlayerMaxHP
-        => playerMaxHP;
+    private void Awake()
+    {
+        if (instance != null)
+        {
+            Destroy(gameObject);
+            return;
+        }
 
-    public int PlayerMaxEnergy
-        => playerMaxEnergy;
+        instance = this;
 
-    public CardData[] EnemyStarterDeck
-        => enemyStarterDeck;
+        Time.timeScale = timeScale;
 
-    public int EnemyMaxHP
-        => enemyMaxHP;
+        if (autoSimulation &&
+            !simulationStarted)
+        {
+            StartSimulationSession();
+        }
+    }
 
-    public int EnemyMaxEnergy
-        => enemyMaxEnergy;
+    private void OnDestroy()
+    {
+        if (instance == this)
+        {
+            instance = null;
+        }
+    }
 
-    public ControllerType PlayerControllerType
-        => playerControllerType;
+    // =========================================================
+    // Simulation Start
+    // =========================================================
 
-    public ControllerType EnemyControllerType
-        => enemyControllerType;
+    private void StartSimulationSession()
+    {
+        simulationStarted = true;
 
-    public bool EnableTranspositionCache => enableTranspositionCache;
-    public bool EnableEarlyCutoff => enableEarlyCutoff;
-    public int EarlyCutoffVisitThreshold => earlyCutoffVisitThreshold;
-    public bool EnableHeuristicPruning => enableHeuristicPruning;
-    public bool EnableLethalCheck => enableLethalCheck;
+        currentBattle = 0;
+        playerWinCount = 0;
+        enemyWinCount = 0;
 
-    public int CurrentBattle => currentBattle;
+        totalSearchTimeMs = 0f;
+        searchCallCount = 0;
 
+        MCTSLogger.StartNewRun(
+            MCTSSearch.CurrentMode
+        );
+
+        Debug.Log(
+            $"[Simulation] Started - " +
+            $"Total Battles : {totalBattleCount}"
+        );
+    }
+
+    // =========================================================
+    // MCTS Search Time
+    // =========================================================
 
     public static void RecordSearchTime(float ms)
     {
         totalSearchTimeMs += ms;
         searchCallCount++;
     }
-    private void Awake()
-    {
-        if (instance == null)
-        {
-            instance = this;
-            DontDestroyOnLoad(gameObject);
 
-            // 새 시뮬레이션 회차 시작
-            MCTSLogger.StartNewRun(MCTSSearch.CurrentMode);
-        }
-        else Destroy(gameObject);
-    }
+    // =========================================================
+    // Battle End
+    // =========================================================
 
-    private void Start()
-    {
-        Time.timeScale = timeScale;
-    }
-
-    /// <summary>
-    /// 전투 종료 시 호출
-    /// </summary>
     public void OnBattleEnded(bool playerWin)
     {
-        // 자동 시뮬레이션이 아니면 아무것도 안 함
         if (!autoSimulation)
             return;
 
-        // 승리 기록
         currentBattle++;
 
-        // 승패 결과 CSV 기록
         MCTSLogger.LogBattleResult(
             currentBattle,
             MCTSSearch.CurrentMode,
@@ -125,55 +191,60 @@ public class SimulationManager : MonoBehaviour
         {
             playerWinCount++;
         }
-
         else
         {
             enemyWinCount++;
         }
 
-        // 진행 상황 출력
         Debug.Log(
             $"[{currentBattle}/{totalBattleCount}] " +
             $"PlayerWin : {playerWinCount}, " +
-            $"EnemyWin : {enemyWinCount}");
+            $"EnemyWin : {enemyWinCount}"
+        );
 
-        // 시뮬레이션 종료
         if (currentBattle >= totalBattleCount)
         {
             PrintResult();
 
+            simulationStarted = false;
+
             return;
         }
 
-        // 다음 판 시작
         SceneManager.LoadScene(
-            SceneManager.GetActiveScene().name);
+            SceneManager.GetActiveScene().name
+        );
     }
 
-    /// <summary>
-    /// 최종 결과 출력
-    /// </summary>
+    // =========================================================
+    // Result
+    // =========================================================
+
     private void PrintResult()
     {
-        Debug.Log("===== Simulation Result =====");
+        Debug.Log(
+            "===== Simulation Result ====="
+        );
+
+        if (totalBattleCount > 0)
+        {
+            Debug.Log(
+                $"Player Win : {playerWinCount} " +
+                $"({(float)playerWinCount / totalBattleCount * 100f:F2}%)"
+            );
+
+            Debug.Log(
+                $"Enemy Win : {enemyWinCount} " +
+                $"({(float)enemyWinCount / totalBattleCount * 100f:F2}%)"
+            );
+        }
 
         Debug.Log(
-            $"Player Win : {playerWinCount} " +
-            $"({(float)playerWinCount / totalBattleCount * 100f:F2}%)");
+            $"Average MCTS Search Time : " +
+            $"{AverageSearchTimeMs:F2}ms " +
+            $"(총 {searchCallCount}회 호출)"
+        );
 
-        Debug.Log(
-            $"Enemy Win : {enemyWinCount} " +
-            $"({(float)enemyWinCount / totalBattleCount * 100f:F2}%)");
-
-        Debug.Log(
-            $"Average MCTS Search Time : {AverageSearchTimeMs:F2}ms " +
-            $"(총 {searchCallCount}회 호출)");
-
-        // 시뮬레이션 회차 종료 → 최종 파일명으로 변경
         MCTSLogger.FinishRun();
     }
-
-    
-
-    
 }

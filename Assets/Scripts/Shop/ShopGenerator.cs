@@ -11,6 +11,7 @@ public static class ShopGenerator
     // =====================================================
 
     private const int CARD_ENTRY_COUNT = 5; // 상점에 진열되는 카드 수
+    private const int RELIC_ENTRY_COUNT = 2; // 상점에 진열되는 유물 수
 
     private const int COMMON_PRICE = 50;
     private const int UNCOMMON_PRICE = 75;
@@ -70,27 +71,45 @@ public static class ShopGenerator
     // =====================================================
 
     /// <summary>
-    /// 유물 풀에서 랜덤으로 1개 뽑아 진열 항목 생성
+    /// 유물 풀에서 중복 없이 유물을 랜덤으로 뽑아 진열 목록 생성
     /// </summary>
-    public static ShopEntry GenerateRelicEntry(List<RelicData> relicPool)
+    public static List<ShopEntry> GenerateRelicEntries(List<RelicData> relicPool)
     {
+        List<ShopEntry> entries =
+            new List<ShopEntry>();
+
         if (relicPool == null || relicPool.Count == 0)
         {
-            return null;
+            return entries;
         }
 
-        int randomIndex =
-            Random.Range(0, relicPool.Count);
+        List<RelicData> pool =
+            new List<RelicData>(relicPool);
 
-        RelicData selected = relicPool[randomIndex];
+        int count =
+            Mathf.Min(RELIC_ENTRY_COUNT, pool.Count);
 
-        return new ShopEntry
+        for (int i = 0; i < count; i++)
         {
-            card = null,
-            relic = selected,
-            price = GetRelicPrice(),
-            purchased = false
-        };
+            int randomIndex =
+                Random.Range(0, pool.Count);
+
+            RelicData selected = pool[randomIndex];
+
+            pool.RemoveAt(randomIndex);
+
+            ShopEntry entry = new ShopEntry
+            {
+                card = null,
+                relic = selected,
+                price = GetRelicPrice(),
+                purchased = false
+            };
+
+            entries.Add(entry);
+        }
+
+        return entries;
     }
 
     // =====================================================
