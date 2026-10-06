@@ -14,6 +14,9 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        // 유물은 런 전체에서 유지되므로 전투 시작 전에 관리자를 준비한다.
+        RelicManager.EnsureInstance();
+
         //테스트용 세팅값 적용
         InitGameData();
 

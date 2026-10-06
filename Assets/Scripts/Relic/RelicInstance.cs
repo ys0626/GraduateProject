@@ -3,11 +3,13 @@
 public class RelicInstance
 {
     public RelicData Data { get; }
+    public RelicSource Source { get; }
 
     // 유물 데이터를 바탕으로 런타임 인스턴스 생성
 
-    public RelicInstance(RelicData data)
+    public RelicInstance(RelicData data, RelicSource source)
     {
         Data = data;
+        Source = source;
     }
 }

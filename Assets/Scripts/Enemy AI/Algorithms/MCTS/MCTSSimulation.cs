@@ -150,7 +150,7 @@ public static class MCTSSimulation
         SimEntity current,
         TurnPlayHistory history)
     {
-        bool pruningOn = SimulationManager.instance == null || SimulationManager.instance.EnableHeuristicPruning;
+        bool pruningOn = SimulationManager.instance == null || SimulationManager.instance.EnableHeuristicRollout;
 
         List<CardInstance> result = new List<CardInstance>();
 

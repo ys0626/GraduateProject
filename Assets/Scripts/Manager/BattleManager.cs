@@ -116,6 +116,10 @@ public class BattleManager : MonoBehaviour
         GameData.instance.player.OnDead += OnPlayerDead;
         GameData.instance.enemy.OnDead += OnEnemyDead;
 
+        RelicManager.Instance?.NotifyBattleStarted(
+            GameData.instance.player,
+            GameData.instance.enemy);
+
         StartPlayerTurn();
     }
 
@@ -170,6 +174,8 @@ public class BattleManager : MonoBehaviour
         battlePhase = BattlePhase.PlayerTurn;
 
         currentTurnEntity = GameData.instance.player;
+
+        RelicManager.Instance?.NotifyTurnStarted(currentTurnEntity);
 
         //UI로 턴 표시
         UIManager.instance.ShowTurnBanner(
@@ -240,6 +246,8 @@ public class BattleManager : MonoBehaviour
         // 턴 종료 시 디버프들의 지속 턴 수를 1만큼 감소
         currentTurnEntity.TickStatuses();
 
+        RelicManager.Instance?.NotifyTurnEnded(currentTurnEntity);
+
         yield return new WaitForSeconds(0.2f);
 
         StartEnemyTurn();
@@ -254,6 +262,8 @@ public class BattleManager : MonoBehaviour
         battlePhase = BattlePhase.EnemyTurn;
 
         currentTurnEntity = GameData.instance.enemy;
+
+        RelicManager.Instance?.NotifyTurnStarted(currentTurnEntity);
         
         //UI로 턴 표시
         UIManager.instance.ShowTurnBanner(
@@ -289,6 +299,8 @@ public class BattleManager : MonoBehaviour
 
         // 턴 종료 시 디버프들의 지속 턴 수를 1만큼 감소
         currentTurnEntity.TickStatuses();
+
+        RelicManager.Instance?.NotifyTurnEnded(currentTurnEntity);
 
         // 턴 증가
         turnCount++;
@@ -439,6 +451,14 @@ public class BattleManager : MonoBehaviour
 
         // 시뮬레이션 결과 기록
         SimulationManager.instance.OnBattleEnded(playerWin);
+
+        RelicManager.Instance?.NotifyBattleEnded(playerWin);
+
+        // 패배는 현재 런의 종료로 취급한다. 다음 런에서는 유물을 다시 획득한다.
+        if (!playerWin)
+        {
+            RelicManager.Instance?.ClearRunRelics();
+        }
     }
 
     private void OnPlayerDead()
@@ -575,6 +595,8 @@ public class BattleManager : MonoBehaviour
                 EnemyDeckManager.instance.DiscardCard(card);
             }
         }
+
+        RelicManager.Instance?.NotifyCardPlayed(user, card, target);
 
         return true;
     }

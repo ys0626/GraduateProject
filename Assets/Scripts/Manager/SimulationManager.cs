@@ -1,6 +1,25 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+/// <summary>
+/// 실험 A에서 비교할 Vanilla MCTS의 보조 기능 구성입니다.
+/// 휴리스틱 가지치기는 롤아웃 단계에만 적용하며, 트리 확장 단계의
+/// 가지치기는 모든 조건에서 끈 상태로 유지합니다.
+/// </summary>
+public enum ExperimentACondition
+{
+    Vanilla,
+    VanillaHeuristicPruning,
+    VanillaLethalCheck,
+    VanillaHeuristicPruningAndLethalCheck
+}
+
+public enum MCTSSearchBudgetMode
+{
+    FixedSimulationCount,
+    TimeLimit
+}
+
 public class SimulationManager : MonoBehaviour
 {
     public static SimulationManager instance;
@@ -32,17 +51,26 @@ public class SimulationManager : MonoBehaviour
     [SerializeField] private bool enableEarlyCutoff = true;
     [SerializeField][Range(5, 200)] private int earlyCutoffVisitThreshold = 30;
     [SerializeField] private bool enableHeuristicPruning = true;
+    [SerializeField] private bool enableHeuristicActionPruning = true;
     [SerializeField] private bool enableLethalCheck = true;
+
+    [Header("Experiment A - Search Budget")]
+    [Tooltip("켜면 아래 조건으로 Vanilla MCTS의 휴리스틱 가지치기와 Lethal Check만 공정하게 비교합니다.")]
+    [SerializeField] private bool enableExperimentA = true;
+    [SerializeField] private ExperimentACondition experimentACondition = ExperimentACondition.Vanilla;
+    [SerializeField] private MCTSSearchBudgetMode searchBudgetMode = MCTSSearchBudgetMode.FixedSimulationCount;
+    [Min(1)] [SerializeField] private int fixedSimulationBudget = 100;
+    [Min(0.1f)] [SerializeField] private float timeBudgetMilliseconds = 5f;
 
     private int currentBattle;
 
     private int playerWinCount;
     private int enemyWinCount;
 
-    private static float totalSearchTimeMs;
+    private static double totalSearchTimeMs;
     private static int searchCallCount;
-    public static float AverageSearchTimeMs =>
-    searchCallCount > 0 ? totalSearchTimeMs / searchCallCount : 0f;
+    public static double AverageSearchTimeMs =>
+        searchCallCount > 0 ? totalSearchTimeMs / searchCallCount : 0d;
 
     [Header("Getter")]
     public bool AutoSimulation => autoSimulation;
@@ -73,13 +101,36 @@ public class SimulationManager : MonoBehaviour
     public bool EnableTranspositionCache => enableTranspositionCache;
     public bool EnableEarlyCutoff => enableEarlyCutoff;
     public int EarlyCutoffVisitThreshold => earlyCutoffVisitThreshold;
-    public bool EnableHeuristicPruning => enableHeuristicPruning;
+    public bool EnableHeuristicRollout => enableHeuristicPruning;
+    public bool EnableHeuristicActionPruning => enableHeuristicActionPruning;
     public bool EnableLethalCheck => enableLethalCheck;
+    public bool UseFixedSimulationBudget =>
+        enableExperimentA && searchBudgetMode == MCTSSearchBudgetMode.FixedSimulationCount;
+    public bool UseTimeBudget =>
+        enableExperimentA && searchBudgetMode == MCTSSearchBudgetMode.TimeLimit;
+    public int FixedSimulationBudget => Mathf.Max(1, fixedSimulationBudget);
+    public double TimeBudgetMilliseconds => Mathf.Max(0.1f, timeBudgetMilliseconds);
+    public bool EnableSearchEarlyStop => !enableExperimentA;
+
+    public string ExperimentModeLabel
+    {
+        get
+        {
+            if (!enableExperimentA)
+                return "Standard_Dynamic";
+
+            string budgetLabel = UseTimeBudget
+                ? $"Time{TimeBudgetMilliseconds:F1}ms"
+                : $"Budget{FixedSimulationBudget}";
+
+            return $"ExperimentA_{experimentACondition}_{budgetLabel}";
+        }
+    }
 
     public int CurrentBattle => currentBattle;
 
 
-    public static void RecordSearchTime(float ms)
+    public static void RecordSearchTime(double ms)
     {
         totalSearchTimeMs += ms;
         searchCallCount++;
@@ -91,6 +142,10 @@ public class SimulationManager : MonoBehaviour
             instance = this;
             DontDestroyOnLoad(gameObject);
 
+            ApplyExperimentAConfiguration();
+            totalSearchTimeMs = 0d;
+            searchCallCount = 0;
+
             // 새 시뮬레이션 회차 시작
             MCTSLogger.StartNewRun(MCTSSearch.CurrentMode);
         }
@@ -100,6 +155,47 @@ public class SimulationManager : MonoBehaviour
     private void Start()
     {
         Time.timeScale = timeScale;
+    }
+
+    /// <summary>
+    /// 실험 A에서는 비교 대상 외의 최적화가 결과에 섞이지 않도록 끕니다.
+    /// 휴리스틱 Action Pruning은 롤아웃 Heuristic Pruning과 별개이므로 항상 끕니다.
+    /// </summary>
+    private void ApplyExperimentAConfiguration()
+    {
+        if (!enableExperimentA)
+            return;
+
+        enableEarlyCutoff = false;
+        enableHeuristicActionPruning = false;
+        enableLethalCheck = false;
+
+        switch (experimentACondition)
+        {
+            case ExperimentACondition.Vanilla:
+                enableTranspositionCache = false;
+                enableHeuristicPruning = false;
+                enableLethalCheck = false;
+                break;
+
+            case ExperimentACondition.VanillaHeuristicPruning:
+                enableTranspositionCache = false;
+                enableHeuristicPruning = true;
+                enableLethalCheck = false;
+                break;
+
+            case ExperimentACondition.VanillaLethalCheck:
+                enableTranspositionCache = false;
+                enableHeuristicPruning = false;
+                enableLethalCheck = true;
+                break;
+
+            case ExperimentACondition.VanillaHeuristicPruningAndLethalCheck:
+                enableTranspositionCache = false;
+                enableHeuristicPruning = true;
+                enableLethalCheck = true;
+                break;
+        }
     }
 
     /// <summary>
