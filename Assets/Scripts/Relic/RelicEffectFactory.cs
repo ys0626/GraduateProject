@@ -6,7 +6,18 @@ public static class RelicEffectFactory
 {
     public static IRelicEffect Create(RelicInstance relic)
     {
-        // TODO: relic.Data.EffectType별 구체 효과 객체를 생성
-        return null;
+        if (relic == null || relic.Data == null)
+        {
+            return null;
+        }
+
+        // 아직 구현된 효과가 없으므로 None은 효과 객체를 만들지 않는다.
+        // 새 효과를 만들 때 여기서 RelicEffectType별 구현 클래스를 생성한다.
+        switch (relic.Data.EffectType)
+        {
+            case RelicEffectType.None:
+            default:
+                return null;
+        }
     }
 }

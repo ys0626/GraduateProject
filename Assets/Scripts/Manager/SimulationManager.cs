@@ -1,6 +1,20 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+public enum ExperimentACondition
+{
+    Vanilla,
+    VanillaHeuristicPruning,
+    VanillaLethalCheck,
+    VanillaHeuristicPruningAndLethalCheck
+}
+
+public enum MCTSSearchBudgetMode
+{
+    FixedSimulationCount,
+    TimeLimit
+}
+
 public class SimulationManager : MonoBehaviour
 {
     public static SimulationManager instance;
@@ -35,7 +49,17 @@ public class SimulationManager : MonoBehaviour
     private int earlyCutoffVisitThreshold = 30;
 
     [SerializeField] private bool enableHeuristicPruning = true;
+    [SerializeField] private bool enableHeuristicActionPruning = true;
     [SerializeField] private bool enableLethalCheck = true;
+
+    [Header("Experiment A - Search Budget")]
+    [SerializeField] private bool enableExperimentA = true;
+    [SerializeField] private ExperimentACondition experimentACondition =
+        ExperimentACondition.Vanilla;
+    [SerializeField] private MCTSSearchBudgetMode searchBudgetMode =
+        MCTSSearchBudgetMode.FixedSimulationCount;
+    [Min(1)] [SerializeField] private int fixedSimulationBudget = 100;
+    [Min(0.1f)] [SerializeField] private float timeBudgetMilliseconds = 5f;
 
     // =========================================================
     // Static Simulation Data
@@ -45,7 +69,7 @@ public class SimulationManager : MonoBehaviour
     private static int playerWinCount;
     private static int enemyWinCount;
 
-    private static float totalSearchTimeMs;
+    private static double totalSearchTimeMs;
     private static int searchCallCount;
 
     private static bool simulationStarted;
@@ -93,16 +117,54 @@ public class SimulationManager : MonoBehaviour
     public bool EnableHeuristicPruning =>
         enableHeuristicPruning;
 
+    public bool EnableHeuristicRollout =>
+        enableHeuristicPruning;
+
+    public bool EnableHeuristicActionPruning =>
+        enableHeuristicActionPruning;
+
     public bool EnableLethalCheck =>
         enableLethalCheck;
 
     public int CurrentBattle =>
         currentBattle;
 
-    public static float AverageSearchTimeMs =>
+    public bool UseFixedSimulationBudget =>
+        enableExperimentA &&
+        searchBudgetMode == MCTSSearchBudgetMode.FixedSimulationCount;
+
+    public bool UseTimeBudget =>
+        enableExperimentA &&
+        searchBudgetMode == MCTSSearchBudgetMode.TimeLimit;
+
+    public int FixedSimulationBudget =>
+        Mathf.Max(1, fixedSimulationBudget);
+
+    public double TimeBudgetMilliseconds =>
+        Mathf.Max(0.1f, timeBudgetMilliseconds);
+
+    public bool EnableSearchEarlyStop =>
+        !enableExperimentA;
+
+    public string ExperimentModeLabel
+    {
+        get
+        {
+            if (!enableExperimentA)
+                return "Standard_Dynamic";
+
+            string budgetLabel = UseTimeBudget
+                ? $"Time{TimeBudgetMilliseconds:F1}ms"
+                : $"Budget{FixedSimulationBudget}";
+
+            return $"ExperimentA_{experimentACondition}_{budgetLabel}";
+        }
+    }
+
+    public static double AverageSearchTimeMs =>
         searchCallCount > 0
             ? totalSearchTimeMs / searchCallCount
-            : 0f;
+            : 0d;
 
     // =========================================================
     // Unity
@@ -141,13 +203,15 @@ public class SimulationManager : MonoBehaviour
 
     private void StartSimulationSession()
     {
+        ApplyExperimentAConfiguration();
+
         simulationStarted = true;
 
         currentBattle = 0;
         playerWinCount = 0;
         enemyWinCount = 0;
 
-        totalSearchTimeMs = 0f;
+        totalSearchTimeMs = 0d;
         searchCallCount = 0;
 
         MCTSLogger.StartNewRun(
@@ -164,10 +228,46 @@ public class SimulationManager : MonoBehaviour
     // MCTS Search Time
     // =========================================================
 
-    public static void RecordSearchTime(float ms)
+    public static void RecordSearchTime(double ms)
     {
         totalSearchTimeMs += ms;
         searchCallCount++;
+    }
+
+    private void ApplyExperimentAConfiguration()
+    {
+        if (!enableExperimentA)
+            return;
+
+        enableEarlyCutoff = false;
+        enableHeuristicActionPruning = false;
+
+        switch (experimentACondition)
+        {
+            case ExperimentACondition.Vanilla:
+                enableTranspositionCache = false;
+                enableHeuristicPruning = false;
+                enableLethalCheck = false;
+                break;
+
+            case ExperimentACondition.VanillaHeuristicPruning:
+                enableTranspositionCache = false;
+                enableHeuristicPruning = true;
+                enableLethalCheck = false;
+                break;
+
+            case ExperimentACondition.VanillaLethalCheck:
+                enableTranspositionCache = false;
+                enableHeuristicPruning = false;
+                enableLethalCheck = true;
+                break;
+
+            case ExperimentACondition.VanillaHeuristicPruningAndLethalCheck:
+                enableTranspositionCache = false;
+                enableHeuristicPruning = true;
+                enableLethalCheck = true;
+                break;
+        }
     }
 
     // =========================================================

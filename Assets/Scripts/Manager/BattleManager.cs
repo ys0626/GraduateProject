@@ -176,6 +176,8 @@ public class BattleManager : MonoBehaviour
 
         currentTurnEntity = GameData.instance.player;
 
+        RelicManager.Instance?.NotifyTurnStarted(currentTurnEntity);
+
         //UI로 턴 표시
         BattleUIManager.instance.ShowTurnBanner(
         turnCount,
@@ -259,6 +261,8 @@ public class BattleManager : MonoBehaviour
         battlePhase = BattlePhase.EnemyTurn;
 
         currentTurnEntity = GameData.instance.enemy;
+
+        RelicManager.Instance?.NotifyTurnStarted(currentTurnEntity);
 
         //UI로 턴 표시
         BattleUIManager.instance.ShowTurnBanner(

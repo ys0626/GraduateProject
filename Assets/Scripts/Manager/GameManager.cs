@@ -36,6 +36,8 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        RelicManager.EnsureInstance();
+
         InitNewGame();
 
         // BattleScene을 에디터에서 직접 재생하는 경우에는

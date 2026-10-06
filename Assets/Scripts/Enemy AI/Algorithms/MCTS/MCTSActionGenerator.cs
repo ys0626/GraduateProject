@@ -4,7 +4,7 @@ public static class MCTSActionGenerator
 {
     public static List<MCTSAction> GetLegalActions(SimGameState state, TurnPlayHistory history)
     {
-        bool pruningOn = SimulationManager.instance == null || SimulationManager.instance.EnableHeuristicPruning;
+        bool pruningOn = SimulationManager.instance == null || SimulationManager.instance.EnableHeuristicActionPruning;
 
         HashSet<CardKey> unique = new HashSet<CardKey>();
         List<MCTSAction> actions = new List<MCTSAction>();

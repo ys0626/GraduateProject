@@ -16,6 +16,12 @@ public class RelicReward
     // 보상을 실제 런 보유 목록에 지급
     public void Grant()
     {
-        // TODO: RelicManager.Instance.Acquire(Relic, Source)를 호출
+        if (Relic == null)
+        {
+            UnityEngine.Debug.LogError("유물 보상 지급에 실패했습니다: RelicData가 없습니다.");
+            return;
+        }
+
+        RelicManager.EnsureInstance().Acquire(Relic, Source);
     }
 }

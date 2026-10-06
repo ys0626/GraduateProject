@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.IO;
 using UnityEngine;
 
@@ -83,12 +84,18 @@ public static class MCTSLogger
         int playableCardCount,
         int selfHP,
         int opponentHP,
+        string budgetMode,
         int targetIterations,
+        double timeBudgetMs,
         int actualIterations,
-        long elapsedMs,
+        double elapsedMs,
         int nodeCount,
         long memoryDeltaBytes,
-        bool isMemorySample)
+        bool isMemorySample,
+        bool lethalSequenceUsed,
+        int cacheHits,
+        int cacheLookups,
+        int cacheEntryCount)
     {
         bool fileExists =
             File.Exists(searchLogPath);
@@ -102,8 +109,9 @@ public static class MCTSLogger
                 writer.WriteLine(
                     "Timestamp,BattleNumber,Mode,PlayableCardCount," +
                     "SelfHP,OpponentHP,HPDifference," +
-                    "TargetIterations,ActualIterations,ElapsedMs," +
-                    "NodeCount,MemoryDeltaBytes,IsMemorySample"
+                    "BudgetMode,TargetIterations,TimeBudgetMs,ActualIterations,ElapsedMs," +
+                    "NodeCount,MemoryDeltaBytes,IsMemorySample,LethalSequenceUsed," +
+                    "CacheHits,CacheLookups,CacheHitRate,CacheEntryCount"
                 );
             }
 
@@ -113,6 +121,9 @@ public static class MCTSLogger
             int hpDifference =
                 Mathf.Abs(selfHP - opponentHP);
 
+            float cacheHitRate =
+                cacheLookups > 0 ? (float)cacheHits / cacheLookups : 0f;
+
             writer.WriteLine(
                 $"{DateTime.Now:yyyy-MM-dd HH:mm:ss}," +
                 $"{battleNumber}," +
@@ -121,12 +132,19 @@ public static class MCTSLogger
                 $"{selfHP}," +
                 $"{opponentHP}," +
                 $"{hpDifference}," +
+                $"{budgetMode}," +
                 $"{targetIterations}," +
+                $"{timeBudgetMs.ToString("F4", CultureInfo.InvariantCulture)}," +
                 $"{actualIterations}," +
-                $"{elapsedMs}," +
+                $"{elapsedMs.ToString("F4", CultureInfo.InvariantCulture)}," +
                 $"{nodeCount}," +
                 $"{memoryDeltaBytes}," +
-                $"{isMemorySample}"
+                $"{isMemorySample}," +
+                $"{lethalSequenceUsed}," +
+                $"{cacheHits}," +
+                $"{cacheLookups}," +
+                $"{cacheHitRate.ToString("F4", CultureInfo.InvariantCulture)}," +
+                $"{cacheEntryCount}"
             );
         }
     }

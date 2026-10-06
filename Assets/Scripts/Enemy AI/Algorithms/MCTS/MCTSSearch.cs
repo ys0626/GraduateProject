@@ -28,7 +28,7 @@ public static class MCTSSearch
 
     private const bool LOG_CHILD_STATS = false; // true로 설정하면 루트 노드의 자식 노드들의 통계 로그를 출력
 
-    private const bool USE_FIXED_ITERATIONS_FOR_TEST = false; // true로 설정하면 테스트용으로 고정된 반복 횟수를 사용, false로 설정하면 동적 반복 횟수 계산 사용
+    private const bool USE_FIXED_ITERATIONS_FOR_TEST = false; // SimulationManager가 없을 때만 사용하는 기본 테스트값
     private const int FIXED_TEST_ITERATIONS = 1000;
 
     private const bool DISABLE_EARLY_STOP_FOR_TEST = false; // true로 설정하면 조기 종료를 사용하지 않음, 순수 반복 횟수만으로 비교할 때 사용
@@ -47,7 +47,9 @@ public static class MCTSSearch
     /// 현재 반복 횟수 계산 방식 (승패 로그 기록 시 참조)
     /// </summary>
     public static string CurrentMode
-        => (USE_FIXED_ITERATIONS_FOR_TEST ? "Fixed" : "Dynamic") +
+        => SimulationManager.instance != null
+            ? SimulationManager.instance.ExperimentModeLabel
+            : (USE_FIXED_ITERATIONS_FOR_TEST ? "Fixed" : "Dynamic") +
            (DISABLE_EARLY_STOP_FOR_TEST ? "_NoEarlyStop" : "") +
            (FORCE_GC_FOR_MEMORY_TEST ? "_MemTest" : "");
 
@@ -87,32 +89,34 @@ public static class MCTSSearch
         SimGameState rootState =
             SimGameState.Create(entity);
 
-        // ===== 즉시 처치 가능 여부 우선 확인 =====
-        bool lethalCheckOn =
-            SimulationManager.instance == null || SimulationManager.instance.EnableLethalCheck;
-
-        if (lethalCheckOn)
-        {
-            List<MCTSAction> lethalSequence =
-                MCTSLethalChecker.FindLethalSequence(rootState);
-
-            if (lethalSequence != null && lethalSequence.Count > 0)
-            {
-                return lethalSequence[0];
-            }
-        }
-
-        MCTSNode root =
-            new MCTSNode(rootState);
-
         // =================================================
-        // 반복 횟수 결정
+        // 탐색 예산 결정
         // =================================================
+
+        bool useFixedBudget =
+            SimulationManager.instance != null
+            ? SimulationManager.instance.UseFixedSimulationBudget
+            : USE_FIXED_ITERATIONS_FOR_TEST;
+
+        bool useTimeBudget =
+            SimulationManager.instance != null &&
+            SimulationManager.instance.UseTimeBudget;
 
         int iterations =
-            USE_FIXED_ITERATIONS_FOR_TEST
-            ? FIXED_TEST_ITERATIONS
-            : GetDynamicIterations(rootState, playableCardCount);
+            useFixedBudget
+            ? (SimulationManager.instance != null
+                ? SimulationManager.instance.FixedSimulationBudget
+                : FIXED_TEST_ITERATIONS)
+            : (useTimeBudget ? -1 : GetDynamicIterations(rootState, playableCardCount));
+
+        double timeBudgetMs =
+            useTimeBudget
+            ? SimulationManager.instance.TimeBudgetMilliseconds
+            : 0d;
+
+        string budgetMode = useTimeBudget
+            ? "TimeLimit"
+            : (useFixedBudget ? "FixedSimulationCount" : "Dynamic");
 
         // =================================================
         // MCTS 반복
@@ -130,15 +134,68 @@ public static class MCTSSearch
             : System.GC.GetTotalMemory(false);
 
         int nodeCount = 0;
+        int cacheHitsBefore = MCTSTranspositionTable.hitCount;
+        int cacheLookupsBefore = MCTSTranspositionTable.totalLookups;
 
         Stopwatch stopwatch =
             Stopwatch.StartNew();
 
+        // ===== 즉시 처치 가능 여부 우선 확인 =====
+        // Lethal Check의 계산 시간과 사용 여부도 실험 로그에 포함한다.
+        bool lethalSequenceUsed = false;
+        bool lethalCheckOn =
+            SimulationManager.instance == null || SimulationManager.instance.EnableLethalCheck;
+
+        if (lethalCheckOn)
+        {
+            List<MCTSAction> lethalSequence =
+                MCTSLethalChecker.FindLethalSequence(rootState);
+
+            if (lethalSequence != null && lethalSequence.Count > 0)
+            {
+                lethalSequenceUsed = true;
+                stopwatch.Stop();
+
+                long lethalMemoryAfter =
+                    isMemorySampleTurn
+                    ? System.GC.GetTotalMemory(true)
+                    : System.GC.GetTotalMemory(false);
+
+                LogSearchResult(
+                    rootState,
+                    playableCardCount,
+                    budgetMode,
+                    iterations,
+                    timeBudgetMs,
+                    0,
+                    stopwatch.Elapsed.TotalMilliseconds,
+                    0,
+                    lethalMemoryAfter - memoryBefore,
+                    isMemorySampleTurn,
+                    true,
+                    cacheHitsBefore,
+                    cacheLookupsBefore);
+
+                return lethalSequence[0];
+            }
+        }
+
+        MCTSNode root =
+            new MCTSNode(rootState);
+
         int executedIterations = 0;
 
-        for (int i = 0; i < iterations; i++)
+        while (useTimeBudget || executedIterations < iterations)
         {
-            executedIterations = i + 1;
+            // 시간 예산 모드에서는 최소 한 번 탐색한 뒤 제한 시간을 확인한다.
+            if (useTimeBudget &&
+                executedIterations > 0 &&
+                stopwatch.Elapsed.TotalMilliseconds >= timeBudgetMs)
+            {
+                break;
+            }
+
+            executedIterations++;
 
             // 1. Selection
             MCTSNode selected =
@@ -172,9 +229,14 @@ public static class MCTSSearch
             );
 
             // 5. 조기 종료 판단
-            if (!DISABLE_EARLY_STOP_FOR_TEST &&
-                i >= MIN_ITERATIONS &&
-                i % CONVERGENCE_CHECK_INTERVAL == 0 &&
+            bool searchEarlyStopOn =
+                SimulationManager.instance != null
+                ? SimulationManager.instance.EnableSearchEarlyStop
+                : !DISABLE_EARLY_STOP_FOR_TEST;
+
+            if (searchEarlyStopOn &&
+                executedIterations >= MIN_ITERATIONS &&
+                executedIterations % CONVERGENCE_CHECK_INTERVAL == 0 &&
                 IsConverged(root))
             {
                 break;
@@ -191,39 +253,20 @@ public static class MCTSSearch
         long memoryDeltaBytes =
             memoryAfter - memoryBefore;
 
-        // 팀원 SimulationManager의 평균 탐색 시간 통계에도 반영
-        SimulationManager.RecordSearchTime(stopwatch.ElapsedMilliseconds);
-
-        // =================================================
-        // 벤치마크 로그 (항상 출력)
-        // =================================================
-
-        Debug.Log(
-            $"[MCTS] Target: {iterations} | " +
-            $"Actual: {executedIterations} | " +
-            $"Elapsed: {stopwatch.ElapsedMilliseconds}ms | " +
-            $"Nodes: {nodeCount} | " +
-            $"MemDelta: {memoryDeltaBytes / 1024}KB | " +
-            $"Cache: {MCTSTranspositionTable.hitCount}/" +
-            $"{MCTSTranspositionTable.totalLookups} " +
-            $"({MCTSTranspositionTable.HitRate * 100f:F1}%) | " +
-            $"Entries: {MCTSTranspositionTable.EntryCount}" +
-            (isMemorySampleTurn ? " | [MemSample]" : "")
-        );
-
-        // CSV 파일로도 기록
-        MCTSLogger.LogSearch(
-            CurrentMode,
+        LogSearchResult(
+            rootState,
             playableCardCount,
-            rootState.self.CurrentHP,
-            rootState.opponent.CurrentHP,
+            budgetMode,
             iterations,
+            timeBudgetMs,
             executedIterations,
-            stopwatch.ElapsedMilliseconds,
+            stopwatch.Elapsed.TotalMilliseconds,
             nodeCount,
             memoryDeltaBytes,
-            isMemorySampleTurn
-        );
+            isMemorySampleTurn,
+            lethalSequenceUsed,
+            cacheHitsBefore,
+            cacheLookupsBefore);
         // =================================================
         // 최종 선택
         // =================================================
@@ -260,6 +303,70 @@ public static class MCTSSearch
         // =================================================
 
         return bestChild.actionFromParent;
+    }
+
+    /// <summary>
+    /// 한 번의 카드 결정에 대한 시간 및 탐색 통계를 콘솔과 CSV에 같은 값으로 기록한다.
+    /// Lethal Check로 즉시 카드를 고른 경우도 이 경로를 거쳐 비교에서 누락되지 않는다.
+    /// </summary>
+    private static void LogSearchResult(
+        SimGameState rootState,
+        int playableCardCount,
+        string budgetMode,
+        int targetIterations,
+        double timeBudgetMs,
+        int actualIterations,
+        double elapsedMs,
+        int nodeCount,
+        long memoryDeltaBytes,
+        bool isMemorySampleTurn,
+        bool lethalSequenceUsed,
+        int cacheHitsBefore,
+        int cacheLookupsBefore)
+    {
+        int cacheHitsThisSearch =
+            MCTSTranspositionTable.hitCount - cacheHitsBefore;
+        int cacheLookupsThisSearch =
+            MCTSTranspositionTable.totalLookups - cacheLookupsBefore;
+
+        SimulationManager.RecordSearchTime(elapsedMs);
+
+        string targetDescription = budgetMode == "TimeLimit"
+            ? $"{timeBudgetMs:F3}ms"
+            : targetIterations.ToString();
+
+        Debug.Log(
+            $"[MCTS] Target: {targetDescription} | " +
+            $"Actual: {actualIterations} | " +
+            $"Elapsed: {elapsedMs:F3}ms | " +
+            $"Nodes: {nodeCount} | " +
+            $"MemDelta: {memoryDeltaBytes / 1024}KB | " +
+            $"Cache: {MCTSTranspositionTable.hitCount}/" +
+            $"{MCTSTranspositionTable.totalLookups} " +
+            $"({MCTSTranspositionTable.HitRate * 100f:F1}%) | " +
+            $"Entries: {MCTSTranspositionTable.EntryCount}" +
+            (lethalSequenceUsed ? " | [Lethal]" : "") +
+            (isMemorySampleTurn ? " | [MemSample]" : "")
+        );
+
+        MCTSLogger.LogSearch(
+            CurrentMode,
+            playableCardCount,
+            rootState.self.CurrentHP,
+            rootState.opponent.CurrentHP,
+            budgetMode,
+            targetIterations,
+            timeBudgetMs,
+            actualIterations,
+            elapsedMs,
+            nodeCount,
+            memoryDeltaBytes,
+            isMemorySampleTurn,
+            lethalSequenceUsed,
+            cacheHitsThisSearch,
+            cacheLookupsThisSearch,
+            MCTSTranspositionTable.EntryCount
+        );
     }
 
     // =====================================================
