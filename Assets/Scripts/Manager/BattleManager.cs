@@ -102,6 +102,8 @@ public class BattleManager : MonoBehaviour
 
     public void Init()
     {
+        battleEnded = false;
+
         turnCount = 1;
 
         // 캐시는 전투 단위로 유지한다. 같은 전투의 다음 턴에서는 재사용하고,
@@ -415,31 +417,52 @@ public class BattleManager : MonoBehaviour
     // 전투 결과
     // =====================================================
 
+    private bool battleEnded;
+
     private void EndBattle(bool playerWin)
     {
-        isBusy = true;
+        if (battleEnded) return;
 
+        battleEnded = true;
+        isBusy = true;
         StopAllCoroutines();
 
-        // 자동 시뮬레이션 아닐 때만 버튼 표시
-        if (!SimulationManager.instance.AutoSimulation)
-        {
-            restartButton.SetActive(true);
-        }
+        bool autoSimulation =
+            SimulationManager.instance != null &&
+            SimulationManager.instance.AutoSimulation;
 
         if (playerWin)
-        {
             Debug.Log("플레이어 승리!");
+        else
+            Debug.Log("플레이어 패배...");
+
+        // 자동 시뮬레이션
+        if (autoSimulation)
+        {
+            SimulationManager.instance.OnBattleEnded(playerWin);
+            return;
         }
 
+        // 일반 게임에서 패배
+        if (!playerWin)
+        {
+            if (restartButton != null)
+                restartButton.SetActive(true);
+
+            return;
+        }
+
+        // 일반 게임에서 승리
+        if (RewardManager.Instance != null)
+        {
+            RewardManager.Instance.ShowRewards();
+        }
         else
         {
-            Debug.Log("플레이어 패배...");
+            Debug.LogError("RewardManager.Instance가 없습니다.");
         }
-
-        // 시뮬레이션 결과 기록
-        SimulationManager.instance.OnBattleEnded(playerWin);
     }
+
 
     private void OnPlayerDead()
     {

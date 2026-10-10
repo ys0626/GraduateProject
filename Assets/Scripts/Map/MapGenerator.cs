@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// 맵 생성 로직 담당하는 클래스
+/// 맵 생성 및 맵 진행 상태 관리 클래스
 /// </summary>
 public class MapGenerator : MonoBehaviour
 {
+    public static MapGenerator instance;
+
     [Header("Map Settings")]
     [SerializeField] private int floorCount = 10;
-
     [SerializeField] private int minNodesPerFloor = 3;
     [SerializeField] private int maxNodesPerFloor = 5;
 
@@ -27,20 +28,16 @@ public class MapGenerator : MonoBehaviour
     [Range(0f, 1f)]
     [SerializeField] private float shopChance = 0.15f;
 
-    //[Range(0f, 1f)]
-    //[SerializeField] private float restChance = 0.15f;
-
     [Header("Map Position")]
     [SerializeField] private float horizontalSpacing = 110f;
     [SerializeField] private float verticalSpacing = 170f;
     [SerializeField] private float verticalRandomness = 50f;
 
-    [Header("Debug")]
-    [SerializeField] private bool generateOnStart = true;
-
-    private List<List<MapNode>> floors = new List<List<MapNode>>();
+    private List<List<MapNode>> floors =
+        new List<List<MapNode>>();
 
     private int nextNodeId = 0;
+    private int currentNodeId = -1;
 
     public int CurrentSeed { get; private set; }
 
@@ -48,12 +45,23 @@ public class MapGenerator : MonoBehaviour
 
     public bool IsMapGenerated { get; private set; }
 
-    private void Start()
+    public int CurrentNodeId => currentNodeId;
+
+
+    // ============================================================
+    // SINGLETON / PERSISTENCE
+    // ============================================================
+
+    private void Awake()
     {
-        if (generateOnStart)
+        if (instance != null && instance != this)
         {
-            GenerateMap();
+            Destroy(gameObject);
+            return;
         }
+
+        instance = this;
+        DontDestroyOnLoad(gameObject);
     }
 
 
@@ -63,8 +71,11 @@ public class MapGenerator : MonoBehaviour
 
     public void GenerateMap()
     {
+        IsMapGenerated = false;
+
         floors.Clear();
         nextNodeId = 0;
+        currentNodeId = -1;
 
         SetSeed();
 
@@ -109,12 +120,11 @@ public class MapGenerator : MonoBehaviour
         // START
         List<MapNode> startFloor = new List<MapNode>();
 
-        MapNode startNode =
-            new MapNode(
-                nextNodeId++,
-                0,
-                MapNodeType.Start
-            );
+        MapNode startNode = new MapNode(
+            nextNodeId++,
+            0,
+            MapNodeType.Start
+        );
 
         startFloor.Add(startNode);
         floors.Add(startFloor);
@@ -128,31 +138,28 @@ public class MapGenerator : MonoBehaviour
             // 마지막 층은 Boss 하나만
             if (floor == floorCount)
             {
-                MapNode bossNode =
-                    new MapNode(
-                        nextNodeId++,
-                        floor,
-                        MapNodeType.Boss
-                    );
+                MapNode bossNode = new MapNode(
+                    nextNodeId++,
+                    floor,
+                    MapNodeType.Boss
+                );
 
                 currentFloor.Add(bossNode);
             }
             else
             {
-                int nodeCount =
-                    UnityEngine.Random.Range(
-                        minNodesPerFloor,
-                        maxNodesPerFloor + 1
-                    );
+                int nodeCount = UnityEngine.Random.Range(
+                    minNodesPerFloor,
+                    maxNodesPerFloor + 1
+                );
 
                 for (int i = 0; i < nodeCount; i++)
                 {
-                    MapNode node =
-                        new MapNode(
-                            nextNodeId++,
-                            floor,
-                            MapNodeType.Combat
-                        );
+                    MapNode node = new MapNode(
+                        nextNodeId++,
+                        floor,
+                        MapNodeType.Combat
+                    );
 
                     currentFloor.Add(node);
                 }
@@ -180,37 +187,33 @@ public class MapGenerator : MonoBehaviour
 
 
     private void ConnectFloor(
-    List<MapNode> currentFloor,
-    List<MapNode> nextFloor)
+        List<MapNode> currentFloor,
+        List<MapNode> nextFloor)
     {
         int currentCount = currentFloor.Count;
         int nextCount = nextFloor.Count;
 
         if (currentCount == 0 || nextCount == 0)
+        {
             return;
+        }
 
-        // --------------------------------------------------
-        // 1. 현재 층의 모든 노드가 다음 층으로 연결
-        // --------------------------------------------------
-
+        // 1. 현재 층의 모든 노드를 다음 층에 연결
         for (int i = 0; i < currentCount; i++)
         {
             int targetIndex;
 
             if (currentCount == 1)
             {
-                targetIndex =
-                    Mathf.RoundToInt(
-                        (nextCount - 1) / 2f
-                    );
+                targetIndex = Mathf.RoundToInt(
+                    (nextCount - 1) / 2f
+                );
             }
             else
             {
-                targetIndex =
-                    Mathf.RoundToInt(
-                        i * (nextCount - 1f)
-                        / (currentCount - 1f)
-                    );
+                targetIndex = Mathf.RoundToInt(
+                    i * (nextCount - 1f) / (currentCount - 1f)
+                );
             }
 
             AddConnection(
@@ -219,28 +222,22 @@ public class MapGenerator : MonoBehaviour
             );
         }
 
-        // --------------------------------------------------
-        // 2. 다음 층의 모든 노드가 이전 층과 연결
-        // --------------------------------------------------
-
+        // 2. 다음 층의 모든 노드를 이전 층에 연결
         for (int i = 0; i < nextCount; i++)
         {
             int sourceIndex;
 
             if (nextCount == 1)
             {
-                sourceIndex =
-                    Mathf.RoundToInt(
-                        (currentCount - 1) / 2f
-                    );
+                sourceIndex = Mathf.RoundToInt(
+                    (currentCount - 1) / 2f
+                );
             }
             else
             {
-                sourceIndex =
-                    Mathf.RoundToInt(
-                        i * (currentCount - 1f)
-                        / (nextCount - 1f)
-                    );
+                sourceIndex = Mathf.RoundToInt(
+                    i * (currentCount - 1f) / (nextCount - 1f)
+                );
             }
 
             AddConnection(
@@ -249,45 +246,34 @@ public class MapGenerator : MonoBehaviour
             );
         }
 
-        // --------------------------------------------------
         // 3. 추가 갈림길 생성
-        // --------------------------------------------------
-
         for (int i = 0; i < currentCount; i++)
         {
             int baseTargetIndex;
 
             if (currentCount == 1)
             {
-                baseTargetIndex =
-                    Mathf.RoundToInt(
-                        (nextCount - 1) / 2f
-                    );
+                baseTargetIndex = Mathf.RoundToInt(
+                    (nextCount - 1) / 2f
+                );
             }
             else
             {
-                baseTargetIndex =
-                    Mathf.RoundToInt(
-                        i * (nextCount - 1f)
-                        / (currentCount - 1f)
-                    );
+                baseTargetIndex = Mathf.RoundToInt(
+                    i * (nextCount - 1f) / (currentCount - 1f)
+                );
             }
 
-            List<int> candidates =
-                new List<int>();
+            List<int> candidates = new List<int>();
 
             if (baseTargetIndex - 1 >= 0)
             {
-                candidates.Add(
-                    baseTargetIndex - 1
-                );
+                candidates.Add(baseTargetIndex - 1);
             }
 
             if (baseTargetIndex + 1 < nextCount)
             {
-                candidates.Add(
-                    baseTargetIndex + 1
-                );
+                candidates.Add(baseTargetIndex + 1);
             }
 
             if (candidates.Count == 0)
@@ -301,20 +287,15 @@ public class MapGenerator : MonoBehaviour
                 continue;
             }
 
-            int randomIndex =
-                UnityEngine.Random.Range(
-                    0,
-                    candidates.Count
-                );
+            int randomIndex = UnityEngine.Random.Range(
+                0,
+                candidates.Count
+            );
 
-            int targetIndex =
-                candidates[randomIndex];
+            int targetIndex = candidates[randomIndex];
 
-            MapNode fromNode =
-                currentFloor[i];
-
-            MapNode toNode =
-                nextFloor[targetIndex];
+            MapNode fromNode = currentFloor[i];
+            MapNode toNode = nextFloor[targetIndex];
 
             if (!HasConnection(fromNode, toNode))
             {
@@ -324,27 +305,26 @@ public class MapGenerator : MonoBehaviour
                     currentFloor,
                     nextFloor))
                 {
-                    AddConnection(
-                        fromNode,
-                        toNode
-                    );
+                    AddConnection(fromNode, toNode);
                 }
             }
         }
     }
 
+
     private bool HasConnection(
-    MapNode fromNode,
-    MapNode toNode)
+        MapNode fromNode,
+        MapNode toNode)
     {
         return fromNode.nextNodes.Contains(toNode);
     }
 
+
     private bool WouldCrossExistingConnection(
-    MapNode fromNode,
-    MapNode toNode,
-    List<MapNode> currentFloor,
-    List<MapNode> nextFloor)
+        MapNode fromNode,
+        MapNode toNode,
+        List<MapNode> currentFloor,
+        List<MapNode> nextFloor)
     {
         Vector2 newStart = fromNode.position;
         Vector2 newEnd = toNode.position;
@@ -355,8 +335,7 @@ public class MapGenerator : MonoBehaviour
 
             foreach (MapNode nextNode in node.nextNodes)
             {
-                if (node == fromNode &&
-                    nextNode == toNode)
+                if (node == fromNode && nextNode == toNode)
                 {
                     continue;
                 }
@@ -377,32 +356,22 @@ public class MapGenerator : MonoBehaviour
 
 
     private bool DoLinesCross(
-    Vector2 a,
-    Vector2 b,
-    Vector2 c,
-    Vector2 d)
+        Vector2 a,
+        Vector2 b,
+        Vector2 c,
+        Vector2 d)
     {
-        float abC =
-            Cross(b - a, c - a);
+        float abC = Cross(b - a, c - a);
+        float abD = Cross(b - a, d - a);
 
-        float abD =
-            Cross(b - a, d - a);
+        float cdA = Cross(d - c, a - c);
+        float cdB = Cross(d - c, b - c);
 
-        float cdA =
-            Cross(d - c, a - c);
-
-        float cdB =
-            Cross(d - c, b - c);
-
-        return
-            abC * abD < 0f &&
-            cdA * cdB < 0f;
+        return abC * abD < 0f && cdA * cdB < 0f;
     }
 
 
-    private float Cross(
-    Vector2 a,
-    Vector2 b)
+    private float Cross(Vector2 a, Vector2 b)
     {
         return a.x * b.y - a.y * b.x;
     }
@@ -413,10 +382,14 @@ public class MapGenerator : MonoBehaviour
         MapNode target)
     {
         if (source == null || target == null)
+        {
             return;
+        }
 
         if (source.nextNodes.Contains(target))
+        {
             return;
+        }
 
         source.nextNodes.Add(target);
         target.previousNodes.Add(source);
@@ -425,6 +398,7 @@ public class MapGenerator : MonoBehaviour
 
     // ============================================================
     // CONNECTIVITY CHECK
+    // 기존 코드 유지. 기존 GenerateMap에서는 호출하지 않음.
     // ============================================================
 
     private void EnsureAllNodesConnected()
@@ -434,35 +408,25 @@ public class MapGenerator : MonoBehaviour
             List<MapNode> currentFloor = floors[floor];
             List<MapNode> nextFloor = floors[floor + 1];
 
-            // 다음 노드가 없는 현재 노드
             foreach (MapNode currentNode in currentFloor)
             {
                 if (currentNode.nextNodes.Count == 0)
                 {
-                    MapNode target =
-                        nextFloor[
-                            UnityEngine.Random.Range(
-                                0,
-                                nextFloor.Count
-                            )
-                        ];
+                    MapNode target = nextFloor[
+                        UnityEngine.Random.Range(0, nextFloor.Count)
+                    ];
 
                     AddConnection(currentNode, target);
                 }
             }
 
-            // 이전 노드가 없는 다음 노드
             foreach (MapNode nextNode in nextFloor)
             {
                 if (nextNode.previousNodes.Count == 0)
                 {
-                    MapNode source =
-                        currentFloor[
-                            UnityEngine.Random.Range(
-                                0,
-                                currentFloor.Count
-                            )
-                        ];
+                    MapNode source = currentFloor[
+                        UnityEngine.Random.Range(0, currentFloor.Count)
+                    ];
 
                     AddConnection(source, nextNode);
                 }
@@ -477,12 +441,8 @@ public class MapGenerator : MonoBehaviour
 
     private void AssignNodeTypes()
     {
-        // START
         floors[0][0].type = MapNodeType.Start;
-
-        // Boss
         floors[floorCount][0].type = MapNodeType.Boss;
-
 
         for (int floor = 1; floor < floorCount; floor++)
         {
@@ -492,10 +452,7 @@ public class MapGenerator : MonoBehaviour
             }
         }
 
-        // 너무 많은 Elite가 연속으로 나오는 것을 방지
         FixEliteChains();
-
-        // 시작 직후에는 Elite가 나오지 않도록
         FixEarlyElite();
     }
 
@@ -508,14 +465,17 @@ public class MapGenerator : MonoBehaviour
             float value = UnityEngine.Random.value;
 
             if (value < 0.70f)
+            {
                 return MapNodeType.Combat;
+            }
 
             if (value < 0.90f)
+            {
                 return MapNodeType.Event;
+            }
 
             return MapNodeType.Shop;
         }
-
 
         // 중반
         if (floor <= 10)
@@ -523,39 +483,52 @@ public class MapGenerator : MonoBehaviour
             float value = UnityEngine.Random.value;
 
             if (value < 0.45f)
+            {
                 return MapNodeType.Combat;
+            }
 
             if (value < 0.45f + eliteChance)
+            {
                 return MapNodeType.Elite;
+            }
 
             if (value < 0.45f + eliteChance + eventChance)
+            {
                 return MapNodeType.Event;
+            }
 
             if (value < 0.45f + eliteChance + eventChance + shopChance)
+            {
                 return MapNodeType.Shop;
+            }
 
             return MapNodeType.Rest;
         }
-
 
         // 후반
+        float lateValue = UnityEngine.Random.value;
+
+        if (lateValue < 0.35f)
         {
-            float value = UnityEngine.Random.value;
-
-            if (value < 0.35f)
-                return MapNodeType.Combat;
-
-            if (value < 0.35f + eliteChance + 0.10f)
-                return MapNodeType.Elite;
-
-            if (value < 0.35f + eliteChance + 0.10f + eventChance)
-                return MapNodeType.Event;
-
-            if (value < 0.35f + eliteChance + 0.10f + eventChance + shopChance)
-                return MapNodeType.Shop;
-
-            return MapNodeType.Rest;
+            return MapNodeType.Combat;
         }
+
+        if (lateValue < 0.35f + eliteChance + 0.10f)
+        {
+            return MapNodeType.Elite;
+        }
+
+        if (lateValue < 0.35f + eliteChance + 0.10f + eventChance)
+        {
+            return MapNodeType.Event;
+        }
+
+        if (lateValue < 0.35f + eliteChance + 0.10f + eventChance + shopChance)
+        {
+            return MapNodeType.Shop;
+        }
+
+        return MapNodeType.Rest;
     }
 
 
@@ -570,7 +543,9 @@ public class MapGenerator : MonoBehaviour
             foreach (MapNode node in floors[floor])
             {
                 if (node.type != MapNodeType.Elite)
+                {
                     continue;
+                }
 
                 bool hasElitePrevious = false;
 
@@ -616,38 +591,32 @@ public class MapGenerator : MonoBehaviour
         for (int floor = 0; floor < floors.Count; floor++)
         {
             List<MapNode> currentFloor = floors[floor];
-
             int nodeCount = currentFloor.Count;
 
             if (nodeCount == 1)
             {
-                currentFloor[0].position =
-                    new Vector2(
-                        floor * horizontalSpacing,
-                        0f
-                    );
+                currentFloor[0].position = new Vector2(
+                    floor * horizontalSpacing,
+                    0f
+                );
 
                 continue;
             }
 
-            float[] yPositions =
-                new float[nodeCount];
+            float[] yPositions = new float[nodeCount];
 
             yPositions[0] = 0f;
 
             for (int i = 1; i < nodeCount; i++)
             {
-                float randomSpacing =
-                    UnityEngine.Random.Range(
-                        0f,
-                        verticalRandomness
-                    );
+                float randomSpacing = UnityEngine.Random.Range(
+                    0f,
+                    verticalRandomness
+                );
 
-                float spacing =
-                    verticalSpacing + randomSpacing;
+                float spacing = verticalSpacing + randomSpacing;
 
-                yPositions[i] =
-                    yPositions[i - 1] - spacing;
+                yPositions[i] = yPositions[i - 1] - spacing;
             }
 
             float centerOffset =
@@ -655,22 +624,17 @@ public class MapGenerator : MonoBehaviour
 
             for (int i = 0; i < nodeCount; i++)
             {
-                float y =
-                    yPositions[i] - centerOffset;
+                float y = yPositions[i] - centerOffset;
 
-                currentFloor[i].position =
-                    new Vector2(
-                        floor * horizontalSpacing,
-                        y
-                    );
+                currentFloor[i].position = new Vector2(
+                    floor * horizontalSpacing,
+                    y
+                );
             }
         }
 
-        float totalWidth =
-            (floors.Count - 1) * horizontalSpacing;
-
-        float offsetX =
-            totalWidth / 2f;
+        float totalWidth = (floors.Count - 1) * horizontalSpacing;
+        float offsetX = totalWidth / 2f;
 
         for (int floor = 0; floor < floors.Count; floor++)
         {
@@ -702,8 +666,7 @@ public class MapGenerator : MonoBehaviour
 
                 foreach (MapNode next in node.nextNodes)
                 {
-                    connections +=
-                        $"Node {next.id} ";
+                    connections += $"Node {next.id} ";
                 }
 
                 Debug.Log(
@@ -718,13 +681,47 @@ public class MapGenerator : MonoBehaviour
 
 
     // ============================================================
+    // MAP PROGRESS
+    // ============================================================
+
+    public void SetCurrentNode(MapNode node)
+    {
+        if (node == null)
+        {
+            return;
+        }
+
+        currentNodeId = node.id;
+    }
+
+
+    public MapNode GetNodeById(int id)
+    {
+        foreach (List<MapNode> floor in floors)
+        {
+            foreach (MapNode node in floor)
+            {
+                if (node.id == id)
+                {
+                    return node;
+                }
+            }
+        }
+
+        return null;
+    }
+
+
+    // ============================================================
     // PUBLIC API
     // ============================================================
 
     public List<MapNode> GetFloor(int floor)
     {
         if (floor < 0 || floor >= floors.Count)
+        {
             return null;
+        }
 
         return floors[floor];
     }
@@ -733,29 +730,50 @@ public class MapGenerator : MonoBehaviour
     public MapNode GetNode(int floor, int index)
     {
         if (floor < 0 || floor >= floors.Count)
+        {
             return null;
+        }
 
         if (index < 0 || index >= floors[floor].Count)
+        {
             return null;
+        }
 
         return floors[floor][index];
     }
 
 
-    public void RegenerateMap()
-    {
-        GenerateMap();
-    }
-
-
     public MapNode GetStartNode()
     {
+        if (floors.Count == 0 || floors[0].Count == 0)
+        {
+            return null;
+        }
+
         return floors[0][0];
     }
 
 
     public MapNode GetBossNode()
     {
-        return floors[floors.Count - 1][0];
+        if (floors.Count == 0)
+        {
+            return null;
+        }
+
+        List<MapNode> lastFloor = floors[floors.Count - 1];
+
+        if (lastFloor.Count == 0)
+        {
+            return null;
+        }
+
+        return lastFloor[0];
+    }
+
+
+    public void RegenerateMap()
+    {
+        GenerateMap();
     }
 }

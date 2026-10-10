@@ -1,3 +1,4 @@
+
 using System.Collections;
 using TMPro;
 using UnityEngine;
@@ -27,6 +28,7 @@ public class PersistentUI : MonoBehaviour
 
     // 현재 UI에 표시하고 있는 값
     private int currentHP = -1;
+    private int currentMaxHP = -1;
     private int currentGold = -1;
     private int currentDeckCount = -1;
 
@@ -110,8 +112,7 @@ public class PersistentUI : MonoBehaviour
             return;
 
 
-        Entity newPlayer =
-            GameData.instance.player;
+        Entity newPlayer = GameData.instance.player;
 
 
         if (newPlayer == null)
@@ -218,7 +219,8 @@ public class PersistentUI : MonoBehaviour
         // HP
         // -----------------------------------------
 
-        if (currentHP != player.CurrentHP)
+        if (currentHP != player.CurrentHP ||
+            currentMaxHP != player.MaxHP)
         {
             UpdateHP(
                 player.CurrentHP,
@@ -244,8 +246,7 @@ public class PersistentUI : MonoBehaviour
         // Deck
         // -----------------------------------------
 
-        int actualDeckCount =
-            player.deck.Count;
+        int actualDeckCount = player.deck.Count;
 
 
         if (currentDeckCount != actualDeckCount)
@@ -279,11 +280,18 @@ public class PersistentUI : MonoBehaviour
             return;
 
 
+        if (player == null)
+            return;
+
+
+        // 현재 체력 / 최대 체력 표시
         hpText.text =
-            value.ToString();
+            player.CurrentHP + "/" + player.MaxHP;
 
 
-        currentHP = value;
+        // 현재 UI 값 저장
+        currentHP = player.CurrentHP;
+        currentMaxHP = player.MaxHP;
 
 
         if (playAnimation)
@@ -449,8 +457,7 @@ public class PersistentUI : MonoBehaviour
             yield break;
 
 
-        Vector3 originalScale =
-            Vector3.one;
+        Vector3 originalScale = Vector3.one;
 
         Vector3 enlargedScale =
             Vector3.one * 1.1f;

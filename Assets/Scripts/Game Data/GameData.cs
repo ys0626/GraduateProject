@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class GameData : MonoBehaviour
@@ -10,35 +11,110 @@ public class GameData : MonoBehaviour
     [SerializeField] private int playerMaxEnergy = 3;
     [SerializeField] private CardData[] playerStartDeck;
 
-    [Header("Normal Game - Enemy Pool")]
-    [SerializeField] private EnemyData[] enemyDatas;
+    [Header("Normal Game - Enemy Pools")]
+    [SerializeField] private EnemyData[] normalEnemyPool;
+    [SerializeField] private EnemyData[] eliteEnemyPool;
+    [SerializeField] private EnemyData[] bossEnemyPool;
+
+    [Header("Normal Enemy Rewards")]
+    [SerializeField] private RewardSettings normalEnemyReward;
+
+    [Header("Elite Enemy Rewards")]
+    [SerializeField] private RewardSettings eliteEnemyReward;
+
+    [Header("Boss Enemy Rewards")]
+    [SerializeField] private RewardSettings bossEnemyReward;
+
+    [Header("Card Reward Pools")]
+    [SerializeField] private CardData[] commonCardPool;
+    [SerializeField] private CardData[] rareCardPool;
+
+    //[Header("Relic Reward Pool")]
+    //[SerializeField] private RelicData[] relicPool;
+
+    private BattleType currentBattleType = BattleType.Normal;
+
+    // =========================================================
+    // Runtime Entity
+    // =========================================================
 
     public Entity player = new Entity();
     public Entity enemy = new Entity();
+
+    // =========================================================
+    // Current Enemy Data
+    // =========================================================
+
+    private EnemyData currentEnemyData;
 
     private string currentEnemyName;
     private Sprite currentEnemySprite;
     private RuntimeAnimatorController currentEnemyAnimatorController;
 
+    // =========================================================
+    // Player Start Setting Properties
+    // =========================================================
+
     public int PlayerStartHP => playerStartHP;
+
     public int PlayerStartGold => playerStartGold;
+
     public int PlayerMaxEnergy => playerMaxEnergy;
 
-    public CardData[] PlayerStartDeck =>
-        playerStartDeck;
+    public CardData[] PlayerStartDeck => playerStartDeck;
 
-    public string CurrentEnemyName =>
-        currentEnemyName;
+    // =========================================================
+    // Enemy Pool Properties
+    // =========================================================
 
-    public Sprite CurrentEnemySprite =>
-        currentEnemySprite;
+    public EnemyData[] NormalEnemyPool => normalEnemyPool;
 
-    public RuntimeAnimatorController CurrentEnemyAnimatorController =>
-        currentEnemyAnimatorController;
+    public EnemyData[] EliteEnemyPool => eliteEnemyPool;
+
+    public EnemyData[] BossEnemyPool => bossEnemyPool;
+
+    // =========================================================
+    // Current Enemy Properties
+    // =========================================================
+
+    public EnemyData CurrentEnemyData => currentEnemyData;
+
+    public string CurrentEnemyName => currentEnemyName;
+
+    public Sprite CurrentEnemySprite => currentEnemySprite;
+
+    public RuntimeAnimatorController CurrentEnemyAnimatorController
+        => currentEnemyAnimatorController;
+
+    // =========================================================
+    // Reward Settings Properties
+    // =========================================================
+
+    public RewardSettings NormalEnemyReward => normalEnemyReward;
+
+    public RewardSettings EliteEnemyReward => eliteEnemyReward;
+
+    public RewardSettings BossEnemyReward => bossEnemyReward;
+
+    public CardData[] CommonCardPool => commonCardPool;
+
+    public CardData[] RareCardPool => rareCardPool;
+
+    //public RelicData[] RelicPool => relicPool;
+
+    public BattleType CurrentBattleType
+    {
+        get => currentBattleType;
+        set => currentBattleType = value;
+    }
+
+    // =========================================================
+    // Singleton
+    // =========================================================
 
     private void Awake()
     {
-        if (instance != null)
+        if (instance != null && instance != this)
         {
             Destroy(gameObject);
             return;
@@ -57,13 +133,15 @@ public class GameData : MonoBehaviour
     {
         ClearAllData();
 
-        // Player
+        // Player HP
         player.MaxHP = playerStartHP;
         player.CurrentHP = playerStartHP;
 
+        // Player Energy
         player.MaxEnergy = playerMaxEnergy;
         player.CurrentEnergy = playerMaxEnergy;
 
+        // Player Gold
         player.Gold = playerStartGold;
 
         // Starting Deck
@@ -72,7 +150,9 @@ public class GameData : MonoBehaviour
             foreach (CardData cardData in playerStartDeck)
             {
                 if (cardData == null)
+                {
                     continue;
+                }
 
                 player.deck.Add(
                     new CardInstance(cardData)
@@ -84,9 +164,9 @@ public class GameData : MonoBehaviour
 
         Debug.Log(
             $"[GameData] New Game Initialized - " +
-            $"HP : {player.CurrentHP}, " +
-            $"Gold : {player.Gold}, " +
-            $"Deck : {player.deck.Count}"
+            $"HP: {player.CurrentHP}, " +
+            $"Gold: {player.Gold}, " +
+            $"Deck: {player.deck.Count}"
         );
     }
 
@@ -119,32 +199,76 @@ public class GameData : MonoBehaviour
     }
 
     // =========================================================
-    // Enemy Data
+    // Random Enemy Selection
     // =========================================================
 
     public EnemyData GetRandomEnemy()
     {
-        if (enemyDatas == null ||
-            enemyDatas.Length == 0)
+        return GetRandomEnemy(currentBattleType);
+    }
+
+    public EnemyData GetRandomEnemy(BattleType battleType)
+    {
+        EnemyData[] selectedPool;
+
+        switch (battleType)
+        {
+            case BattleType.Normal:
+                selectedPool = normalEnemyPool;
+                break;
+
+            case BattleType.Elite:
+                selectedPool = eliteEnemyPool;
+                break;
+
+            case BattleType.Boss:
+                selectedPool = bossEnemyPool;
+                break;
+
+            default:
+                Debug.LogError(
+                    $"[GameData] Unsupported BattleType: {battleType}"
+                );
+
+                return null;
+        }
+
+        if (selectedPool == null || selectedPool.Length == 0)
         {
             Debug.LogError(
-                "[GameData] EnemyData가 없습니다."
+                $"[GameData] {battleType} Enemy Pool is empty."
             );
 
             return null;
         }
 
-        int index = Random.Range(
-            0,
-            enemyDatas.Length
-        );
+        List<EnemyData> validEnemies = new List<EnemyData>();
 
-        EnemyData selectedEnemy =
-            enemyDatas[index];
+        foreach (EnemyData enemyData in selectedPool)
+        {
+            if (enemyData != null)
+            {
+                validEnemies.Add(enemyData);
+            }
+        }
+
+        if (validEnemies.Count == 0)
+        {
+            Debug.LogError(
+                $"[GameData] No valid EnemyData found in " +
+                $"{battleType} Enemy Pool."
+            );
+
+            return null;
+        }
+
+        int index = Random.Range(0, validEnemies.Count);
+
+        EnemyData selectedEnemy = validEnemies[index];
 
         Debug.Log(
-            $"[GameData] Selected Enemy : " +
-            $"{selectedEnemy.enemyName}"
+            $"[GameData] BattleType: {battleType}, " +
+            $"Selected Enemy: {selectedEnemy.enemyName}"
         );
 
         return selectedEnemy;
@@ -154,26 +278,27 @@ public class GameData : MonoBehaviour
     // Current Enemy
     // =========================================================
 
-    public void SetCurrentEnemy(
-        EnemyData enemyData)
+    public void SetCurrentEnemy(EnemyData enemyData)
     {
         if (enemyData == null)
         {
             Debug.LogError(
-                "[GameData] EnemyData가 null입니다."
+                "[GameData] EnemyData is null."
             );
 
             return;
         }
 
-        currentEnemyName =
-            enemyData.enemyName;
+        currentEnemyData = enemyData;
 
-        currentEnemySprite =
-            enemyData.sprite;
-
+        currentEnemyName = enemyData.enemyName;
+        currentEnemySprite = enemyData.sprite;
         currentEnemyAnimatorController =
             enemyData.animatorController;
+
+        Debug.Log(
+            $"[GameData] Current Enemy Set: {currentEnemyName}"
+        );
     }
 
     // =========================================================
@@ -185,9 +310,13 @@ public class GameData : MonoBehaviour
         ClearEntity(player);
         ClearEntity(enemy);
 
+        currentEnemyData = null;
+
         currentEnemyName = null;
         currentEnemySprite = null;
         currentEnemyAnimatorController = null;
+
+        currentBattleType = BattleType.Normal;
     }
 
     private void ClearEntity(Entity entity)
@@ -207,31 +336,23 @@ public class GameData : MonoBehaviour
 
     public void UpdatePlayerPileCount()
     {
-        player.DeckCount =
-            player.deck.Count;
+        player.DeckCount = player.deck.Count;
 
-        player.DrawPileCount =
-            player.drawPile.Count;
+        player.DrawPileCount = player.drawPile.Count;
 
-        player.DiscardPileCount =
-            player.discardPile.Count;
+        player.DiscardPileCount = player.discardPile.Count;
 
-        player.ExhaustPileCount =
-            player.exhaustPile.Count;
+        player.ExhaustPileCount = player.exhaustPile.Count;
     }
 
     public void UpdateEnemyPileCount()
     {
-        enemy.DeckCount =
-            enemy.deck.Count;
+        enemy.DeckCount = enemy.deck.Count;
 
-        enemy.DrawPileCount =
-            enemy.drawPile.Count;
+        enemy.DrawPileCount = enemy.drawPile.Count;
 
-        enemy.DiscardPileCount =
-            enemy.discardPile.Count;
+        enemy.DiscardPileCount = enemy.discardPile.Count;
 
-        enemy.ExhaustPileCount =
-            enemy.exhaustPile.Count;
+        enemy.ExhaustPileCount = enemy.exhaustPile.Count;
     }
 }

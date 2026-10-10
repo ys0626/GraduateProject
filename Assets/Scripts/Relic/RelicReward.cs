@@ -13,9 +13,20 @@ public class RelicReward
         Source = source;
     }
 
-    // 보상을 실제 런 보유 목록에 지급
     public void Grant()
     {
-        // TODO: RelicManager.Instance.Acquire(Relic, Source)를 호출
+        if (RelicManager.Instance == null)
+        {
+            UnityEngine.Debug.LogError("RelicManager.Instance가 없습니다.");
+            return;
+        }
+
+        if (Relic == null)
+        {
+            UnityEngine.Debug.LogError("지급하려는 RelicData가 null입니다.");
+            return;
+        }
+
+        RelicManager.Instance.Acquire(Relic, Source);
     }
 }

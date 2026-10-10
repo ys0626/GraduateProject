@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: af1b4f9afa4a82940a50d4787765d0fb, type: 3}
-  m_Name: Temp
+  m_Name: Temp 2
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
   enemyName: temp
   sprite: {fileID: -990920262, guid: 933d7e717b9571349839bf2d01cb070f, type: 3}
   animatorController: {fileID: 9100000, guid: d27cfabcb9360f84fb029e648a54a89e, type: 2}
-  maxHP: 10
+  maxHP: 2
   maxEnergy: 3
   starterDeck:
   - {fileID: 11400000, guid: 45f5720786ba1974192c501cf5d9917d, type: 2}

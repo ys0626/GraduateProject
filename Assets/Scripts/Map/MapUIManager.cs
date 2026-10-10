@@ -13,27 +13,33 @@ public class MapUIManager : MonoBehaviour
     private Dictionary<MapNode, MapNodeUI> nodeUIs =
         new Dictionary<MapNode, MapNodeUI>();
 
-    [System.NonSerialized] private MapNode currentNode;
+    private MapNode currentNode;
 
     private void Start()
     {
+        mapGenerator = MapGenerator.instance;
+
+        if (mapGenerator == null)
+        {
+            Debug.LogError("MapGenerator 인스턴스를 찾을 수 없습니다.");
+            return;
+        }
+
         if (!mapGenerator.IsMapGenerated)
         {
             mapGenerator.GenerateMap();
         }
 
         CreateMapUI();
-
-        SetStartNode();
+        RestoreCurrentNode();
     }
 
     private void CreateMapUI()
     {
         ClearMapUI();
-
         nodeUIs.Clear();
 
-        foreach (var floor in mapGenerator.Floors)
+        foreach (List<MapNode> floor in mapGenerator.Floors)
         {
             foreach (MapNode node in floor)
             {
@@ -46,24 +52,23 @@ public class MapUIManager : MonoBehaviour
 
     private void CreateNodeUI(MapNode node)
     {
-        GameObject nodeObject =
-            Instantiate(mapNodePrefab, mapContent);
+        GameObject nodeObject = Instantiate(
+            mapNodePrefab,
+            mapContent
+        );
 
         RectTransform rectTransform =
             nodeObject.GetComponent<RectTransform>();
 
-        rectTransform.anchoredPosition =
-            node.position;
+        rectTransform.anchoredPosition = node.position;
 
         MapNodeUI nodeUI =
             nodeObject.GetComponent<MapNodeUI>();
 
         nodeUI.Setup(node);
-
         nodeUIs.Add(node, nodeUI);
 
-        Button button =
-            nodeObject.GetComponent<Button>();
+        Button button = nodeObject.GetComponent<Button>();
 
         button.onClick.AddListener(
             () => OnNodeClicked(node)
@@ -72,42 +77,69 @@ public class MapUIManager : MonoBehaviour
 
     private void CreateConnections()
     {
-        foreach (var floor in mapGenerator.Floors)
+        foreach (List<MapNode> floor in mapGenerator.Floors)
         {
             foreach (MapNode node in floor)
             {
                 foreach (MapNode nextNode in node.nextNodes)
                 {
-                    mapConnectionUI.CreateConnection(
-                        node,
-                        nextNode
-                    );
+                    mapConnectionUI.CreateConnection(node, nextNode);
                 }
             }
         }
     }
 
-    private void SetStartNode()
+    private void RestoreCurrentNode()
     {
-        currentNode =
-            mapGenerator.Floors[0][0];
+        currentNode = mapGenerator.GetNodeById(
+            mapGenerator.CurrentNodeId
+        );
+
+        if (currentNode == null)
+        {
+            currentNode = mapGenerator.GetStartNode();
+
+            if (currentNode == null)
+            {
+                Debug.LogError("시작 노드를 찾을 수 없습니다.");
+                return;
+            }
+
+            mapGenerator.SetCurrentNode(currentNode);
+        }
 
         UpdateAvailableNodes();
     }
 
     private void OnNodeClicked(MapNode selectedNode)
     {
+        if (selectedNode == null || currentNode == null)
+            return;
+
+        if (!currentNode.nextNodes.Contains(selectedNode))
+            return;
+
+        // 현재 노드와 진행 상태 저장
         currentNode = selectedNode;
+        selectedNode.visited = true;
+        mapGenerator.SetCurrentNode(selectedNode);
 
-        UpdateAvailableNodes();
-
+        // 여기서는 UpdateAvailableNodes()를 호출하지 않음
+        // 바로 해당 노드의 씬으로 이동
         switch (selectedNode.type)
         {
             case MapNodeType.Combat:
+                GameData.instance.CurrentBattleType = BattleType.Normal;
                 SceneChanger.instance.GoToBattleScene();
                 break;
 
             case MapNodeType.Elite:
+                GameData.instance.CurrentBattleType = BattleType.Elite;
+                SceneChanger.instance.GoToBattleScene();
+                break;
+
+            case MapNodeType.Boss:
+                GameData.instance.CurrentBattleType = BattleType.Boss;
                 SceneChanger.instance.GoToBattleScene();
                 break;
 
@@ -122,10 +154,6 @@ public class MapUIManager : MonoBehaviour
             case MapNodeType.Rest:
                 SceneChanger.instance.GoToRestScene();
                 break;
-
-            case MapNodeType.Boss:
-                SceneChanger.instance.GoToBattleScene();
-                break;
         }
     }
 
@@ -134,6 +162,11 @@ public class MapUIManager : MonoBehaviour
         foreach (MapNodeUI nodeUI in nodeUIs.Values)
         {
             nodeUI.SetInteractable(false);
+        }
+
+        if (currentNode == null)
+        {
+            return;
         }
 
         foreach (MapNode nextNode in currentNode.nextNodes)

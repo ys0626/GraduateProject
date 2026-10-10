@@ -5,6 +5,7 @@ public enum RelicSource
 {
     Shop,
     Event,
+    Elite,
 }
 
 // 유물 효과 구현을 식별하는 키

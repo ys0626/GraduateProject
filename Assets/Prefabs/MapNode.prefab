@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5112047770198327880}
   - component: {fileID: 9046979073015616902}
   - component: {fileID: 1706706780333156925}
+  - component: {fileID: 1137977095571476111}
   m_Layer: 5
   m_Name: MapNode
   m_TagString: Untagged
@@ -136,6 +137,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MapNodeUI
   background: {fileID: 5112047770198327880}
   text: {fileID: 171101912817917460}
+  nodeOutline: {fileID: 1137977095571476111}
+  availableOutlineColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  availableTextColor: {r: 1, g: 1, b: 1, a: 1}
+  unavailableColor: {r: 0.55, g: 0.55, b: 0.55, a: 0.65}
+--- !u!114 &1137977095571476111
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 80124039955088487}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e19747de3f5aca642ab2be37e372fb86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Outline
+  m_EffectColor: {r: 1, g: 0.84313726, b: 0, a: 1}
+  m_EffectDistance: {x: 3, y: 3}
+  m_UseGraphicAlpha: 1
 --- !u!1 &8819618934233723959
 GameObject:
   m_ObjectHideFlags: 0

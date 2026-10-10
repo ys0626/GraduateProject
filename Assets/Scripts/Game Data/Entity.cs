@@ -522,5 +522,19 @@ public class Entity : IBattleEntity
     }
 
 
+    /// <summary>
+    /// Entity가 amount만큼 체력을 회복한다.
+    /// 최대 체력을 초과할 수 없다.
+    /// </summary>
+    /// <param name="amount">회복할 체력</param>
+    public void Heal(int amount)
+    {
+        if (amount <= 0)
+            return;
 
+        CurrentHP = Mathf.Min(
+            CurrentHP + amount,
+            MaxHP
+        );
+    }
 }

@@ -150,7 +150,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   persistentObjects:
   - {fileID: 1634048577}
-  battleSceneName: BattleScene
 --- !u!4 &138730767
 Transform:
   m_ObjectHideFlags: 0
@@ -584,14 +583,44 @@ MonoBehaviour:
   playerMaxEnergy: 3
   playerStartDeck:
   - {fileID: 11400000, guid: 45f5720786ba1974192c501cf5d9917d, type: 2}
-  - {fileID: 11400000, guid: a1d7aed4f858e8840919319f7a7df8b7, type: 2}
-  - {fileID: 11400000, guid: 53c7444e9e1e99547ad3bbe063645680, type: 2}
-  - {fileID: 11400000, guid: 53c7444e9e1e99547ad3bbe063645680, type: 2}
-  - {fileID: 11400000, guid: 53c7444e9e1e99547ad3bbe063645680, type: 2}
-  - {fileID: 11400000, guid: 53c7444e9e1e99547ad3bbe063645680, type: 2}
-  - {fileID: 11400000, guid: 53c7444e9e1e99547ad3bbe063645680, type: 2}
-  enemyDatas:
+  - {fileID: 11400000, guid: 1c4839203dbb9bd40b6c9973b78ce344, type: 2}
+  - {fileID: 11400000, guid: 1c4839203dbb9bd40b6c9973b78ce344, type: 2}
+  - {fileID: 11400000, guid: 1c4839203dbb9bd40b6c9973b78ce344, type: 2}
+  - {fileID: 11400000, guid: 1c4839203dbb9bd40b6c9973b78ce344, type: 2}
+  - {fileID: 11400000, guid: 1c4839203dbb9bd40b6c9973b78ce344, type: 2}
+  normalEnemyPool:
+  - {fileID: 11400000, guid: c4e5b86235acd214484e8edc0b8cbd05, type: 2}
+  eliteEnemyPool:
+  - {fileID: 11400000, guid: d349f86fe1e80e74a922de5671a91a92, type: 2}
+  bossEnemyPool:
   - {fileID: 11400000, guid: d00241e45b657f64999b490bfcae94bd, type: 2}
+  normalEnemyReward:
+    minGold: 10
+    maxGold: 15
+    cheeseChance: 0.4
+    cheeseHealAmount: 10
+    cardChoiceCount: 3
+  eliteEnemyReward:
+    minGold: 30
+    maxGold: 45
+    cheeseChance: 0.5
+    cheeseHealAmount: 10
+    cardChoiceCount: 3
+  bossEnemyReward:
+    minGold: 50
+    maxGold: 75
+    cheeseChance: 1
+    cheeseHealAmount: 20
+    cardChoiceCount: 3
+  commonCardPool:
+  - {fileID: 11400000, guid: 45f5720786ba1974192c501cf5d9917d, type: 2}
+  - {fileID: 11400000, guid: 88e2cdd1aa25c1c418927c8abdb676ec, type: 2}
+  - {fileID: 11400000, guid: a1d7aed4f858e8840919319f7a7df8b7, type: 2}
+  - {fileID: 11400000, guid: 80f95a1809369e146a9e7e6517abb2ca, type: 2}
+  rareCardPool:
+  - {fileID: 11400000, guid: 0aae2a385a56bab448a3da0a34b44cea, type: 2}
+  - {fileID: 11400000, guid: 78dd2dcdbcf8f0d4b9dd010a05ed694b, type: 2}
+  - {fileID: 11400000, guid: d7cb432f20e776d47bac64d6388bc1b5, type: 2}
 --- !u!4 &1634048579
 Transform:
   m_ObjectHideFlags: 0

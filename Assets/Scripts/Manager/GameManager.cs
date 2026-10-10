@@ -8,8 +8,7 @@ public class GameManager : MonoBehaviour
     [Header("Persistent Objects")]
     public GameObject[] persistentObjects;
 
-    [Header("Scene")]
-    [SerializeField] private string battleSceneName = "BattleScene";
+    private string battleSceneName = "BattleScene";
 
     private bool newGameInitialized;
 
