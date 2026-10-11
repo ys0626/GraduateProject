@@ -2,18 +2,8 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// 실험 A에서 비교할 Vanilla MCTS의 보조 기능 구성입니다.
-/// 휴리스틱 가지치기는 롤아웃 단계에만 적용하며, 트리 확장 단계의
-/// 가지치기는 모든 조건에서 끈 상태로 유지합니다.
+/// 동적 탐색을 끈 MCTS가 사용할 탐색 예산 방식
 /// </summary>
-public enum ExperimentACondition
-{
-    Vanilla,
-    VanillaHeuristicPruning,
-    VanillaLethalCheck,
-    VanillaHeuristicPruningAndLethalCheck
-}
-
 public enum MCTSSearchBudgetMode
 {
     FixedSimulationCount,
@@ -46,18 +36,28 @@ public class SimulationManager : MonoBehaviour
     [Header("Speed")]
     [SerializeField] private float timeScale;
 
-    [Header("MCTS Optimization")]
-    [SerializeField] private bool enableTranspositionCache = true;
-    [SerializeField] private bool enableEarlyCutoff = true;
-    [SerializeField][Range(5, 200)] private int earlyCutoffVisitThreshold = 30;
-    [SerializeField] private bool enableHeuristicPruning = true;
+    // MCTS 컨트롤러에만 적용되며, MCTSVanilla는 이 값들을 참조하지 않음
+    [Header("MCTS Techniques")]
+    [Tooltip("선택지 수와 HP 차이로 반복 횟수를 계산합니다. 끄면 아래 Search Budget을 사용합니다.")]
+    [SerializeField] private bool enableDynamicSearch = true;
+    [Tooltip("롤아웃에서 4가지 필터 규칙과 Power 카드 가중치를 사용합니다. 끄면 사용 가능한 카드 중 균등 무작위로 고릅니다.")]
+    [SerializeField] private bool enableHeuristicRollout = true;
+    [Tooltip("최다 방문 child가 2위 child보다 일정 배수 이상 방문되면 탐색을 중단합니다.")]
+    [SerializeField] private bool enableEarlyStop = true;
+    [Tooltip("전위 테이블 캐시와, 일정 횟수 이상 방문한 노드의 시뮬레이션 생략을 함께 사용합니다.")]
+    [SerializeField] private bool enableCaching = true;
+    [SerializeField][Range(5, 200)] private int earlyCutoffVisitThreshold = 30; // 캐싱의 시뮬레이션 생략 기준 방문 수
+    [Tooltip("같은 턴의 다음 탐색에서 이전 트리를 재사용하고, 재사용 노드의 방문 수를 1로 초기화합니다(Fast Expansion).")]
+    [SerializeField] private bool enableTreeReuse = true;
+
+    [Header("MCTS Etc")]
+    [Tooltip("트리 확장 단계에서 휴리스틱 규칙에 걸리는 카드를 후보에서 제외합니다.")]
     [SerializeField] private bool enableHeuristicActionPruning = true;
+    [Tooltip("탐색 전에 이번 턴 안에 상대를 처치할 수 있는 카드 순서가 있는지 먼저 확인합니다.")]
     [SerializeField] private bool enableLethalCheck = true;
 
-    [Header("Experiment A - Search Budget")]
-    [Tooltip("켜면 아래 조건으로 Vanilla MCTS의 휴리스틱 가지치기와 Lethal Check만 공정하게 비교합니다.")]
-    [SerializeField] private bool enableExperimentA = true;
-    [SerializeField] private ExperimentACondition experimentACondition = ExperimentACondition.Vanilla;
+    [Header("Search Budget")]
+    [Tooltip("MCTS는 동적 탐색을 끈 경우에만 사용합니다. MCTSVanilla는 항상 Fixed Simulation Budget을 사용합니다.")]
     [SerializeField] private MCTSSearchBudgetMode searchBudgetMode = MCTSSearchBudgetMode.FixedSimulationCount;
     [Min(1)] [SerializeField] private int fixedSimulationBudget = 100;
     [Min(0.1f)] [SerializeField] private float timeBudgetMilliseconds = 5f;
@@ -98,32 +98,63 @@ public class SimulationManager : MonoBehaviour
     public ControllerType EnemyControllerType
         => enemyControllerType;
 
-    public bool EnableTranspositionCache => enableTranspositionCache;
-    public bool EnableEarlyCutoff => enableEarlyCutoff;
+    // ===== MCTS 기법 =====
+    public bool EnableDynamicSearch => enableDynamicSearch;
+    public bool EnableHeuristicRollout => enableHeuristicRollout;
+    public bool EnableSearchEarlyStop => enableEarlyStop;
+    public bool EnableTranspositionCache => enableCaching; // 캐싱: 전위 테이블
+    public bool EnableEarlyCutoff => enableCaching; // 캐싱: 시뮬레이션 생략
     public int EarlyCutoffVisitThreshold => earlyCutoffVisitThreshold;
-    public bool EnableHeuristicRollout => enableHeuristicPruning;
+    public bool EnableTreeReuse => enableTreeReuse;
+
+    // ===== MCTS 기타 =====
     public bool EnableHeuristicActionPruning => enableHeuristicActionPruning;
     public bool EnableLethalCheck => enableLethalCheck;
-    public bool UseFixedSimulationBudget =>
-        enableExperimentA && searchBudgetMode == MCTSSearchBudgetMode.FixedSimulationCount;
-    public bool UseTimeBudget =>
-        enableExperimentA && searchBudgetMode == MCTSSearchBudgetMode.TimeLimit;
-    public int FixedSimulationBudget => Mathf.Max(1, fixedSimulationBudget);
-    public double TimeBudgetMilliseconds => Mathf.Max(0.1f, timeBudgetMilliseconds);
-    public bool EnableSearchEarlyStop => !enableExperimentA;
 
-    public string ExperimentModeLabel
+    // ===== 탐색 예산 (동적 탐색이 꺼진 경우에만 MCTS에 적용) =====
+    public bool UseFixedSimulationBudget =>
+        !enableDynamicSearch && searchBudgetMode == MCTSSearchBudgetMode.FixedSimulationCount;
+    public bool UseTimeBudget =>
+        !enableDynamicSearch && searchBudgetMode == MCTSSearchBudgetMode.TimeLimit;
+    public int FixedSimulationBudget => Mathf.Max(1, fixedSimulationBudget); // MCTSVanilla도 이 값을 사용
+    public double TimeBudgetMilliseconds => Mathf.Max(0.1f, timeBudgetMilliseconds);
+
+    /// <summary>
+    /// 대결 구도와 MCTS 기법 on/off 조합을 나타내는 라벨 (CSV 파일명, Mode 컬럼에 사용)
+    /// 예: MCTS_vs_MCTSVanilla_DS1_HR1_ES1_TC1_TR1_LC1_AP1_Vanilla100
+    /// </summary>
+    public string MCTSModeLabel
     {
         get
         {
-            if (!enableExperimentA)
-                return "Standard_Dynamic";
+            string label =
+                $"{playerControllerType}_vs_{enemyControllerType}_" +
+                $"DS{(enableDynamicSearch ? 1 : 0)}_" +
+                $"HR{(enableHeuristicRollout ? 1 : 0)}_" +
+                $"ES{(enableEarlyStop ? 1 : 0)}_" +
+                $"TC{(enableCaching ? 1 : 0)}_" +
+                $"TR{(enableTreeReuse ? 1 : 0)}_" +
+                $"LC{(enableLethalCheck ? 1 : 0)}_" +
+                $"AP{(enableHeuristicActionPruning ? 1 : 0)}";
 
-            string budgetLabel = UseTimeBudget
-                ? $"Time{TimeBudgetMilliseconds:F1}ms"
-                : $"Budget{FixedSimulationBudget}";
+            // 동적 탐색이 꺼져 있으면 MCTS가 사용하는 예산 표시
+            if (UseTimeBudget)
+            {
+                label += $"_Time{TimeBudgetMilliseconds:F1}ms";
+            }
+            else if (UseFixedSimulationBudget)
+            {
+                label += $"_Budget{FixedSimulationBudget}";
+            }
 
-            return $"ExperimentA_{experimentACondition}_{budgetLabel}";
+            // MCTSVanilla가 대결에 있으면 바닐라의 고정 반복 횟수 표시
+            if (playerControllerType == ControllerType.MCTSVanilla ||
+                enemyControllerType == ControllerType.MCTSVanilla)
+            {
+                label += $"_Vanilla{FixedSimulationBudget}";
+            }
+
+            return label;
         }
     }
 
@@ -142,12 +173,12 @@ public class SimulationManager : MonoBehaviour
             instance = this;
             DontDestroyOnLoad(gameObject);
 
-            ApplyExperimentAConfiguration();
             totalSearchTimeMs = 0d;
             searchCallCount = 0;
 
             // 새 시뮬레이션 회차 시작
             MCTSLogger.StartNewRun(MCTSSearch.CurrentMode);
+            MCTSVanillaLogger.StartNewRun(MCTSSearch.CurrentMode);
         }
         else Destroy(gameObject);
     }
@@ -155,47 +186,6 @@ public class SimulationManager : MonoBehaviour
     private void Start()
     {
         Time.timeScale = timeScale;
-    }
-
-    /// <summary>
-    /// 실험 A에서는 비교 대상 외의 최적화가 결과에 섞이지 않도록 끕니다.
-    /// 휴리스틱 Action Pruning은 롤아웃 Heuristic Pruning과 별개이므로 항상 끕니다.
-    /// </summary>
-    private void ApplyExperimentAConfiguration()
-    {
-        if (!enableExperimentA)
-            return;
-
-        enableEarlyCutoff = false;
-        enableHeuristicActionPruning = false;
-        enableLethalCheck = false;
-
-        switch (experimentACondition)
-        {
-            case ExperimentACondition.Vanilla:
-                enableTranspositionCache = false;
-                enableHeuristicPruning = false;
-                enableLethalCheck = false;
-                break;
-
-            case ExperimentACondition.VanillaHeuristicPruning:
-                enableTranspositionCache = false;
-                enableHeuristicPruning = true;
-                enableLethalCheck = false;
-                break;
-
-            case ExperimentACondition.VanillaLethalCheck:
-                enableTranspositionCache = false;
-                enableHeuristicPruning = false;
-                enableLethalCheck = true;
-                break;
-
-            case ExperimentACondition.VanillaHeuristicPruningAndLethalCheck:
-                enableTranspositionCache = false;
-                enableHeuristicPruning = true;
-                enableLethalCheck = true;
-                break;
-        }
     }
 
     /// <summary>
@@ -265,8 +255,17 @@ public class SimulationManager : MonoBehaviour
             $"Average MCTS Search Time : {AverageSearchTimeMs:F2}ms " +
             $"(총 {searchCallCount}회 호출)");
 
+        // 바닐라 MCTS가 대결에 있었으면 바닐라 평균 탐색 시간도 출력
+        if (MCTSVanillaLogger.SearchCount > 0)
+        {
+            Debug.Log(
+                $"Average Vanilla MCTS Search Time : {MCTSVanillaLogger.AverageSearchTimeMs:F2}ms " +
+                $"(총 {MCTSVanillaLogger.SearchCount}회 호출)");
+        }
+
         // 시뮬레이션 회차 종료 → 최종 파일명으로 변경
         MCTSLogger.FinishRun();
+        MCTSVanillaLogger.FinishRun();
     }
 
     

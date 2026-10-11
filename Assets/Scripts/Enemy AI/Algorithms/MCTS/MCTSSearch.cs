@@ -48,7 +48,7 @@ public static class MCTSSearch
     /// </summary>
     public static string CurrentMode
         => SimulationManager.instance != null
-            ? SimulationManager.instance.ExperimentModeLabel
+            ? SimulationManager.instance.MCTSModeLabel
             : (USE_FIXED_ITERATIONS_FOR_TEST ? "Fixed" : "Dynamic") +
            (DISABLE_EARLY_STOP_FOR_TEST ? "_NoEarlyStop" : "") +
            (FORCE_GC_FOR_MEMORY_TEST ? "_MemTest" : "");
@@ -62,6 +62,23 @@ public static class MCTSSearch
     /// </summary>
     public static MCTSAction Search(Entity entity)
     {
+        MCTSNode chosenNode;
+
+        return Search(entity, null, out chosenNode);
+    }
+
+    /// <summary>
+    /// 현재 상태에서 가장 좋은 action 선택 (Tree Reuse 지원)
+    /// reusableNode: 직전 탐색에서 고른 child 노드, 같은 턴의 다음 탐색에서 루트로 재사용을 시도
+    /// chosenNode: 이번 탐색에서 고른 child 노드, Tree Reuse가 꺼져 있으면 null
+    /// </summary>
+    public static MCTSAction Search(
+        Entity entity,
+        MCTSNode reusableNode,
+        out MCTSNode chosenNode)
+    {
+        chosenNode = null;
+
         // =================================================
         // 사용 가능한 카드 확인
         // =================================================
@@ -162,7 +179,9 @@ public static class MCTSSearch
                     : System.GC.GetTotalMemory(false);
 
                 LogSearchResult(
+                    entity,
                     rootState,
+                    lethalSequence[0],
                     playableCardCount,
                     budgetMode,
                     iterations,
@@ -174,14 +193,35 @@ public static class MCTSSearch
                     isMemorySampleTurn,
                     true,
                     cacheHitsBefore,
-                    cacheLookupsBefore);
+                    cacheLookupsBefore,
+                    false,
+                    0);
 
                 return lethalSequence[0];
             }
         }
 
+        // =================================================
+        // 루트 노드 준비 (Tree Reuse)
+        // =================================================
+
+        bool treeReuseOn =
+            SimulationManager.instance == null || SimulationManager.instance.EnableTreeReuse;
+
+        int reusedNodeCount = 0;
+
         MCTSNode root =
-            new MCTSNode(rootState);
+            treeReuseOn
+            ? TryReuseTree(reusableNode, rootState, out reusedNodeCount)
+            : null;
+
+        bool treeReused = root != null;
+
+        // 재사용할 트리가 없으면 새 트리로 시작
+        if (root == null)
+        {
+            root = new MCTSNode(rootState);
+        }
 
         int executedIterations = 0;
 
@@ -253,8 +293,14 @@ public static class MCTSSearch
         long memoryDeltaBytes =
             memoryAfter - memoryBefore;
 
+        // 최다 방문 child 선택 (선택 카드를 로그에 남기기 위해 기록 전에 계산, 시간 측정 구간 밖)
+        MCTSNode bestChild =
+            root.GetMostVisitedChild();
+
         LogSearchResult(
+            entity,
             rootState,
+            bestChild != null ? bestChild.actionFromParent : default,
             playableCardCount,
             budgetMode,
             iterations,
@@ -266,7 +312,9 @@ public static class MCTSSearch
             isMemorySampleTurn,
             lethalSequenceUsed,
             cacheHitsBefore,
-            cacheLookupsBefore);
+            cacheLookupsBefore,
+            treeReused,
+            reusedNodeCount);
         // =================================================
         // 최종 선택
         // =================================================
@@ -290,12 +338,15 @@ public static class MCTSSearch
             }
         }
 
-        MCTSNode bestChild =
-            root.GetMostVisitedChild();
-
         if (bestChild == null)
         {
             return default;
+        }
+
+        // Tree Reuse가 켜져 있으면 고른 child를 다음 탐색의 루트 후보로 넘김
+        if (treeReuseOn)
+        {
+            chosenNode = bestChild;
         }
 
         // =================================================
@@ -310,7 +361,9 @@ public static class MCTSSearch
     /// Lethal Check로 즉시 카드를 고른 경우도 이 경로를 거쳐 비교에서 누락되지 않는다.
     /// </summary>
     private static void LogSearchResult(
+        Entity entity,
         SimGameState rootState,
+        MCTSAction selectedAction,
         int playableCardCount,
         string budgetMode,
         int targetIterations,
@@ -322,7 +375,9 @@ public static class MCTSSearch
         bool isMemorySampleTurn,
         bool lethalSequenceUsed,
         int cacheHitsBefore,
-        int cacheLookupsBefore)
+        int cacheLookupsBefore,
+        bool treeReused,
+        int reusedNodeCount)
     {
         int cacheHitsThisSearch =
             MCTSTranspositionTable.hitCount - cacheHitsBefore;
@@ -345,6 +400,7 @@ public static class MCTSSearch
             $"{MCTSTranspositionTable.totalLookups} " +
             $"({MCTSTranspositionTable.HitRate * 100f:F1}%) | " +
             $"Entries: {MCTSTranspositionTable.EntryCount}" +
+            (treeReused ? $" | [Reuse:{reusedNodeCount}]" : "") +
             (lethalSequenceUsed ? " | [Lethal]" : "") +
             (isMemorySampleTurn ? " | [MemSample]" : "")
         );
@@ -365,8 +421,81 @@ public static class MCTSSearch
             lethalSequenceUsed,
             cacheHitsThisSearch,
             cacheLookupsThisSearch,
-            MCTSTranspositionTable.EntryCount
+            MCTSTranspositionTable.EntryCount,
+            treeReused,
+            reusedNodeCount,
+            entity == GameData.instance.player ? "Player" : "Enemy",
+            rootState.turnCount,
+            rootState.self.Block,
+            rootState.opponent.Block,
+            MCTSLogger.GetCardLabel(selectedAction.cardKey.data, selectedAction.cardKey.upgraded)
         );
+    }
+
+    // =====================================================
+    // Tree Reuse + Fast Expansion
+    // =====================================================
+
+    /// <summary>
+    /// 직전 탐색에서 고른 child 노드를 이번 탐색의 루트로 재사용
+    /// 실제 게임 상태와 같을 때만 재사용하고, 다르면 null을 반환해 새 트리로 시작하게 함
+    /// </summary>
+    private static MCTSNode TryReuseTree(
+        MCTSNode candidate,
+        SimGameState rootState,
+        out int reusedNodeCount)
+    {
+        reusedNodeCount = 0;
+
+        if (candidate == null || candidate.state == null)
+            return null;
+
+        // 카드 사용 후 턴이 끝난 노드는 다음 턴 상태와 맞지 않으므로 재사용하지 않음
+        if (!candidate.state.selfTurn)
+            return null;
+
+        // 실제 탐색의 루트는 turnHistory가 매번 초기화되므로,
+        // 양쪽 모두 후보 노드의 turnHistory로 해시를 계산해 게임 상태만 비교
+        ulong candidateHash =
+            candidate.state.GetStateHash(candidate.turnHistory);
+
+        ulong actualHash =
+            rootState.GetStateHash(candidate.turnHistory);
+
+        if (candidateHash != actualHash)
+            return null;
+
+        // 이전 루트와 연결을 끊음 (역전파가 이전 루트까지 올라가지 않고, 이전 트리가 메모리에서 해제되도록)
+        candidate.parent = null;
+
+        reusedNodeCount =
+            ApplyFastExpansion(candidate);
+
+        return candidate;
+    }
+
+    /// <summary>
+    /// Fast Expansion: 재사용하는 서브트리에서 방문한 노드마다
+    /// 평균 보상은 유지하고 방문 수는 1로 초기화 (이전 탐색 통계가 과도한 영향을 주지 않도록)
+    /// 초기화한 노드 수를 반환
+    /// </summary>
+    private static int ApplyFastExpansion(MCTSNode node)
+    {
+        int count = 0;
+
+        if (node.visitCount > 0)
+        {
+            node.totalReward = node.AverageReward;
+            node.visitCount = 1;
+            count++;
+        }
+
+        foreach (MCTSNode child in node.children)
+        {
+            count += ApplyFastExpansion(child);
+        }
+
+        return count;
     }
 
     // =====================================================

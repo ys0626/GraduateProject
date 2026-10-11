@@ -8,7 +8,8 @@ using UnityEngine;
 public static class MCTSSimulation
 {
     // =====================================================
-    // 진입점 1: 노드 기준 (캐싱 + 조기종료 + 이력 이어받기)
+    // 진입점 1: 노드 기준 (캐싱 + 시뮬레이션 생략 + 이력 이어받기)
+    // 캐싱 토글(EnableTranspositionCache, EnableEarlyCutoff)이 두 기능을 함께 켜고 끔
     // =====================================================
 
     public static float Simulate(MCTSNode node, int maxDepth = 20)
@@ -283,6 +284,14 @@ public static class MCTSSimulation
         SimEntity target,
         SimGameState sim)
     {
+        bool heuristicOn = SimulationManager.instance == null || SimulationManager.instance.EnableHeuristicRollout;
+
+        // 휴리스틱 롤아웃 off → 카드 가중치 없이 균등 무작위
+        if (!heuristicOn)
+        {
+            return playableCards[Random.Range(0, playableCards.Count)];
+        }
+
         List<float> scores = new List<float>();
         float totalScore = 0f;
 

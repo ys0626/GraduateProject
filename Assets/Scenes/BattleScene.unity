@@ -3401,7 +3401,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 0aae2a385a56bab448a3da0a34b44cea, type: 2}
   - {fileID: 11400000, guid: 74a49aaad4d1f044c8fde27756b93cf2, type: 2}
   - {fileID: 11400000, guid: 53c7444e9e1e99547ad3bbe063645680, type: 2}
-  playerMaxHP: 150
+  playerMaxHP: 100
   playerMaxEnergy: 4
   enemyStarterDeck:
   - {fileID: 11400000, guid: 99fc643c6a5dd494189cada6ba2df985, type: 2}
@@ -3419,22 +3419,24 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 0aae2a385a56bab448a3da0a34b44cea, type: 2}
   - {fileID: 11400000, guid: 74a49aaad4d1f044c8fde27756b93cf2, type: 2}
   - {fileID: 11400000, guid: 53c7444e9e1e99547ad3bbe063645680, type: 2}
-  enemyMaxHP: 150
+  enemyMaxHP: 100
   enemyMaxEnergy: 4
   playerControllerType: 1
-  enemyControllerType: 5
+  enemyControllerType: 6
   autoSimulation: 1
   totalBattleCount: 500
   timeScale: 100
-  enableTranspositionCache: 0
-  enableEarlyCutoff: 0
+  enableDynamicSearch: 1
+  enableHeuristicRollout: 1
+  enableEarlyStop: 1
+  enableCaching: 1
   earlyCutoffVisitThreshold: 30
-  enableHeuristicPruning: 0
-  enableHeuristicActionPruning: 0
-  enableLethalCheck: 0
-  enableExperimentA: 1
-  experimentACondition: 0
-  fixedSimulationBudget: 100
+  enableTreeReuse: 1
+  enableHeuristicActionPruning: 1
+  enableLethalCheck: 1
+  searchBudgetMode: 0
+  fixedSimulationBudget: 1000
+  timeBudgetMilliseconds: 5
 --- !u!4 &776499466
 Transform:
   m_ObjectHideFlags: 0

@@ -147,6 +147,9 @@ public class BattleManager : MonoBehaviour
             case ControllerType.MCTS:
                 return new MCTSController();
 
+            case ControllerType.MCTSVanilla:
+                return new MCTSVanillaController();
+
             case ControllerType.AlphaBeta:
                 return new AlphaBetaController();
             
