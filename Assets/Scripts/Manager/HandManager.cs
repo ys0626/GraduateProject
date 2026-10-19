@@ -13,8 +13,8 @@ public class HandManager : MonoBehaviour
     public GameObject cardPrefab;
 
     [Header("Setting")]
-    [SerializeField] float radius = 4000f;
-    [SerializeField] float spreadPerCard = 1.6f;
+    [SerializeField] float radius = 400f;
+    [SerializeField] float spreadPerCard = 18f;
     [SerializeField] float maxAngleSpread = 160f;
 
     [HideInInspector] public List<CardView> cards = new List<CardView>();
@@ -24,6 +24,25 @@ public class HandManager : MonoBehaviour
     {
         if (instance == null) instance = this;
         else Destroy(gameObject);
+
+        EnsureVisibleHandLayout();
+    }
+
+    private void EnsureVisibleHandLayout()
+    {
+        if (handArea is RectTransform handRect &&
+            handRect.anchoredPosition.y < -1000f)
+        {
+            // 이전 씬 값(-3900)은 반지름 4000 전용 오프셋이었다.
+            // 현재 카드 반지름(400)에서는 화면 밖으로 나가므로 하단에 배치한다.
+            handRect.anchoredPosition = new Vector2(
+                handRect.anchoredPosition.x,
+                -300f
+            );
+        }
+
+        // 기존 씬에 직렬화된 작은 값도 카드가 겹치지 않게 보정한다.
+        spreadPerCard = Mathf.Max(spreadPerCard, 18f);
     }
 
     public CardView CreateCard(CardInstance cardInstance)

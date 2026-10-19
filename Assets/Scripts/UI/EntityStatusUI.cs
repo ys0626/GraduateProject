@@ -24,6 +24,17 @@ public class EntityStatusUI : MonoBehaviour
 
     private void Start()
     {
+        // 이 UI가 단독 테스트 씬에 있어도 예외 없이 동작하도록 한다.
+        // GameData는 영속 오브젝트이므로 해당 씬에 없을 수 있다.
+        if (GameData.instance == null)
+        {
+            Debug.LogWarning(
+                "[EntityStatusUI] GameData가 없어 상태 UI를 초기화하지 않습니다."
+            );
+
+            return;
+        }
+
         // Entity 연결
         if (statusOwner == StatusOwner.Player)
         {
@@ -53,6 +64,9 @@ public class EntityStatusUI : MonoBehaviour
 
     public void Refresh()
     {
+        if (targetEntity == null)
+            return;
+
         ClearIcons();
 
         // UI 표시용 정렬 리스트

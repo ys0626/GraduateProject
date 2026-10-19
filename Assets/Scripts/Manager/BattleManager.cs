@@ -92,6 +92,11 @@ public class BattleManager : MonoBehaviour
 
     private void OnDisable()
     {
+        // BattleManager가 초기화되기 전에 씬이 닫힐 수 있다.
+        // 그 경우 GameData가 아직 없으므로 이벤트 해제를 건너뛴다.
+        if (GameData.instance == null)
+            return;
+
         GameData.instance.player.OnDead -= OnPlayerDead;
         GameData.instance.enemy.OnDead -= OnEnemyDead;
     }

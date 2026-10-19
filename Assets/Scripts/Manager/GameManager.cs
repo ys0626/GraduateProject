@@ -37,6 +37,13 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         InitNewGame();
+
+        // BattleScene을 에디터에서 직접 재생하는 경우에는
+        // sceneLoaded 이벤트가 발생하지 않는다. 이때도 전투를 준비한다.
+        if (SceneManager.GetActiveScene().name == battleSceneName)
+        {
+            InitBattleScene();
+        }
     }
 
     private void OnDestroy()
@@ -83,6 +90,12 @@ public class GameManager : MonoBehaviour
         LoadSceneMode mode)
     {
         if (scene.name != battleSceneName)
+            return;
+
+        // BattleScene을 직접 열었을 때 Awake 직후에는 sceneLoaded가
+        // Start보다 먼저 호출된다. 새 게임 데이터가 준비된 뒤 Start에서
+        // 전투를 초기화하도록 여기서는 기다린다.
+        if (!newGameInitialized)
             return;
 
         InitBattleScene();
