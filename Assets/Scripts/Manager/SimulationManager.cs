@@ -56,6 +56,10 @@ public class SimulationManager : MonoBehaviour
     [Tooltip("탐색 전에 이번 턴 안에 상대를 처치할 수 있는 카드 순서가 있는지 먼저 확인합니다.")]
     [SerializeField] private bool enableLethalCheck = true;
 
+    [Header("MCTS Evaluation")]
+    [Tooltip("승리 1, 패배 -1, 비종결 상태는 tanh 결과에 0.9를 곱하고 탐험 상수 2√2를 사용합니다. 끄면 기존 평가(승리 0.05, 패배 -0.05, tanh, 탐험 상수 1)를 사용합니다.")]
+    [SerializeField] private bool enableImprovedEvaluation = false;
+
     [Header("Search Budget")]
     [Tooltip("MCTS는 동적 탐색을 끈 경우에만 사용합니다. MCTSVanilla는 항상 Fixed Simulation Budget을 사용합니다.")]
     [SerializeField] private MCTSSearchBudgetMode searchBudgetMode = MCTSSearchBudgetMode.FixedSimulationCount;
@@ -111,6 +115,9 @@ public class SimulationManager : MonoBehaviour
     public bool EnableHeuristicActionPruning => enableHeuristicActionPruning;
     public bool EnableLethalCheck => enableLethalCheck;
 
+    // ===== MCTS 평가 =====
+    public bool EnableImprovedEvaluation => enableImprovedEvaluation;
+
     // ===== 탐색 예산 (동적 탐색이 꺼진 경우에만 MCTS에 적용) =====
     public bool UseFixedSimulationBudget =>
         !enableDynamicSearch && searchBudgetMode == MCTSSearchBudgetMode.FixedSimulationCount;
@@ -121,7 +128,7 @@ public class SimulationManager : MonoBehaviour
 
     /// <summary>
     /// 대결 구도와 MCTS 기법 on/off 조합을 나타내는 라벨 (CSV 파일명, Mode 컬럼에 사용)
-    /// 예: MCTS_vs_MCTSVanilla_DS1_HR1_ES1_TC1_TR1_LC1_AP1_Vanilla100
+    /// 예: MCTS_vs_MCTSVanilla_DS1_HR1_ES1_TC1_TR1_LC1_AP1_EV0_Vanilla100
     /// </summary>
     public string MCTSModeLabel
     {
@@ -135,7 +142,8 @@ public class SimulationManager : MonoBehaviour
                 $"TC{(enableCaching ? 1 : 0)}_" +
                 $"TR{(enableTreeReuse ? 1 : 0)}_" +
                 $"LC{(enableLethalCheck ? 1 : 0)}_" +
-                $"AP{(enableHeuristicActionPruning ? 1 : 0)}";
+                $"AP{(enableHeuristicActionPruning ? 1 : 0)}_" +
+                $"EV{(enableImprovedEvaluation ? 1 : 0)}";
 
             // 동적 탐색이 꺼져 있으면 MCTS가 사용하는 예산 표시
             if (UseTimeBudget)

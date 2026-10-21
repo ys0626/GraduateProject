@@ -8,6 +8,39 @@ using UnityEngine;
 public static class MCTSSimulation
 {
     // =====================================================
+    // 평가 함수 설정값
+    // =====================================================
+
+    // 기존 평가
+    private const float LEGACY_WIN_REWARD = 0.05f;
+    private const float LEGACY_LOSE_REWARD = -0.05f;
+    private const float LEGACY_EXPLORATION_CONSTANT = 1f;
+
+    // 개선 평가: 승패가 어떤 비종결 상태보다도 확실히 크거나 작도록 함
+    private const float IMPROVED_WIN_REWARD = 1f;
+    private const float IMPROVED_LOSE_REWARD = -1f;
+    private const float IMPROVED_NON_TERMINAL_SCALE = 0.9f; // 비종결 상태 점수를 [-0.9, 0.9]로 줄여 종결 값과 간격 확보
+    private const float IMPROVED_EXPLORATION_CONSTANT = 2.82842712f; // 2√2, 보상 범위 [0, 1]의 표준값 √2를 범위 폭 [-1, 1]에 맞춰 환산한 시작값
+
+    /// <summary>
+    /// 개선 평가 사용 여부 (SimulationManager가 없으면 기존 평가)
+    /// </summary>
+    private static bool IsImprovedEvaluationOn()
+    {
+        return SimulationManager.instance != null && SimulationManager.instance.EnableImprovedEvaluation;
+    }
+
+    /// <summary>
+    /// UCT 탐험 상수. 평가 방식의 보상 범위에 맞춘 값을 반환 (MCTSSelection에서 사용)
+    /// </summary>
+    public static float GetExplorationConstant()
+    {
+        return IsImprovedEvaluationOn()
+            ? IMPROVED_EXPLORATION_CONSTANT
+            : LEGACY_EXPLORATION_CONSTANT;
+    }
+
+    // =====================================================
     // 진입점 1: 노드 기준 (캐싱 + 시뮬레이션 생략 + 이력 이어받기)
     // 캐싱 토글(EnableTranspositionCache, EnableEarlyCutoff)이 두 기능을 함께 켜고 끔
     // =====================================================
@@ -243,11 +276,13 @@ public static class MCTSSimulation
 
     private static float Evaluate(SimGameState state)
     {
+        bool improvedOn = IsImprovedEvaluationOn();
+
         // 승리
-        if (state.opponent.CurrentHP <= 0) return 0.05f;
+        if (state.opponent.CurrentHP <= 0) return improvedOn ? IMPROVED_WIN_REWARD : LEGACY_WIN_REWARD;
 
         // 패배
-        if (state.self.CurrentHP <= 0) return -0.05f;
+        if (state.self.CurrentHP <= 0) return improvedOn ? IMPROVED_LOSE_REWARD : LEGACY_LOSE_REWARD;
 
         float score = 0f;
 
@@ -263,6 +298,12 @@ public static class MCTSSimulation
 
         score += state.opponent.GetStatusValue(StatusType.Weak) * 0.01f;
         score += state.opponent.GetStatusValue(StatusType.Vulnerable) * 0.01f;
+
+        // 개선 평가: 비종결 상태가 승패 값(±1)에 닿지 않도록 계수를 곱함
+        if (improvedOn)
+        {
+            return Tanh(score) * IMPROVED_NON_TERMINAL_SCALE;
+        }
 
         return Tanh(score);
     }
