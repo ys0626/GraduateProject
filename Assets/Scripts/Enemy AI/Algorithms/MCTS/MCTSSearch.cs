@@ -465,6 +465,13 @@ public static class MCTSSearch
         if (candidateHash != actualHash)
             return null;
 
+        // 고를 수 있는 행동이 없는 노드는 재사용하지 않음
+        // 재사용 노드는 이번 턴 사용 이력을 이어받아 확장 단계 가지치기가 루트에도 적용되므로,
+        // 남은 카드가 모두 제외되면 카드를 남긴 채 턴이 끝남. 새 트리로 시작해 Tree Reuse off와 같은 결정 규칙을 따르게 함
+        if (candidate.IsFullyExpanded() &&
+            candidate.children.Count == 0)
+            return null;
+
         // 이전 루트와 연결을 끊음 (역전파가 이전 루트까지 올라가지 않고, 이전 트리가 메모리에서 해제되도록)
         candidate.parent = null;
 
