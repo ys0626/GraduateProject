@@ -10,12 +10,6 @@ public class BattleManager : MonoBehaviour
     public static BattleManager instance;
 
     // =====================================================
-    // 테스트용 버튼
-    // =====================================================
-
-    [SerializeField] private GameObject restartButton;
-
-    // =====================================================
     // Controller
     // =====================================================
 
@@ -102,24 +96,52 @@ public class BattleManager : MonoBehaviour
 
     public void Init()
     {
-        battleEnded = false;
+        InitializeBattle();
 
+        // 전투 데이터 초기화는 끝났지만,
+        // 첫 턴 시작은 페이드인 완료 후 진행
+        StartCoroutine(WaitForSceneReadyAndStartBattle());
+    }
+
+    private IEnumerator WaitForSceneReadyAndStartBattle()
+    {
+        // SceneChanger가 없는 테스트 환경도 지원
+        if (SceneChanger.instance != null)
+        {
+            yield return new WaitUntil(() =>
+                SceneChanger.instance != null &&
+                SceneChanger.instance.IsReady
+            );
+        }
+
+        // 페이드인이 끝난 뒤에만 첫 턴 시작
+        if (!battleEnded)
+        {
+            StartPlayerTurn();
+        }
+    }
+
+    private void InitializeBattle()
+    {
+        battleEnded = false;
+        isBusy = true;
         turnCount = 1;
 
-        // 캐시는 전투 단위로 유지한다. 같은 전투의 다음 턴에서는 재사용하고,
-        // 새 전투가 시작될 때만 이전 전투의 상태를 비운다.
         MCTSTranspositionTable.Clear();
 
-        GameData.instance.player.statuses.Clear();
-        GameData.instance.enemy.statuses.Clear();
-        
+        GameData.instance.player.ClearStatuses();
+        GameData.instance.enemy.ClearStatuses();
+
         InitializeControllers();
+
+        GameData.instance.player.OnDead -= OnPlayerDead;
+        GameData.instance.enemy.OnDead -= OnEnemyDead;
 
         GameData.instance.player.OnDead += OnPlayerDead;
         GameData.instance.enemy.OnDead += OnEnemyDead;
-
-        StartPlayerTurn();
     }
+
+
 
     // =====================================================
     // Controller 초기화
@@ -446,9 +468,6 @@ public class BattleManager : MonoBehaviour
         // 일반 게임에서 패배
         if (!playerWin)
         {
-            if (restartButton != null)
-                restartButton.SetActive(true);
-
             return;
         }
 
@@ -473,20 +492,6 @@ public class BattleManager : MonoBehaviour
     {
         EndBattle(true);
     }
-
-    /// <summary>
-    /// 테스트용
-    /// 전투 다시 시작
-    /// </summary>
-    public void RestartBattle()
-    {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-    }
-
-
-
-
-
 
 
 

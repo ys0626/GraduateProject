@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -28,6 +29,13 @@ public class GameData : MonoBehaviour
     [Header("Card Reward Pools")]
     [SerializeField] private CardData[] commonCardPool;
     [SerializeField] private CardData[] rareCardPool;
+
+    [Header("Cheese Pool")]
+    [SerializeField] private CheeseData[] cheesePool;
+    private readonly CheeseData[] cheeseInventory = new CheeseData[3];
+    public CheeseData[] CheesePool => cheesePool;
+    public CheeseData[] CheeseInventory => cheeseInventory;
+    public event Action OnCheeseInventoryChanged;
 
     //[Header("Relic Reward Pool")]
     //[SerializeField] private RelicData[] relicPool;
@@ -181,7 +189,7 @@ public class GameData : MonoBehaviour
         player.drawPile.Clear();
         player.discardPile.Clear();
         player.exhaustPile.Clear();
-
+        player.ClearStatuses();
         player.Block = 0;
         player.CurrentEnergy = player.MaxEnergy;
 
@@ -191,7 +199,7 @@ public class GameData : MonoBehaviour
         enemy.discardPile.Clear();
         enemy.exhaustPile.Clear();
         enemy.deck.Clear();
-
+        enemy.ClearStatuses();
         enemy.Block = 0;
 
         UpdatePlayerPileCount();
@@ -262,7 +270,7 @@ public class GameData : MonoBehaviour
             return null;
         }
 
-        int index = Random.Range(0, validEnemies.Count);
+        int index = UnityEngine.Random.Range(0, validEnemies.Count);
 
         EnemyData selectedEnemy = validEnemies[index];
 
@@ -309,6 +317,7 @@ public class GameData : MonoBehaviour
     {
         ClearEntity(player);
         ClearEntity(enemy);
+        ClearCheeseInventory();
 
         currentEnemyData = null;
 
@@ -326,7 +335,7 @@ public class GameData : MonoBehaviour
         entity.discardPile.Clear();
         entity.exhaustPile.Clear();
         entity.deck.Clear();
-
+        entity.ClearStatuses();
         entity.Block = 0;
     }
 
@@ -354,5 +363,73 @@ public class GameData : MonoBehaviour
         enemy.DiscardPileCount = enemy.discardPile.Count;
 
         enemy.ExhaustPileCount = enemy.exhaustPile.Count;
+    }
+
+    // =========================================================
+    // 치즈 관련 함수들
+    // =========================================================
+
+    // 치즈를 왼쪽부터 빈 슬롯에 추가
+    public bool AddCheese(CheeseData cheeseData)
+    {
+        if (cheeseData == null)
+            return false;
+
+        for (int i = 0; i < cheeseInventory.Length; i++)
+        {
+            if (cheeseInventory[i] == null)
+            {
+                cheeseInventory[i] = cheeseData;
+
+                OnCheeseInventoryChanged?.Invoke();
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    // 지정한 슬롯의 치즈 사용
+    public bool UseCheese(int slotIndex)
+    {
+        if (slotIndex < 0 ||
+            slotIndex >= cheeseInventory.Length)
+        {
+            return false;
+        }
+
+        CheeseData cheese = cheeseInventory[slotIndex];
+
+        if (cheese == null || player == null)
+            return false;
+
+        if (cheese.IsRotten)
+        {
+            // 최대 HP를 먼저 올린 뒤 현재 HP를 회복한다.
+            player.MaxHP += cheese.effectAmount;
+            player.Heal(cheese.effectAmount);
+        }
+        else
+        {
+            player.Heal(cheese.effectAmount);
+        }
+
+        cheeseInventory[slotIndex] = null;
+
+        OnCheeseInventoryChanged?.Invoke();
+
+        return true;
+    }
+
+    // 새 게임 시작 시 인벤토리 초기화
+    private void ClearCheeseInventory()
+    {
+        for (int i = 0; i < cheeseInventory.Length; i++)
+        {
+            cheeseInventory[i] = null;
+        }
+
+        OnCheeseInventoryChanged?.Invoke();
     }
 }

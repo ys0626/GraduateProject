@@ -26,7 +26,7 @@ public static class MCTSSearch
     // 테스트 / 디버그용 설정
     // =====================================================
 
-    private const bool LOG_CHILD_STATS = false; // true로 설정하면 루트 노드의 자식 노드들의 통계 로그를 출력
+    private const bool LOG_CHILD_STATS = true; // true로 설정하면 루트 노드의 자식 노드들의 통계 로그를 출력
 
     private const bool USE_FIXED_ITERATIONS_FOR_TEST = false; // true로 설정하면 테스트용으로 고정된 반복 횟수를 사용, false로 설정하면 동적 반복 횟수 계산 사용
     private const int FIXED_TEST_ITERATIONS = 1000;

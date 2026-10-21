@@ -176,12 +176,17 @@ public class RewardManager : MonoBehaviour
             return;
         }
 
-        rewards.Add(
-            new Reward(
-                RewardType.Cheese,
-                cheeseHealAmount: settings.cheeseHealAmount
-            )
-        );
+        CheeseData cheese = GetRandomCheese();
+
+        if (cheese != null)
+        {
+            rewards.Add(
+                new Reward(
+                    RewardType.Cheese,
+                    cheeseData: cheese
+                )
+            );
+        }
     }
 
     // 카드 선택지 생성
@@ -244,6 +249,35 @@ public class RewardManager : MonoBehaviour
                 )
             );
         }
+    }
+
+    private CheeseData GetRandomCheese()
+    {
+        if (GameData.instance == null)
+            return null;
+
+        CheeseData[] pool = GameData.instance.CheesePool;
+
+        if (pool == null || pool.Length == 0)
+            return null;
+
+        List<CheeseData> validCheeses =
+            new List<CheeseData>();
+
+        foreach (CheeseData cheese in pool)
+        {
+            if (cheese != null)
+            {
+                validCheeses.Add(cheese);
+            }
+        }
+
+        if (validCheeses.Count == 0)
+            return null;
+
+        return validCheeses[
+            Random.Range(0, validCheeses.Count)
+        ];
     }
 
     // 유물 보상 생성

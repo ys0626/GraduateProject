@@ -444,6 +444,7 @@ public class MapGenerator : MonoBehaviour
         floors[0][0].type = MapNodeType.Start;
         floors[floorCount][0].type = MapNodeType.Boss;
 
+        // 기존 확률에 따라 노드 종류 배정
         for (int floor = 1; floor < floorCount; floor++)
         {
             foreach (MapNode node in floors[floor])
@@ -452,8 +453,17 @@ public class MapGenerator : MonoBehaviour
             }
         }
 
-        FixEliteChains();
-        FixEarlyElite();
+        // 규칙 2: 5층 이전 엘리트 및 휴식 노드 제거
+        FixEarlyEliteAndRest();
+
+        // 규칙 3: 보스 직전 층을 모두 휴식 노드로 변경
+        FixBossPredecessorRest();
+
+        // 규칙 1 및 규칙 3과의 충돌 방지
+        FixNoRestBeforeBossPredecessor();
+
+        // 규칙 1: 같은 종류의 특수 노드가 연속되지 않도록 보정
+        FixConsecutiveSpecialNodes();
     }
 
 
@@ -533,32 +543,21 @@ public class MapGenerator : MonoBehaviour
 
 
     // ============================================================
-    // ELITE CONTROL
+    // NODE TYPE RULES
     // ============================================================
 
-    private void FixEliteChains()
+    /// <summary>
+    /// 규칙 2:
+    /// 5층 이전에는 엘리트 및 휴식 노드를 생성하지 않는다.
+    /// </summary>
+    private void FixEarlyEliteAndRest()
     {
-        for (int floor = 2; floor < floorCount; floor++)
+        for (int floor = 1; floor < 5 && floor < floorCount; floor++)
         {
             foreach (MapNode node in floors[floor])
             {
-                if (node.type != MapNodeType.Elite)
-                {
-                    continue;
-                }
-
-                bool hasElitePrevious = false;
-
-                foreach (MapNode previous in node.previousNodes)
-                {
-                    if (previous.type == MapNodeType.Elite)
-                    {
-                        hasElitePrevious = true;
-                        break;
-                    }
-                }
-
-                if (hasElitePrevious)
+                if (node.type == MapNodeType.Elite ||
+                    node.type == MapNodeType.Rest)
                 {
                     node.type = MapNodeType.Combat;
                 }
@@ -567,18 +566,96 @@ public class MapGenerator : MonoBehaviour
     }
 
 
-    private void FixEarlyElite()
+    /// <summary>
+    /// 규칙 3:
+    /// 보스 직전 층의 모든 노드를 휴식 노드로 변경한다.
+    /// </summary>
+    private void FixBossPredecessorRest()
     {
-        for (int floor = 1; floor <= 3 && floor < floorCount; floor++)
+        int bossPredecessorFloor = floorCount - 1;
+
+        if (bossPredecessorFloor < 1 ||
+            bossPredecessorFloor >= floors.Count)
+        {
+            return;
+        }
+
+        foreach (MapNode node in floors[bossPredecessorFloor])
+        {
+            node.type = MapNodeType.Rest;
+        }
+    }
+
+
+    /// <summary>
+    /// 보스 직전 층이 전부 휴식이므로,
+    /// 그 바로 앞 층에는 휴식 노드가 생성되지 않도록 한다.
+    /// </summary>
+    private void FixNoRestBeforeBossPredecessor()
+    {
+        int floorBeforeBossPredecessor = floorCount - 2;
+
+        if (floorBeforeBossPredecessor < 1 ||
+            floorBeforeBossPredecessor >= floors.Count)
+        {
+            return;
+        }
+
+        foreach (MapNode node in floors[floorBeforeBossPredecessor])
+        {
+            if (node.type == MapNodeType.Rest)
+            {
+                node.type = MapNodeType.Combat;
+            }
+        }
+    }
+
+
+    /// <summary>
+    /// 규칙 1:
+    /// 엘리트-엘리트, 상점-상점, 휴식-휴식 연결을 금지한다.
+    /// 서로 다른 종류의 특수 노드끼리 연결되는 것은 허용한다.
+    /// </summary>
+    private void FixConsecutiveSpecialNodes()
+    {
+        // 보스 직전 층은 휴식 노드로 고정되어 있으므로 제외한다.
+        for (int floor = 1; floor < floorCount - 1; floor++)
         {
             foreach (MapNode node in floors[floor])
             {
-                if (node.type == MapNodeType.Elite)
+                if (!IsSpecialNodeType(node.type))
+                {
+                    continue;
+                }
+
+                bool hasSameTypePrevious = false;
+
+                foreach (MapNode previous in node.previousNodes)
+                {
+                    if (previous.type == node.type)
+                    {
+                        hasSameTypePrevious = true;
+                        break;
+                    }
+                }
+
+                if (hasSameTypePrevious)
                 {
                     node.type = MapNodeType.Combat;
                 }
             }
         }
+    }
+
+
+    /// <summary>
+    /// 연속 생성 제한을 적용할 특수 노드 종류인지 확인한다.
+    /// </summary>
+    private bool IsSpecialNodeType(MapNodeType type)
+    {
+        return type == MapNodeType.Elite ||
+               type == MapNodeType.Shop ||
+               type == MapNodeType.Rest;
     }
 
 

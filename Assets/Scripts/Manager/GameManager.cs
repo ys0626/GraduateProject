@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -8,9 +9,11 @@ public class GameManager : MonoBehaviour
     [Header("Persistent Objects")]
     public GameObject[] persistentObjects;
 
+    private Coroutine battleInitCoroutine;
     private string battleSceneName = "BattleScene";
 
     private bool newGameInitialized;
+
 
     // =========================================================
     // Unity
@@ -77,6 +80,8 @@ public class GameManager : MonoBehaviour
     // Scene Loaded
     // =========================================================
 
+
+
     private void OnSceneLoaded(
         Scene scene,
         LoadSceneMode mode)
@@ -84,8 +89,48 @@ public class GameManager : MonoBehaviour
         if (scene.name != battleSceneName)
             return;
 
-        InitBattleScene();
+        if (battleInitCoroutine != null)
+        {
+            StopCoroutine(battleInitCoroutine);
+        }
+
+        battleInitCoroutine =
+            StartCoroutine(PrepareBattleScene());
     }
+
+    private IEnumerator PrepareBattleScene()
+    {
+        // 씬 오브젝트의 Awake, OnEnable 및 초기 UI 준비 대기
+        yield return null;
+        yield return new WaitForEndOfFrame();
+
+        // 페이드인이 시작되기 전에 전투 데이터와 UI 준비
+        InitBattleScene();
+
+        // 전투 준비 완료 신호 전달
+        if (SceneChanger.instance != null)
+        {
+            SceneChanger.instance.NotifyBattleScenePrepared();
+        }
+
+        battleInitCoroutine = null;
+    }
+
+
+    private IEnumerator WaitForFadeAndInitBattle()
+    {
+        // 페이드 시스템이 준비될 때까지 대기
+        yield return new WaitUntil(() =>
+            SceneChanger.instance != null &&
+            SceneChanger.instance.IsReady
+        );
+
+        // 페이드인이 완전히 끝난 뒤에만 전투 초기화
+        InitBattleScene();
+
+        battleInitCoroutine = null;
+    }
+
 
     // =========================================================
     // Battle Scene

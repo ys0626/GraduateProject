@@ -413,6 +413,12 @@ public class Entity : IBattleEntity
         OnStatusesChanged?.Invoke();
     }
 
+    public void ClearStatuses()
+    {
+        statuses.Clear();
+        OnStatusesChanged?.Invoke();
+    }
+
 
     /// <summary>
     /// 버프와 디버프를 고려하여 이 Entity가 입힐 damage를 계산

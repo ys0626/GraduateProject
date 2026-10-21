@@ -1,6 +1,5 @@
 
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,7 +12,8 @@ public class RewardPanelUI : MonoBehaviour
 
     [Header("Card Choice Panel")]
     [SerializeField] private GameObject cardChoicePanel;
-    [SerializeField] private RewardCardUI[] cardChoices;
+    [SerializeField] private CardSelectionUI[] cardChoices;
+    [SerializeField] private Button cardSkipButton;
 
     [Header("Continue")]
     [SerializeField] private Button continueButton;
@@ -42,22 +42,36 @@ public class RewardPanelUI : MonoBehaviour
             );
         }
 
+        if (cardSkipButton != null)
+        {
+            cardSkipButton.onClick.RemoveListener(
+                OnCardSkipClicked
+            );
+
+            cardSkipButton.onClick.AddListener(
+                OnCardSkipClicked
+            );
+        }
+
         Hide();
     }
+
+    // =====================================================
+    // 보상 화면 표시
+    // =====================================================
 
     public void ShowRewards()
     {
         if (RewardManager.Instance == null)
         {
             Debug.LogError(
-                "RewardManager.Instance가 없습니다."
+                "[RewardPanelUI] RewardManager가 없습니다."
             );
 
             return;
         }
 
         ClearRewardItems();
-
         currentRewards.Clear();
 
         currentRewards.AddRange(
@@ -96,13 +110,18 @@ public class RewardPanelUI : MonoBehaviour
         cardChoiceOpen = false;
     }
 
+    // =====================================================
+    // 보상 항목 표시
+    // =====================================================
+
     private void DisplayRewards()
     {
         if (rewardContent == null ||
             rewardItemPrefab == null)
         {
             Debug.LogError(
-                "Reward Content 또는 Reward Item Prefab이 연결되지 않았습니다."
+                "[RewardPanelUI] Reward Content 또는 " +
+                "Reward Item Prefab이 연결되지 않았습니다."
             );
 
             return;
@@ -129,21 +148,22 @@ public class RewardPanelUI : MonoBehaviour
                     break;
 
                 case RewardType.Cheese:
-                    CreateRewardItem(
-                        reward,
-                        "Cheese +" +
-                        reward.CheeseHealAmount +
-                        " HP"
-                    );
+                    if (reward.CheeseData != null)
+                    {
+                        CreateRewardItem(
+                            reward,
+                            reward.CheeseData.cheeseName
+                        );
+                    }
                     break;
 
                 case RewardType.Card:
-                    // 여러 카드 선택지를 하나의 항목으로 표시
+                    // 카드가 여러 장이어도 보상 항목은 하나만 표시
                     if (!cardRewardDisplayed)
                     {
                         cardRewardItem = CreateRewardItem(
                             reward,
-                            "카드 획득"
+                            "덱에 추가할 카드를 선택하세요!"
                         );
 
                         cardRewardDisplayed = true;
@@ -151,7 +171,7 @@ public class RewardPanelUI : MonoBehaviour
                     break;
 
                 case RewardType.Relic:
-                    // 유물 시스템 구현 전까지 표시하지 않음
+                    // 유물 시스템 구현 후 연결
                     break;
             }
         }
@@ -177,7 +197,11 @@ public class RewardPanelUI : MonoBehaviour
         return item;
     }
 
+    // =====================================================
+    // 보상 획득
     // RewardItemUI에서 호출
+    // =====================================================
+
     public void ClaimReward(
         Reward reward,
         RewardItemUI item)
@@ -192,11 +216,10 @@ public class RewardPanelUI : MonoBehaviour
             return;
         }
 
-        if (GameData.instance == null ||
-            GameData.instance.player == null)
+        if (GameData.instance == null)
         {
             Debug.LogError(
-                "GameData 또는 Player 데이터가 없습니다."
+                "[RewardPanelUI] GameData가 없습니다."
             );
 
             return;
@@ -212,11 +235,7 @@ public class RewardPanelUI : MonoBehaviour
                 break;
 
             case RewardType.Cheese:
-                GameData.instance.player.Heal(
-                    reward.CheeseHealAmount
-                );
-
-                RemoveReward(reward, item);
+                ClaimCheeseReward(reward, item);
                 break;
 
             case RewardType.Card:
@@ -224,34 +243,62 @@ public class RewardPanelUI : MonoBehaviour
                 break;
 
             case RewardType.Relic:
-                // 유물 시스템 구현 후 처리
+                // 유물 시스템 구현 후 연결
                 break;
         }
     }
 
-    private void OpenCardChoice()
+    private void ClaimCheeseReward(
+        Reward reward,
+        RewardItemUI item)
     {
-        if (cardChoiceOpen || cardRewardItem == null)
+        if (reward.CheeseData == null)
         {
+            Debug.LogWarning(
+                "[RewardPanelUI] 치즈 데이터가 없습니다."
+            );
+
             return;
         }
 
-        List<CardData> availableCards =
-            GetAvailableCardChoices();
+        bool added = GameData.instance.AddCheese(
+            reward.CheeseData
+        );
 
-        if (availableCards.Count == 0)
+        if (added)
         {
-            Debug.LogWarning(
-                "선택할 카드가 없습니다."
-            );
+            if (PersistentUI.Instance != null)
+            {
+                PersistentUI.Instance.RefreshCheeseSlots();
+            }
 
+            RemoveReward(reward, item);
+        }
+        else
+        {
+            if (PersistentUI.Instance != null)
+            {
+                PersistentUI.Instance
+                    .ShowCheeseInventoryFullPopup();
+            }
+        }
+    }
+
+    // =====================================================
+    // 카드 선택 패널 열기
+    // =====================================================
+
+    private void OpenCardChoice()
+    {
+        if (cardChoiceOpen || cardSelected)
+        {
             return;
         }
 
         if (cardChoicePanel == null)
         {
             Debug.LogError(
-                "CardChoicePanel이 연결되지 않았습니다."
+                "[RewardPanelUI] Card Choice Panel이 없습니다."
             );
 
             return;
@@ -261,34 +308,54 @@ public class RewardPanelUI : MonoBehaviour
             cardChoices.Length == 0)
         {
             Debug.LogError(
-                "CardChoicePanel에 카드 선택 UI가 없습니다."
+                "[RewardPanelUI] Card Choices가 비어 있습니다."
+            );
+
+            return;
+        }
+
+        List<CardData> availableCards =
+            GetAvailableCardChoices();
+
+        if (availableCards.Count == 0)
+        {
+            Debug.LogWarning(
+                "[RewardPanelUI] 선택할 카드가 없습니다."
             );
 
             return;
         }
 
         cardChoiceOpen = true;
-        cardSelected = false;
 
         cardChoicePanel.SetActive(true);
 
         for (int i = 0; i < cardChoices.Length; i++)
         {
-            if (cardChoices[i] == null)
+            CardSelectionUI choice = cardChoices[i];
+
+            if (choice == null)
             {
+                Debug.LogWarning(
+                    "[RewardPanelUI] Card Choices의 " +
+                    i + "번째 슬롯이 비어 있습니다."
+                );
+
                 continue;
             }
 
             if (i < availableCards.Count)
             {
-                cardChoices[i].Setup(
+                choice.gameObject.SetActive(true);
+
+                choice.Setup(
                     availableCards[i],
-                    this
+                    SelectCard
                 );
             }
             else
             {
-                cardChoices[i].gameObject.SetActive(false);
+                choice.gameObject.SetActive(false);
             }
         }
     }
@@ -314,7 +381,11 @@ public class RewardPanelUI : MonoBehaviour
         return cards;
     }
 
-    // RewardCardUI에서 호출
+    // =====================================================
+    // 카드 선택
+    // CardSelectionUI에서 호출
+    // =====================================================
+
     public void SelectCard(CardData cardData)
     {
         if (!cardChoiceOpen || cardSelected)
@@ -322,43 +393,29 @@ public class RewardPanelUI : MonoBehaviour
             return;
         }
 
-        if (cardData == null)
+        if (cardData == null ||
+            !IsAvailableCard(cardData))
         {
             return;
         }
 
-        if (!IsAvailableCard(cardData))
+        if (PlayerDeckManager.instance == null)
         {
+            Debug.LogError(
+                "[RewardPanelUI] PlayerDeckManager가 없습니다."
+            );
+
             return;
         }
 
-        if (!AddCardToPlayerDeck(cardData))
-        {
-            return;
-        }
+        // 실제 덱에는 선택한 카드 한 장만 추가
+        PlayerDeckManager.instance.AddCardToPlayerDeck(
+            cardData
+        );
 
         cardSelected = true;
 
-        // 선택지에 사용된 카드 보상을 모두 제거
-        for (int i = currentRewards.Count - 1; i >= 0; i--)
-        {
-            if (currentRewards[i].RewardType ==
-                RewardType.Card)
-            {
-                currentRewards.RemoveAt(i);
-            }
-        }
-
-        RemoveCardRewardItem();
-
-        cardChoiceOpen = false;
-
-        if (cardChoicePanel != null)
-        {
-            cardChoicePanel.SetActive(false);
-        }
-
-        DisableCardChoices();
+        CompleteCardReward();
     }
 
     private bool IsAvailableCard(CardData cardData)
@@ -378,34 +435,61 @@ public class RewardPanelUI : MonoBehaviour
         return false;
     }
 
-    private bool AddCardToPlayerDeck(CardData cardData)
-    {
-        if (GameData.instance == null ||
-            GameData.instance.player == null ||
-            GameData.instance.player.deck == null)
-        {
-            Debug.LogError(
-                "플레이어 덱에 카드를 추가할 수 없습니다."
-            );
+    // =====================================================
+    // 카드 선택 완료 또는 넘기기
+    // =====================================================
 
-            return false;
+    private void OnCardSkipClicked()
+    {
+        if (!cardChoiceOpen || cardSelected)
+        {
+            return;
         }
 
-        GameData.instance.player.deck.Add(
-            new CardInstance(cardData)
-        );
+        // 카드를 획득하지 않고 선택 창만 닫는다.
+        // 카드 보상 버튼과 보상 데이터는 유지한다.
+        cardChoiceOpen = false;
 
-        GameData.instance.UpdatePlayerPileCount();
-
-        return true;
+        if (cardChoicePanel != null)
+        {
+            cardChoicePanel.SetActive(false);
+        }
     }
+
+
+    private void CompleteCardReward()
+    {
+        // 카드 보상 선택지 전체 제거
+        for (int i = currentRewards.Count - 1; i >= 0; i--)
+        {
+            Reward reward = currentRewards[i];
+
+            if (reward != null &&
+                reward.RewardType == RewardType.Card)
+            {
+                currentRewards.RemoveAt(i);
+            }
+        }
+
+        RemoveCardRewardItem();
+
+        cardChoiceOpen = false;
+
+        if (cardChoicePanel != null)
+        {
+            cardChoicePanel.SetActive(false);
+        }
+    }
+
+    // =====================================================
+    // 보상 항목 제거
+    // =====================================================
 
     private void RemoveReward(
         Reward reward,
         RewardItemUI item)
     {
         currentRewards.Remove(reward);
-
         spawnedItems.Remove(item);
 
         if (item != null)
@@ -416,14 +500,16 @@ public class RewardPanelUI : MonoBehaviour
 
     private void RemoveCardRewardItem()
     {
-        if (cardRewardItem != null)
+        if (cardRewardItem == null)
         {
-            spawnedItems.Remove(cardRewardItem);
-
-            Destroy(cardRewardItem.gameObject);
-
-            cardRewardItem = null;
+            return;
         }
+
+        spawnedItems.Remove(cardRewardItem);
+
+        Destroy(cardRewardItem.gameObject);
+
+        cardRewardItem = null;
     }
 
     private void ClearRewardItems()
@@ -437,31 +523,12 @@ public class RewardPanelUI : MonoBehaviour
         }
 
         spawnedItems.Clear();
+        cardRewardItem = null;
     }
 
-    private void DisableCardChoices()
-    {
-        if (cardChoices == null)
-        {
-            return;
-        }
-
-        for (int i = 0; i < cardChoices.Length; i++)
-        {
-            if (cardChoices[i] == null)
-            {
-                continue;
-            }
-
-            Button button =
-                cardChoices[i].GetComponent<Button>();
-
-            if (button != null)
-            {
-                button.interactable = false;
-            }
-        }
-    }
+    // =====================================================
+    // 보상 화면 넘기기
+    // =====================================================
 
     private void OnContinueClicked()
     {
@@ -474,7 +541,7 @@ public class RewardPanelUI : MonoBehaviour
         else
         {
             Debug.LogError(
-                "SceneChanger.instance가 없습니다."
+                "[RewardPanelUI] SceneChanger가 없습니다."
             );
         }
     }

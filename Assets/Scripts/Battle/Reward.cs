@@ -4,7 +4,7 @@ public class Reward
 
     public int GoldAmount { get; }
 
-    public int CheeseHealAmount { get; }
+    public CheeseData CheeseData { get; }
 
     public CardData CardData { get; }
 
@@ -13,13 +13,13 @@ public class Reward
     public Reward(
         RewardType rewardType,
         int goldAmount = 0,
-        int cheeseHealAmount = 0,
+        CheeseData cheeseData = null,
         CardData cardData = null,
         RelicReward relicReward = null)
     {
         RewardType = rewardType;
         GoldAmount = goldAmount;
-        CheeseHealAmount = cheeseHealAmount;
+        CheeseData = cheeseData;
         CardData = cardData;
         RelicReward = relicReward;
     }
