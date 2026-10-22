@@ -176,8 +176,6 @@ public class BattleManager : MonoBehaviour
 
         currentTurnEntity = GameData.instance.player;
 
-        RelicManager.Instance?.NotifyTurnStarted(currentTurnEntity);
-
         //UI로 턴 표시
         BattleUIManager.instance.ShowTurnBanner(
         turnCount,
@@ -196,6 +194,17 @@ public class BattleManager : MonoBehaviour
 
         // 에너지 회복
         RecoverEnergy(currentTurnEntity);
+
+        // 전투 시작 유물은 방어도 제거와 에너지 회복 뒤에 적용해야
+        // 첫 턴의 방어도/버프가 초기화로 사라지지 않는다.
+        if (turnCount == 1)
+        {
+            RelicManager.Instance?.NotifyBattleStarted(
+                GameData.instance.player,
+                GameData.instance.enemy);
+        }
+
+        RelicManager.Instance?.NotifyTurnStarted(currentTurnEntity);
 
         // 카드 드로우
         yield return StartCoroutine(DrawPlayerCardsRoutine());
@@ -247,6 +256,8 @@ public class BattleManager : MonoBehaviour
         // 턴 종료 시 디버프들의 지속 턴 수를 1만큼 감소
         currentTurnEntity.TickStatuses();
 
+        RelicManager.Instance?.NotifyTurnEnded(currentTurnEntity);
+
         yield return new WaitForSeconds(0.2f);
 
         StartEnemyTurn();
@@ -261,8 +272,6 @@ public class BattleManager : MonoBehaviour
         battlePhase = BattlePhase.EnemyTurn;
 
         currentTurnEntity = GameData.instance.enemy;
-
-        RelicManager.Instance?.NotifyTurnStarted(currentTurnEntity);
 
         //UI로 턴 표시
         BattleUIManager.instance.ShowTurnBanner(
@@ -282,6 +291,8 @@ public class BattleManager : MonoBehaviour
 
         // 에너지 회복
         RecoverEnergy(currentTurnEntity);
+
+        RelicManager.Instance?.NotifyTurnStarted(currentTurnEntity);
 
         // 카드 드로우
         EnemyDeckManager.instance.DrawCards(drawPerTurn);
@@ -584,6 +595,8 @@ public class BattleManager : MonoBehaviour
                 EnemyDeckManager.instance.DiscardCard(card);
             }
         }
+
+        RelicManager.Instance?.NotifyCardPlayed(user, card, target);
 
         return true;
     }

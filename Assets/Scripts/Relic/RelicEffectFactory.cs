@@ -11,10 +11,38 @@ public static class RelicEffectFactory
             return null;
         }
 
-        // 아직 구현된 효과가 없으므로 None은 효과 객체를 만들지 않는다.
-        // 새 효과를 만들 때 여기서 RelicEffectType별 구현 클래스를 생성한다.
         switch (relic.Data.EffectType)
         {
+            case RelicEffectType.StartBattleStrength:
+                return new StartBattleStrengthRelicEffect();
+
+            case RelicEffectType.StartBattleBlock:
+                return new StartBattleBlockRelicEffect();
+
+            case RelicEffectType.MaxHealthOnAcquired:
+                return new MaxHealthRelicEffect();
+
+            case RelicEffectType.FirstAttackBonusDamage:
+                return new FirstAttackBonusDamageRelicEffect();
+
+            case RelicEffectType.EndTurnBlockIfUnarmored:
+                return new EndTurnBlockIfUnarmoredRelicEffect();
+
+            case RelicEffectType.FirstTurnBonusEnergy:
+                return new FirstTurnBonusEnergyRelicEffect();
+
+            case RelicEffectType.EveryThirdTurnBonusEnergy:
+                return new EveryThirdTurnBonusEnergyRelicEffect();
+
+            case RelicEffectType.PowerCardRandomDiscount:
+                return new PowerCardRandomDiscountRelicEffect();
+
+            case RelicEffectType.SecondTurnBlock:
+                return new SecondTurnBlockRelicEffect();
+
+            case RelicEffectType.TurnStartDamage:
+                return new TurnStartDamageRelicEffect();
+
             case RelicEffectType.None:
             default:
                 return null;

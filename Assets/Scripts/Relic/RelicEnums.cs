@@ -13,4 +13,14 @@ public enum RelicSource
 public enum RelicEffectType
 {
     None,
+    StartBattleStrength,
+    StartBattleBlock,
+    MaxHealthOnAcquired,
+    FirstAttackBonusDamage,
+    EndTurnBlockIfUnarmored,
+    FirstTurnBonusEnergy,
+    EveryThirdTurnBonusEnergy,
+    PowerCardRandomDiscount,
+    SecondTurnBlock,
+    TurnStartDamage,
 }
