@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using static BattleUIManager;
 
@@ -152,14 +153,24 @@ public class PlayerDeckManager : MonoBehaviour
 
     public void ShuffleDrawPile()
     {
-        for (int i = 0; i < GameData.instance.player.drawPile.Count; i++)
+        List<CardInstance> drawPile =
+            GameData.instance.player.drawPile;
+
+        for (int i = 0; i < drawPile.Count; i++)
         {
             int randomIndex =
-                Random.Range(i, GameData.instance.player.drawPile.Count);
+                Random.Range(i, drawPile.Count);
 
-            CardInstance temp = GameData.instance.player.drawPile[i];
-            GameData.instance.player.drawPile[i] = GameData.instance.player.drawPile[randomIndex];
-            GameData.instance.player.drawPile[randomIndex] = temp;
+            CardInstance temp = drawPile[i];
+
+            drawPile[i] = drawPile[randomIndex];
+            drawPile[randomIndex] = temp;
+        }
+
+        // 실제 셔플이 완료된 뒤 팝업의 표시 순서 갱신
+        if (CardPopupManager.instance != null)
+        {
+            CardPopupManager.instance.OnPlayerDrawPileShuffled();
         }
     }
 

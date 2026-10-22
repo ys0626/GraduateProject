@@ -727,6 +727,11 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 1c4839203dbb9bd40b6c9973b78ce344, type: 2}
   - {fileID: 11400000, guid: 1c4839203dbb9bd40b6c9973b78ce344, type: 2}
   - {fileID: 11400000, guid: 1c4839203dbb9bd40b6c9973b78ce344, type: 2}
+  - {fileID: 11400000, guid: 80f95a1809369e146a9e7e6517abb2ca, type: 2}
+  - {fileID: 11400000, guid: 80f95a1809369e146a9e7e6517abb2ca, type: 2}
+  - {fileID: 11400000, guid: 80f95a1809369e146a9e7e6517abb2ca, type: 2}
+  - {fileID: 11400000, guid: 80f95a1809369e146a9e7e6517abb2ca, type: 2}
+  - {fileID: 11400000, guid: 80f95a1809369e146a9e7e6517abb2ca, type: 2}
   normalEnemyPool:
   - {fileID: 11400000, guid: c4e5b86235acd214484e8edc0b8cbd05, type: 2}
   eliteEnemyPool:

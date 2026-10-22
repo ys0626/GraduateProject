@@ -153,9 +153,16 @@ MonoBehaviour:
   maxNodesPerFloor: 5
   useRandomSeed: 1
   seed: 12345
-  eliteChance: 0.15
-  eventChance: 0.25
-  shopChance: 0.1
+  minRestNodes: 3
+  maxRestNodes: 5
+  restMinFloor: 5
+  minEliteNodes: 5
+  maxEliteNodes: 7
+  eliteMinFloor: 5
+  minShopNodes: 2
+  maxShopNodes: 3
+  shopMinFloor: 3
+  combatChance: 0.7
   horizontalSpacing: 110
   verticalSpacing: 100
   verticalRandomness: 50

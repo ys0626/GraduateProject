@@ -11,6 +11,12 @@ public class CardData : ScriptableObject
 
     public Sprite artwork;
 
+    [Header("Upgrade Info")]
+    public CardUpgradeType upgradeType;
+
+    [TextArea]
+    public string upgradedDescription;
+
     [Header("Card Info")]
     public int cost;
 

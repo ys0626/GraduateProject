@@ -1,5 +1,4 @@
-
-using UnityEditor;
+using UnityEngine;
 
 /// <summary>
 /// 실제 런타임 중 게임에서 사용되는 카드 객체
@@ -65,6 +64,43 @@ public class CardInstance
         ethereal = original.ethereal;
     }
 
+    public string GetDisplayName()
+    {
+        if (upgraded)
+        {
+            return data.cardName + "+";
+        }
+
+        return data.cardName;
+    }
+
+    public string GetDisplayDescription()
+    {
+        if (upgraded &&
+            !string.IsNullOrEmpty(data.upgradedDescription))
+        {
+            return data.upgradedDescription;
+        }
+
+        return data.description;
+    }
+
+    public bool Upgrade()
+    {
+        if (upgraded || data == null)
+        {
+            return false;
+        }
+
+        if (data.upgradeType == CardUpgradeType.CostReduction)
+        {
+            currentCost = Mathf.Max(0, currentCost - 1);
+        }
+
+        upgraded = true;
+
+        return true;
+    }
 
 
     // =====================================================

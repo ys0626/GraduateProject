@@ -1,3 +1,4 @@
+
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,7 +12,10 @@ public class MapNode
 
     public Vector2 position;
 
+    [NonSerialized]
     public List<MapNode> nextNodes = new List<MapNode>();
+
+    [NonSerialized]
     public List<MapNode> previousNodes = new List<MapNode>();
 
     public bool visited;

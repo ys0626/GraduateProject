@@ -2,9 +2,6 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-/// <summary>
-/// 카드에 카드 그림, 설명, 코스트 등을 채워넣는다
-/// </summary>
 public class CardUI : MonoBehaviour
 {
     [Header("UI")]
@@ -15,6 +12,13 @@ public class CardUI : MonoBehaviour
     [SerializeField] private TMP_Text descriptionText;
 
     [SerializeField] private Image sprite;
+
+    [Header("Upgrade Colors")]
+    [SerializeField] private Color normalNameColor = Color.white;
+
+    [SerializeField]
+    private Color upgradedNameColor =
+        new Color(0.22f, 0.66f, 0.42f);
 
     private CardInstance card;
 
@@ -27,17 +31,28 @@ public class CardUI : MonoBehaviour
 
     public void RefreshUI()
     {
-        nameText.text =
-            card.data.cardName;
+        if (card == null || card.data == null)
+        {
+            return;
+        }
 
-        costText.text =
-            card.currentCost.ToString();
+        nameText.text = card.GetDisplayName();
 
-        descriptionText.text =
-            card.data.description;
+        nameText.color = card.upgraded
+            ? upgradedNameColor
+            : normalNameColor;
 
-        sprite.sprite =
-            card.data.artwork;
+        costText.text = card.currentCost.ToString();
+
+        costText.color =
+            card.upgraded &&
+            card.data.upgradeType == CardUpgradeType.CostReduction
+                ? upgradedNameColor
+                : normalNameColor;
+
+        descriptionText.text = card.GetDisplayDescription();
+
+        sprite.sprite = card.data.artwork;
     }
 
     public CardInstance GetCard()

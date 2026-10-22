@@ -39,6 +39,12 @@ public enum TargetType
     Enemy,
 }
 
+public enum CardUpgradeType
+{
+    EffectUpgrade,
+    CostReduction
+}
+
 [System.Flags]
 public enum CardTag
 {
