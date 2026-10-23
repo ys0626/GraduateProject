@@ -124,6 +124,8 @@ public class BattleManager : MonoBehaviour
     private void InitializeBattle()
     {
         battleEnded = false;
+        relicBattleStarted = false;
+
         isBusy = true;
         turnCount = 1;
 
@@ -208,28 +210,53 @@ public class BattleManager : MonoBehaviour
     {
         isBusy = true;
 
-        // 턴 시작 시 Block 제거
+        // 플레이어 턴 시작 시 방어도 초기화
         currentTurnEntity.Block = 0;
 
-        // 에너지 회복
+        // 기본 에너지 회복
         RecoverEnergy(currentTurnEntity);
+
+        RelicManager relicManager = RelicManager.EnsureInstance();
+
+        // 전투 시작 유물 효과: 전투당 한 번
+        if (!relicBattleStarted)
+        {
+            relicBattleStarted = true;
+
+            relicManager.NotifyBattleStarted(
+                GameData.instance.player,
+                GameData.instance.enemy
+            );
+        }
+
+        if (battleEnded)
+            yield break;
+
+        // 플레이어 턴 시작 유물 효과
+        relicManager.NotifyTurnStarted(
+            GameData.instance.player
+        );
+
+        if (battleEnded)
+            yield break;
 
         // 카드 드로우
         yield return StartCoroutine(DrawPlayerCardsRoutine());
 
+        if (battleEnded)
+            yield break;
+
         isBusy = false;
 
-        // =====================================================
         // AI가 플레이하는 경우
-        // =====================================================
-
         if (GetCurrentController() != null)
         {
             yield return new WaitForSeconds(0.5f);
 
             yield return StartCoroutine(AIPlayRoutine());
 
-            EndTurn();
+            if (!battleEnded)
+                EndTurn();
         }
     }
 
@@ -261,10 +288,21 @@ public class BattleManager : MonoBehaviour
         // 손패 버리기
         yield return StartCoroutine(DiscardPlayerHandRoutine());
 
-        // 턴 종료 시 디버프들의 지속 턴 수를 1만큼 감소
+        if (battleEnded)
+            yield break;
+
+        // 플레이어 턴 종료 유물 효과
+        RelicManager.EnsureInstance().NotifyTurnEnded(
+            GameData.instance.player
+        );
+
+        // 디버프 지속 시간 감소
         currentTurnEntity.TickStatuses();
 
         yield return new WaitForSeconds(0.2f);
+
+        if (battleEnded)
+            yield break;
 
         StartEnemyTurn();
     }
@@ -440,13 +478,19 @@ public class BattleManager : MonoBehaviour
     // =====================================================
 
     private bool battleEnded;
+    private bool relicBattleStarted;
 
     private void EndBattle(bool playerWin)
     {
-        if (battleEnded) return;
+        if (battleEnded)
+            return;
 
         battleEnded = true;
         isBusy = true;
+
+        // 전투 종료 유물 효과
+        RelicManager.EnsureInstance().NotifyBattleEnded(playerWin);
+
         StopAllCoroutines();
 
         bool autoSimulation =
@@ -467,9 +511,7 @@ public class BattleManager : MonoBehaviour
 
         // 일반 게임에서 패배
         if (!playerWin)
-        {
             return;
-        }
 
         // 일반 게임에서 승리
         if (RewardManager.Instance != null)

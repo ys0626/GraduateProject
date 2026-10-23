@@ -319,8 +319,9 @@ public class GameData : MonoBehaviour
         ClearEntity(enemy);
         ClearCheeseInventory();
 
-        currentEnemyData = null;
+        RelicManager.EnsureInstance().ClearRunRelics();
 
+        currentEnemyData = null;
         currentEnemyName = null;
         currentEnemySprite = null;
         currentEnemyAnimatorController = null;

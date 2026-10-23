@@ -54,6 +54,7 @@ public sealed class MaxHealthRelicEffect : IRelicEffect
         }
 
         GameData.instance.player.MaxHP += MaxHealthAmount;
+        GameData.instance.player.Heal(MaxHealthAmount);
     }
 
     public void OnBattleStarted(Entity owner, Entity opponent) { }

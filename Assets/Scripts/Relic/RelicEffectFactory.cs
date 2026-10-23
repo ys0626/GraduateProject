@@ -22,9 +22,6 @@ public static class RelicEffectFactory
             case RelicEffectType.MaxHealthOnAcquired:
                 return new MaxHealthRelicEffect();
 
-            case RelicEffectType.FirstAttackBonusDamage:
-                return new FirstAttackBonusDamageRelicEffect();
-
             case RelicEffectType.EndTurnBlockIfUnarmored:
                 return new EndTurnBlockIfUnarmoredRelicEffect();
 
@@ -33,9 +30,6 @@ public static class RelicEffectFactory
 
             case RelicEffectType.EveryThirdTurnBonusEnergy:
                 return new EveryThirdTurnBonusEnergyRelicEffect();
-
-            case RelicEffectType.PowerCardRandomDiscount:
-                return new PowerCardRandomDiscountRelicEffect();
 
             case RelicEffectType.SecondTurnBlock:
                 return new SecondTurnBlockRelicEffect();

@@ -800,9 +800,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: fe8f2b9f98cc28849bd8e07427f27191, type: 2}
   - {fileID: 11400000, guid: b9bcd873c37d6d84cab73fcaccba3e5f, type: 2}
   relicPool:
-  - {fileID: 11400000, guid: a84b3f119fda4a119562d28b9d42ca58, type: 2}
   - {fileID: 11400000, guid: 651b51101f1a40b8b25f65b2f2dc33e0, type: 2}
-  - {fileID: 11400000, guid: 15654e9ca9e341cfa871b39ed5c17e64, type: 2}
   - {fileID: 11400000, guid: 4d6ca95c4b5e4c249d43b7d7a8332e5f, type: 2}
   - {fileID: 11400000, guid: 237a796fd44a4c3b82289f867de9d4fc, type: 2}
   - {fileID: 11400000, guid: 4b69f73df4314d5d9c5c20aac6b1b395, type: 2}

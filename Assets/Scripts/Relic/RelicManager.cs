@@ -223,4 +223,105 @@ public class RelicManager : MonoBehaviour
 
         return results;
     }
+
+
+
+
+
+
+
+
+    // =========================
+    // Relic Test Context Menus
+    // =========================
+
+    private void TestAcquireRelic(RelicEffectType effectType)
+    {
+        if (GameData.instance == null)
+        {
+            Debug.LogWarning("GameData 인스턴스가 없습니다.");
+            return;
+        }
+
+        RelicData targetRelic = null;
+
+        foreach (RelicData relic in GameData.instance.RelicPool)
+        {
+            if (relic != null && relic.EffectType == effectType)
+            {
+                targetRelic = relic;
+                break;
+            }
+        }
+
+        if (targetRelic == null)
+        {
+            Debug.LogWarning(
+                "해당 효과 타입의 유물을 RelicPool에서 찾을 수 없습니다: "
+                + effectType);
+            return;
+        }
+
+        RelicInstance result = Acquire(targetRelic, RelicSource.Event);
+
+        if (result != null)
+        {
+            Debug.Log("테스트 유물 획득: " + targetRelic.DisplayName);
+        }
+        else
+        {
+            Debug.LogWarning(
+                "유물을 획득하지 못했습니다. 이미 보유 중인지 확인하세요: "
+                + targetRelic.DisplayName);
+        }
+    }
+
+    [ContextMenu("Relic Test/1. Start Battle Strength")]
+    private void TestStartBattleStrength()
+    {
+        TestAcquireRelic(RelicEffectType.StartBattleStrength);
+    }
+
+    [ContextMenu("Relic Test/2. Start Battle Block")]
+    private void TestStartBattleBlock()
+    {
+        TestAcquireRelic(RelicEffectType.StartBattleBlock);
+    }
+
+    [ContextMenu("Relic Test/3. Max Health On Acquired")]
+    private void TestMaxHealthOnAcquired()
+    {
+        TestAcquireRelic(RelicEffectType.MaxHealthOnAcquired);
+    }
+
+    [ContextMenu("Relic Test/4. End Turn Block If Unarmored")]
+    private void TestEndTurnBlockIfUnarmored()
+    {
+        TestAcquireRelic(RelicEffectType.EndTurnBlockIfUnarmored);
+    }
+
+    [ContextMenu("Relic Test/5. First Turn Bonus Energy")]
+    private void TestFirstTurnBonusEnergy()
+    {
+        TestAcquireRelic(RelicEffectType.FirstTurnBonusEnergy);
+    }
+
+    [ContextMenu("Relic Test/6. Every Third Turn Bonus Energy")]
+    private void TestEveryThirdTurnBonusEnergy()
+    {
+        TestAcquireRelic(RelicEffectType.EveryThirdTurnBonusEnergy);
+    }
+
+    [ContextMenu("Relic Test/7. Second Turn Block")]
+    private void TestSecondTurnBlock()
+    {
+        TestAcquireRelic(RelicEffectType.SecondTurnBlock);
+    }
+
+    [ContextMenu("Relic Test/8. Turn Start Damage")]
+    private void TestTurnStartDamage()
+    {
+        TestAcquireRelic(RelicEffectType.TurnStartDamage);
+    }
+
 }
