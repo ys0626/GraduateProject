@@ -123,7 +123,7 @@ public class RewardManager : MonoBehaviour
             settings.cardChoiceCount
         );
 
-        // TODO: 유물 시스템 구현 후 GenerateRelic() 호출
+        GenerateRelic();
     }
 
     // 보스 전투 보상
@@ -281,85 +281,35 @@ public class RewardManager : MonoBehaviour
     }
 
     // 유물 보상 생성
-    // 현재는 호출하지 않으며 유물 시스템 완성 후 사용
-    //private void GenerateRelic()
-    //{
-    //    if (GameData.instance == null)
-    //    {
-    //        return;
-    //    }
+    private void GenerateRelic()
+    {
+        RelicManager relicManager =
+            RelicManager.EnsureInstance();
 
-    //    RelicData[] pool =
-    //        GameData.instance.RelicPool;
+        List<RelicData> availableRelics =
+            relicManager.DrawRandomAvailableRelics(1);
 
-    //    if (pool == null || pool.Length == 0)
-    //    {
-    //        Debug.LogWarning(
-    //            "Relic Pool이 비어 있습니다."
-    //        );
+        if (availableRelics.Count == 0)
+        {
+            Debug.Log(
+                "이번 런에서 등장 가능한 유물이 없습니다."
+            );
 
-    //        return;
-    //    }
+            return;
+        }
 
-    //    if (RelicManager.Instance == null)
-    //    {
-    //        Debug.LogError(
-    //            "RelicManager.Instance가 없습니다."
-    //        );
+        RelicData selectedRelic = availableRelics[0];
 
-    //        return;
-    //    }
+        RelicReward relicReward = new RelicReward(
+            selectedRelic,
+            RelicSource.Elite
+        );
 
-    //    List<RelicData> candidates =
-    //        new List<RelicData>();
-
-    //    for (int i = 0; i < pool.Length; i++)
-    //    {
-    //        RelicData relic = pool[i];
-
-    //        if (relic == null)
-    //        {
-    //            continue;
-    //        }
-
-    //        if (RelicManager.Instance.HasRelic(
-    //            relic.RelicId))
-    //        {
-    //            continue;
-    //        }
-
-    //        if (!candidates.Contains(relic))
-    //        {
-    //            candidates.Add(relic);
-    //        }
-    //    }
-
-    //    if (candidates.Count == 0)
-    //    {
-    //        Debug.LogWarning(
-    //            "현재 획득하지 않은 유물이 없습니다."
-    //        );
-
-    //        return;
-    //    }
-
-    //    int randomIndex =
-    //        Random.Range(0, candidates.Count);
-
-    //    RelicData selectedRelic =
-    //        candidates[randomIndex];
-
-    //    RelicReward relicReward =
-    //        new RelicReward(
-    //            selectedRelic,
-    //            RelicSource.Elite
-    //        );
-
-    //    rewards.Add(
-    //        new Reward(
-    //            RewardType.Relic,
-    //            relicReward: relicReward
-    //        )
-    //    );
-    //}
+        rewards.Add(
+            new Reward(
+                RewardType.Relic,
+                relicReward: relicReward
+            )
+        );
+    }
 }

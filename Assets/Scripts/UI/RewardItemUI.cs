@@ -45,6 +45,7 @@ public class RewardItemUI : MonoBehaviour
         }
     }
 
+
     private void UpdateRewardIcon()
     {
         if (rewardIcon == null)
@@ -72,12 +73,21 @@ public class RewardItemUI : MonoBehaviour
                 case RewardType.Card:
                     icon = cardRewardIcon;
                     break;
+
+                case RewardType.Relic:
+                    if (reward.RelicReward != null &&
+                        reward.RelicReward.Relic != null)
+                    {
+                        icon = reward.RelicReward.Relic.Icon;
+                    }
+                    break;
             }
         }
 
         rewardIcon.sprite = icon;
         rewardIcon.enabled = icon != null;
     }
+
 
 
     private void OnClicked()

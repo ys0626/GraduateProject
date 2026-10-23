@@ -171,7 +171,14 @@ public class RewardPanelUI : MonoBehaviour
                     break;
 
                 case RewardType.Relic:
-                    // 유물 시스템 구현 후 연결
+                    if (reward.RelicReward != null &&
+                        reward.RelicReward.Relic != null)
+                    {
+                        CreateRewardItem(
+                            reward,
+                            reward.RelicReward.Relic.DisplayName
+                        );
+                    }
                     break;
             }
         }
@@ -243,7 +250,7 @@ public class RewardPanelUI : MonoBehaviour
                 break;
 
             case RewardType.Relic:
-                // 유물 시스템 구현 후 연결
+                ClaimRelicReward(reward, item);
                 break;
         }
     }
@@ -281,6 +288,37 @@ public class RewardPanelUI : MonoBehaviour
                 PersistentUI.Instance
                     .ShowCheeseInventoryFullPopup();
             }
+        }
+    }
+
+    // 유물 보상 획득
+    private void ClaimRelicReward(
+        Reward reward,
+        RewardItemUI item)
+    {
+        if (reward.RelicReward == null ||
+            reward.RelicReward.Relic == null)
+        {
+            Debug.LogWarning(
+                "[RewardPanelUI] 유물 보상 데이터가 없습니다."
+            );
+
+            return;
+        }
+
+        RelicManager relicManager =
+            RelicManager.EnsureInstance();
+
+        RelicInstance acquiredRelic =
+            relicManager.Acquire(
+                reward.RelicReward.Relic,
+                reward.RelicReward.Source
+            );
+
+        // 실제 획득에 성공했을 때만 보상 항목 제거
+        if (acquiredRelic != null)
+        {
+            RemoveReward(reward, item);
         }
     }
 

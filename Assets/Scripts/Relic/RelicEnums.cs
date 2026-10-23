@@ -3,9 +3,9 @@
 
 public enum RelicSource
 {
-    Shop,
-    Event,
     Elite,
+    Shop,
+    Event
 }
 
 // 유물 효과 구현을 식별하는 키
@@ -14,4 +14,14 @@ public enum RelicSource
 public enum RelicEffectType
 {
     None,
+    StartBattleStrength,
+    StartBattleBlock,
+    MaxHealthOnAcquired,
+    FirstAttackBonusDamage,
+    EndTurnBlockIfUnarmored,
+    FirstTurnBonusEnergy,
+    EveryThirdTurnBonusEnergy,
+    PowerCardRandomDiscount,
+    SecondTurnBlock,
+    TurnStartDamage,
 }

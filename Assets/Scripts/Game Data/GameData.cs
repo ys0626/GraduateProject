@@ -37,8 +37,8 @@ public class GameData : MonoBehaviour
     public CheeseData[] CheeseInventory => cheeseInventory;
     public event Action OnCheeseInventoryChanged;
 
-    //[Header("Relic Reward Pool")]
-    //[SerializeField] private RelicData[] relicPool;
+    [Header("Relic Pool")]
+    [SerializeField] private List<RelicData> relicPool = new List<RelicData>();
 
     private BattleType currentBattleType = BattleType.Normal;
 
@@ -108,7 +108,7 @@ public class GameData : MonoBehaviour
 
     public CardData[] RareCardPool => rareCardPool;
 
-    //public RelicData[] RelicPool => relicPool;
+    public IReadOnlyList<RelicData> RelicPool => relicPool;
 
     public BattleType CurrentBattleType
     {

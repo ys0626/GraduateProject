@@ -1,17 +1,63 @@
 using UnityEngine;
+using UnityEngine.UI;
 
-/// <summary>
-/// 보유 유물 아이콘을 표시하는 UI의 진입점입니다.
-/// 실제 아이콘 프리팹 생성·정렬·툴팁 표시는 유물 UI 제작 단계에서 구현합니다.
-/// </summary>
 public class RelicInventoryUI : MonoBehaviour
 {
-    [SerializeField] private Transform iconContainer;
+    [Header("UI References")]
+    [SerializeField] private Transform relicContainer;
     [SerializeField] private GameObject relicIconPrefab;
 
-    /// <summary>유물 획득 또는 런 로드 후 보유 목록을 다시 그립니다.</summary>
-    public void Refresh()
+    private RelicManager relicManager;
+
+    private void OnEnable()
     {
-        // TODO: RelicManager.Instance.Relics를 읽어 아이콘 UI를 구성한다.
+        relicManager = RelicManager.EnsureInstance();
+
+        relicManager.OnRelicsChanged += RefreshUI;
+
+        RefreshUI();
+    }
+
+    private void OnDisable()
+    {
+        if (relicManager != null)
+        {
+            relicManager.OnRelicsChanged -= RefreshUI;
+        }
+    }
+
+    private void RefreshUI()
+    {
+        if (relicContainer == null || relicIconPrefab == null)
+        {
+            Debug.LogWarning(
+                "RelicInventoryUI: UI 참조가 연결되지 않았습니다.");
+            return;
+        }
+
+        for (int i = relicContainer.childCount - 1; i >= 0; i--)
+        {
+            Destroy(relicContainer.GetChild(i).gameObject);
+        }
+
+        if (relicManager == null)
+            return;
+
+        foreach (RelicInstance relic in relicManager.Relics)
+        {
+            if (relic == null || relic.Data == null)
+                continue;
+
+            GameObject iconObject = Instantiate(
+                relicIconPrefab, relicContainer);
+
+            Image iconImage = iconObject.GetComponent<Image>();
+
+            if (iconImage != null)
+            {
+                iconImage.sprite = relic.Data.Icon;
+                iconImage.preserveAspect = true;
+            }
+        }
     }
 }
