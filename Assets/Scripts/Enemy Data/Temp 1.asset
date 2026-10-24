@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af1b4f9afa4a82940a50d4787765d0fb, type: 3}
   m_Name: Temp 1
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
-  enemyName: temp
-  sprite: {fileID: -990920262, guid: 933d7e717b9571349839bf2d01cb070f, type: 3}
-  animatorController: {fileID: 9100000, guid: d27cfabcb9360f84fb029e648a54a89e, type: 2}
+  enemyName: slime
+  sprite: {fileID: 2083464259699928970, guid: e0242c0d8534874479e288686d5ae675, type: 3}
+  animatorController: {fileID: 9100000, guid: 5afac3ef59ccf77499be89d5ecbcbe9e, type: 2}
   maxHP: 20
   maxEnergy: 3
   starterDeck:

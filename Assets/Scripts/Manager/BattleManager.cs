@@ -16,6 +16,9 @@ public class BattleManager : MonoBehaviour
     private IEntityController playerController;
     private IEntityController enemyController;
 
+    [Header("Presentation")]
+    [SerializeField] private CardPlayPresentation cardPlayPresentation;
+
     /// <summary>
     /// 현재 턴의 Controller를 리턴
     /// </summary>
@@ -124,6 +127,7 @@ public class BattleManager : MonoBehaviour
     private void InitializeBattle()
     {
         battleEnded = false;
+        battleEnding = false;
         relicBattleStarted = false;
 
         isBusy = true;
@@ -141,6 +145,22 @@ public class BattleManager : MonoBehaviour
 
         GameData.instance.player.OnDead += OnPlayerDead;
         GameData.instance.enemy.OnDead += OnEnemyDead;
+
+        // 캐릭터 애니메이션 연출 초기화
+        if (cardPlayPresentation != null)
+        {
+            cardPlayPresentation.Initialize(
+                GameData.instance.player,
+                GameData.instance.enemy
+            );
+        }
+        else
+        {
+            Debug.LogWarning(
+                "BattleManager: CardPlayPresentation이 연결되지 않았습니다.",
+                this
+            );
+        }
     }
 
 
@@ -185,6 +205,39 @@ public class BattleManager : MonoBehaviour
             default:
                 return null;
         }
+    }
+
+    public void SetEnemyAnimatorController(
+    RuntimeAnimatorController controller)
+    {
+        if (cardPlayPresentation == null)
+        {
+            Debug.LogError(
+                "BattleManager: CardPlayPresentation이 연결되지 않았습니다.",
+                this
+            );
+
+            return;
+        }
+
+        cardPlayPresentation.SetEnemyAnimatorController(
+            controller
+        );
+    }
+
+    public void SetEnemyVisual(EnemyData enemyData)
+    {
+        if (cardPlayPresentation == null)
+        {
+            Debug.LogError(
+                "BattleManager: CardPlayPresentation이 연결되지 않았습니다.",
+                this
+            );
+
+            return;
+        }
+
+        cardPlayPresentation.SetEnemyVisual(enemyData);
     }
 
     // =====================================================
@@ -477,21 +530,73 @@ public class BattleManager : MonoBehaviour
     // 전투 결과
     // =====================================================
 
+    [Header("Death Animation")]
+    [SerializeField] private float deathAnimationWait = 1.0f;
+
     private bool battleEnded;
+    private bool battleEnding;
     private bool relicBattleStarted;
 
-    private void EndBattle(bool playerWin)
+    // =====================================================
+    // 전투 종료 및 사망 처리
+    // =====================================================
+
+    private void OnPlayerDead()
+    {
+        BeginBattleEnd(false);
+    }
+
+    private void OnEnemyDead()
+    {
+        BeginBattleEnd(true);
+    }
+
+    private void BeginBattleEnd(bool playerWin)
+    {
+        if (battleEnded || battleEnding)
+            return;
+
+        battleEnding = true;
+        isBusy = true;
+
+        // 진행 중인 턴 및 AI 코루틴 중단
+        StopAllCoroutines();
+
+        // 사망 애니메이션 재생
+        if (cardPlayPresentation != null)
+        {
+            Entity deadEntity = playerWin
+                ? GameData.instance.enemy
+                : GameData.instance.player;
+
+            cardPlayPresentation.PlayDeathAnimation(deadEntity);
+        }
+
+        // 사망 애니메이션이 재생된 후 결과 처리
+        StartCoroutine(
+            FinishBattleAfterDeathAnimation(playerWin)
+        );
+    }
+
+    private IEnumerator FinishBattleAfterDeathAnimation(
+        bool playerWin)
+    {
+        yield return new WaitForSeconds(deathAnimationWait);
+
+        FinishBattle(playerWin);
+    }
+
+    private void FinishBattle(bool playerWin)
     {
         if (battleEnded)
             return;
 
         battleEnded = true;
+        battleEnding = false;
         isBusy = true;
 
         // 전투 종료 유물 효과
         RelicManager.EnsureInstance().NotifyBattleEnded(playerWin);
-
-        StopAllCoroutines();
 
         bool autoSimulation =
             SimulationManager.instance != null &&
@@ -511,7 +616,10 @@ public class BattleManager : MonoBehaviour
 
         // 일반 게임에서 패배
         if (!playerWin)
+        {
+            // 추후 게임 오버 UI 및 런 종료 처리를 추가할 위치
             return;
+        }
 
         // 일반 게임에서 승리
         if (RewardManager.Instance != null)
@@ -520,19 +628,10 @@ public class BattleManager : MonoBehaviour
         }
         else
         {
-            Debug.LogError("RewardManager.Instance가 없습니다.");
+            Debug.LogError(
+                "RewardManager.Instance가 없습니다."
+            );
         }
-    }
-
-
-    private void OnPlayerDead()
-    {
-        EndBattle(false);
-    }
-
-    private void OnEnemyDead()
-    {
-        EndBattle(true);
     }
 
 
@@ -579,6 +678,14 @@ public class BattleManager : MonoBehaviour
         // =====================================================
         // 카드 효과 실행
         // =====================================================
+
+        if (cardPlayPresentation != null)
+        {
+            cardPlayPresentation.PlayCardAnimation(
+                user,
+                card.data.cardType
+            );
+        }
 
         ICardEffect effect = CardEffectFactory.Create(card);
 

@@ -240,9 +240,21 @@ public class GameManager : MonoBehaviour
         // Current Enemy Visual Data
         // -----------------------------------------
 
-        data.SetCurrentEnemy(
-            enemyData
-        );
+        // Current Enemy Visual Data
+
+        data.SetCurrentEnemy(enemyData);
+
+        if (BattleManager.instance != null)
+        {
+            BattleManager.instance.SetEnemyVisual(enemyData);
+        }
+        else
+        {
+            Debug.LogError(
+                "[GameManager] 적 시각 정보를 설정할 때 " +
+                "BattleManager가 없습니다."
+            );
+        }
 
         // -----------------------------------------
         // Initialize Decks
