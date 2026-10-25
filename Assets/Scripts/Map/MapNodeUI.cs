@@ -1,3 +1,5 @@
+
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -6,47 +8,52 @@ public class MapNodeUI : MonoBehaviour
 {
     [Header("Node UI")]
     [SerializeField] private Image background;
-    [SerializeField] private TMP_Text text;
 
-    [Header("Available Node Highlight")]
-    [SerializeField] private Outline nodeOutline;
-    [SerializeField] private Color availableOutlineColor = Color.yellow;
-    [SerializeField] private Color availableTextColor = Color.white;
-    [SerializeField]
-    private Color unavailableColor =
-        new Color(0.55f, 0.55f, 0.55f, 0.65f);
+    [Header("Node Sprites")]
+    [SerializeField] private Sprite startSprite;
+    [SerializeField] private Sprite combatSprite;
+    [SerializeField] private Sprite eliteSprite;
+    [SerializeField] private Sprite eventSprite;
+    [SerializeField] private Sprite shopSprite;
+    [SerializeField] private Sprite restSprite;
+    [SerializeField] private Sprite bossSprite;
 
-    [System.NonSerialized] private MapNode node;
+    [Header("Scale Animation")]
+    [SerializeField] private float scaleMultiplier = 1.15f;
+    [SerializeField] private float animationDuration = 0.7f;
+    [SerializeField] private float animationStartDelay = 0.3f;
 
+
+
+    [Header("Node Appearance")]
+    [SerializeField] private Color visitedColor = new Color(0.7f, 0.7f, 0.7f, 1f);
+
+    private MapNode node;
     private Button button;
-    private Color originalBackgroundColor;
-    private Color originalTextColor;
+
+    private Vector3 originalScale;
+    private Coroutine scaleCoroutine;
 
     private void Awake()
     {
         button = GetComponent<Button>();
-
-        if (nodeOutline == null)
-        {
-            nodeOutline = GetComponent<Outline>();
-        }
-
-        if (nodeOutline != null)
-        {
-            nodeOutline.enabled = false;
-        }
+        originalScale = transform.localScale;
     }
 
     public void Setup(MapNode mapNode)
     {
         node = mapNode;
 
-        text.text = GetNodeText(mapNode.type);
+        SetNodeSprite(mapNode.type);
 
-        SetNodeColor(mapNode.type);
+        if (background != null)
+        {
+            background.enabled = true;
+            background.color = mapNode.visited ? visitedColor : Color.white;
+        }
 
-        originalBackgroundColor = background.color;
-        originalTextColor = text.color;
+        originalScale = transform.localScale;
+        transform.localScale = originalScale;
 
         SetInteractable(false);
     }
@@ -54,92 +61,114 @@ public class MapNodeUI : MonoBehaviour
     public void SetInteractable(bool value)
     {
         if (button != null)
-        {
             button.interactable = value;
+
+        if (scaleCoroutine != null)
+        {
+            StopCoroutine(scaleCoroutine);
+            scaleCoroutine = null;
         }
 
-        if (background != null)
-        {
-            background.color = value
-                ? originalBackgroundColor
-                : originalBackgroundColor * unavailableColor;
-        }
+        transform.localScale = originalScale;
 
-        if (text != null)
-        {
-            text.color = value
-                ? availableTextColor
-                : originalTextColor * unavailableColor;
-        }
+        if (value)
+            scaleCoroutine = StartCoroutine(ScaleAnimation());
+    }
 
-        if (nodeOutline != null)
+    private IEnumerator ScaleAnimation()
+    {
+        float randomDelay = UnityEngine.Random.Range(0f, animationStartDelay);
+        yield return new WaitForSecondsRealtime(randomDelay);
+
+        while (true)
         {
-            nodeOutline.enabled = value;
-            nodeOutline.effectColor = availableOutlineColor;
+            yield return StartCoroutine(
+                ScaleTo(originalScale * scaleMultiplier)
+            );
+
+            yield return StartCoroutine(
+                ScaleTo(originalScale)
+            );
         }
     }
 
-    private string GetNodeText(MapNodeType type)
+    private IEnumerator ScaleTo(Vector3 targetScale)
     {
-        switch (type)
+        Vector3 startScale = transform.localScale;
+        float elapsed = 0f;
+        float duration = Mathf.Max(0.01f, animationDuration);
+
+        while (elapsed < duration)
         {
-            case MapNodeType.Start:
-                return "START";
+            elapsed += Time.unscaledDeltaTime;
 
-            case MapNodeType.Combat:
-                return "COMBAT";
+            float progress = Mathf.Clamp01(elapsed / duration);
 
-            case MapNodeType.Elite:
-                return "ELITE";
+            transform.localScale = Vector3.Lerp(
+                startScale,
+                targetScale,
+                progress
+            );
 
-            case MapNodeType.Event:
-                return "EVENT";
-
-            case MapNodeType.Shop:
-                return "SHOP";
-
-            case MapNodeType.Rest:
-                return "REST";
-
-            case MapNodeType.Boss:
-                return "BOSS";
-
-            default:
-                return "?";
+            yield return null;
         }
+
+        transform.localScale = targetScale;
     }
 
-    private void SetNodeColor(MapNodeType type)
+    private void SetNodeSprite(MapNodeType type)
     {
+        Sprite selectedSprite = null;
+
         switch (type)
         {
             case MapNodeType.Start:
-                background.color = Color.white;
+                selectedSprite = startSprite;
                 break;
 
             case MapNodeType.Combat:
-                background.color = Color.gray;
+                selectedSprite = combatSprite;
                 break;
 
             case MapNodeType.Elite:
-                background.color = Color.red;
+                selectedSprite = eliteSprite;
                 break;
 
             case MapNodeType.Event:
-                background.color = Color.yellow;
+                selectedSprite = eventSprite;
                 break;
 
             case MapNodeType.Shop:
-                background.color = Color.green;
+                selectedSprite = shopSprite;
                 break;
 
             case MapNodeType.Rest:
-                background.color = Color.cyan;
+                selectedSprite = restSprite;
                 break;
 
             case MapNodeType.Boss:
-                background.color = Color.magenta;
+                selectedSprite = bossSprite;
                 break;
         }
+
+        if (background == null)
+        {
+            Debug.LogError(
+                "MapNodeUI: Background Image가 할당되지 않았습니다.",
+                this
+            );
+            return;
+        }
+
+        if (selectedSprite == null)
+        {
+            Debug.LogError(
+                $"MapNodeUI: {type} 노드의 스프라이트가 할당되지 않았습니다.",
+                this
+            );
+            return;
+        }
+
+        background.sprite = selectedSprite;
     }
 }

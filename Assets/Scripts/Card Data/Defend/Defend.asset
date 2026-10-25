@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: "\uC218\uBE44"
   description: "\uBC29\uC5B4\uB3C4\uB97C 5 \uC5BB\uC2B5\uB2C8\uB2E4."
-  artwork: {fileID: 412434694075372973, guid: 5d88fcb8b116f3f47b2ff3acba297ddb, type: 3}
+  artwork: {fileID: 412434694075372973, guid: 8837257d73621f041a57871c89b6fd5c, type: 3}
   upgradeType: 0
   upgradedDescription: "\uBC29\uC5B4\uB3C4\uB97C <color=#39A96B>8</color> \uC5BB\uC2B5\uB2C8\uB2E4."
   cost: 1

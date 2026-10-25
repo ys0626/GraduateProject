@@ -15,7 +15,7 @@ MonoBehaviour:
   cardName: "\uAC15\uD0C0"
   description: "\uD53C\uD574\uB97C 8 \uC90D\uB2C8\uB2E4.\r\n\uCDE8\uC57D\uC744 2
     \uBD80\uC5EC\uD569\uB2C8\uB2E4."
-  artwork: {fileID: -7186194909302163070, guid: a3dfdbb8c2d02c54cbfb47097cbdca9b, type: 3}
+  artwork: {fileID: -7186194909302163070, guid: 5182444b17c38f14bba6debb22defef9, type: 3}
   upgradeType: 0
   upgradedDescription: "\uD53C\uD574\uB97C <color=#39A96B>10</color> \uC90D\uB2C8\uB2E4.\r\n\uCDE8\uC57D\uC744
     <color=#39A96B>3</color> \uBD80\uC5EC\uD569\uB2C8\uB2E4."
