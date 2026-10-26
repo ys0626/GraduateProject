@@ -19,6 +19,24 @@ public class CardPopupManager : MonoBehaviour
     [SerializeField] private Button popupBackgroundButton;
     [SerializeField] private TMP_Text popupTitleText;
 
+    [Header("Banner")]
+    [SerializeField] private RectTransform bannerRectTransform;
+    [SerializeField] private TMP_Text bannerTitleText;
+
+    [Header("Banner Titles")]
+    [SerializeField] private string deckBannerTitle = "덱";
+    [SerializeField] private string drawPileBannerTitle = "뽑을 카드 더미";
+    [SerializeField] private string discardPileBannerTitle = "버린 카드 더미";
+    [SerializeField] private string exhaustPileBannerTitle = "소멸된 카드 더미";
+    [SerializeField] private string upgradableDeckBannerTitle = "강화할 카드를 선택하세요!";
+
+    [Header("Banner Width")]
+    [SerializeField] private float deckBannerWidth = 180f;
+    [SerializeField] private float drawPileBannerWidth = 300f;
+    [SerializeField] private float discardPileBannerWidth = 270f;
+    [SerializeField] private float exhaustPileBannerWidth = 300f;
+    [SerializeField] private float upgradableDeckBannerWidth = 400f;
+
     [Header("Card List")]
     [SerializeField] private Transform contentRoot;
     [SerializeField] private GameObject cardSelectionPrefab;
@@ -377,6 +395,8 @@ public class CardPopupManager : MonoBehaviour
             popupTitleText.text = title;
         }
 
+        UpdateBanner(popupId);
+
         foreach (CardInstance card in cards)
         {
             GameObject cardObject = Instantiate(
@@ -444,6 +464,60 @@ public class CardPopupManager : MonoBehaviour
         isClosing = false;
 
         transitionCoroutine = null;
+    }
+
+    // =====================================================
+    // 배너 텍스트 및 너비 설정
+    // =====================================================
+
+    private void UpdateBanner(string popupId)
+    {
+        string bannerTitle;
+        float bannerWidth;
+
+        switch (popupId)
+        {
+            case "PlayerDeck":
+                bannerTitle = deckBannerTitle;
+                bannerWidth = deckBannerWidth;
+                break;
+
+            case "DrawPile":
+                bannerTitle = drawPileBannerTitle;
+                bannerWidth = drawPileBannerWidth;
+                break;
+
+            case "DiscardPile":
+                bannerTitle = discardPileBannerTitle;
+                bannerWidth = discardPileBannerWidth;
+                break;
+
+            case "ExhaustPile":
+                bannerTitle = exhaustPileBannerTitle;
+                bannerWidth = exhaustPileBannerWidth;
+                break;
+
+            case "UpgradableDeck":
+                bannerTitle = upgradableDeckBannerTitle;
+                bannerWidth = upgradableDeckBannerWidth;
+                break;
+
+            default:
+                return;
+        }
+
+        if (bannerTitleText != null)
+        {
+            bannerTitleText.text = bannerTitle;
+        }
+
+        if (bannerRectTransform != null)
+        {
+            bannerRectTransform.SetSizeWithCurrentAnchors(
+                RectTransform.Axis.Horizontal,
+                bannerWidth
+            );
+        }
     }
 
     // =====================================================

@@ -154,7 +154,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 0, y: 8}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: -20, y: 45}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!222 &70464788
@@ -304,7 +304,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 0, y: 8}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: -20, y: 45}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!222 &224582548
@@ -484,7 +484,7 @@ GameObject:
   - component: {fileID: 494478996}
   - component: {fileID: 494478995}
   m_Layer: 0
-  m_Name: Skip Button
+  m_Name: Continue Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -529,7 +529,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 0.15686275, g: 0.4862745, b: 0.5137255, a: 1}
     m_HighlightedColor: {r: 0.22352941, g: 0.6039216, b: 0.627451, a: 1}
@@ -574,8 +574,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 649223268058989734, guid: 1d35d144a34f88f4ab77b4e3bbf0bc88, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -644,7 +644,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShopCardSlotUI
   cardContainer: {fileID: 1963326555}
-  cardPrefab: {fileID: 62877545723522108, guid: d51a589c1bf1b6a41b6bdc8dc6a2e890, type: 3}
+  cardPrefab: {fileID: -5894113173078379296, guid: 54bf70075795041429aec4b4d68c10a5, type: 3}
   priceText: {fileID: 1850788572}
   goldIcon: {fileID: 1381401605}
 --- !u!222 &502001213
@@ -844,7 +844,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShopCardSlotUI
   cardContainer: {fileID: 1795973582}
-  cardPrefab: {fileID: 62877545723522108, guid: d51a589c1bf1b6a41b6bdc8dc6a2e890, type: 3}
+  cardPrefab: {fileID: -5894113173078379296, guid: 54bf70075795041429aec4b4d68c10a5, type: 3}
   priceText: {fileID: 1683441308}
   goldIcon: {fileID: 999130530}
 --- !u!222 &892438947
@@ -956,7 +956,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -46, y: 0}
-  m_SizeDelta: {x: 60, y: 60}
+  m_SizeDelta: {x: 70, y: 70}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &999130530
 MonoBehaviour:
@@ -978,7 +978,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -3988769855312385993, guid: 6245437517051ca4e9e0ff4c46bc3e03, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 6245437517051ca4e9e0ff4c46bc3e03, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1031,7 +1031,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 0, y: 8}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: -20, y: 45}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!222 &1019277691
@@ -1089,7 +1089,7 @@ GameObject:
   - component: {fileID: 1292289565}
   - component: {fileID: 1292289564}
   m_Layer: 0
-  m_Name: Skip Text
+  m_Name: Continue Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1378,7 +1378,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -46, y: 0}
-  m_SizeDelta: {x: 60, y: 60}
+  m_SizeDelta: {x: 70, y: 70}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1381401605
 MonoBehaviour:
@@ -1400,7 +1400,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -3988769855312385993, guid: 6245437517051ca4e9e0ff4c46bc3e03, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 6245437517051ca4e9e0ff4c46bc3e03, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1590,7 +1590,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 0, y: 8}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: -20, y: 45}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!222 &1434431251
@@ -1653,7 +1653,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShopCardSlotUI
   cardContainer: {fileID: 2123907814}
-  cardPrefab: {fileID: 62877545723522108, guid: d51a589c1bf1b6a41b6bdc8dc6a2e890, type: 3}
+  cardPrefab: {fileID: -5894113173078379296, guid: 54bf70075795041429aec4b4d68c10a5, type: 3}
   priceText: {fileID: 2071664410}
   goldIcon: {fileID: 1719477954}
 --- !u!222 &1576557052
@@ -1898,7 +1898,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -46, y: 0}
-  m_SizeDelta: {x: 60, y: 60}
+  m_SizeDelta: {x: 70, y: 70}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1719477954
 MonoBehaviour:
@@ -1920,7 +1920,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -3988769855312385993, guid: 6245437517051ca4e9e0ff4c46bc3e03, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 6245437517051ca4e9e0ff4c46bc3e03, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1973,7 +1973,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -46, y: 0}
-  m_SizeDelta: {x: 60, y: 60}
+  m_SizeDelta: {x: 70, y: 70}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1766606777
 MonoBehaviour:
@@ -1995,7 +1995,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -3988769855312385993, guid: 6245437517051ca4e9e0ff4c46bc3e03, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 6245437517051ca4e9e0ff4c46bc3e03, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -2272,7 +2272,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShopCardSlotUI
   cardContainer: {fileID: 1247220695}
-  cardPrefab: {fileID: 62877545723522108, guid: d51a589c1bf1b6a41b6bdc8dc6a2e890, type: 3}
+  cardPrefab: {fileID: -5894113173078379296, guid: 54bf70075795041429aec4b4d68c10a5, type: 3}
   priceText: {fileID: 1388064674}
   goldIcon: {fileID: 1766606777}
 --- !u!222 &2040914966

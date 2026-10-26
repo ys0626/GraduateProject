@@ -35,7 +35,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 40}
+  m_AnchoredPosition: {x: -20, y: 40}
   m_SizeDelta: {x: 140, y: 140}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6016630816980599623
@@ -180,9 +180,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShopItemUI
   itemIcon: {fileID: 667545403318438238}
-  priceText: {fileID: 0}
+  priceText: {fileID: 492133836363695651}
   iconButton: {fileID: 5009569130606323033}
-  goldIcon: {fileID: 0}
+  goldIcon: {fileID: 2752209342457121434}
 --- !u!1 &6438030242374225002
 GameObject:
   m_ObjectHideFlags: 0
@@ -294,7 +294,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -3988769855312385993, guid: 6245437517051ca4e9e0ff4c46bc3e03, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 6245437517051ca4e9e0ff4c46bc3e03, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -338,7 +338,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 22.46368, y: 0}
+  m_AnchoredPosition: {x: 16.7, y: 0}
   m_SizeDelta: {x: 74.9274, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1634447911742146157

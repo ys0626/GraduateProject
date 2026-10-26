@@ -164,4 +164,18 @@ public class SceneChanger : MonoBehaviour
         color.a = alpha;
         fadeImage.color = color;
     }
+
+
+
+
+
+
+
+    //테스트용
+    [ContextMenu("Debug/Force Move To ShopScene")]
+    private void ForceMoveToShopScene()
+    {
+        isChangingScene = false;
+        ChangeScene("ShopScene");
+    }
 }

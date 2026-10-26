@@ -134,12 +134,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MapNodeUI
   background: {fileID: 5112047770198327880}
-  startSprite: {fileID: 5096295965786666615, guid: a84ed73fedd7604449314c910bb3a3e1, type: 3}
-  combatSprite: {fileID: -458045230797359096, guid: 6a09e74c0ec7c40469235dc1f9e7ade9, type: 3}
-  eliteSprite: {fileID: -2062538214534799615, guid: fd0733fc2e015bc4e912567a44edc6b9, type: 3}
-  eventSprite: {fileID: 9062061421838133808, guid: b724c74a45276634091793cfe1e5a4f9, type: 3}
-  shopSprite: {fileID: -424817534095123940, guid: 9aec32c1b04f7dd4cbac8c7fc17174c4, type: 3}
-  restSprite: {fileID: 8852556843388091105, guid: 36f46ee158abb8b4e9db34c3f64f33b5, type: 3}
+  startSprite: {fileID: 21300000, guid: a84ed73fedd7604449314c910bb3a3e1, type: 3}
+  combatSprite: {fileID: 21300000, guid: 6a09e74c0ec7c40469235dc1f9e7ade9, type: 3}
+  eliteSprite: {fileID: 21300000, guid: fd0733fc2e015bc4e912567a44edc6b9, type: 3}
+  eventSprite: {fileID: 21300000, guid: b724c74a45276634091793cfe1e5a4f9, type: 3}
+  shopSprite: {fileID: 21300000, guid: 9aec32c1b04f7dd4cbac8c7fc17174c4, type: 3}
+  restSprite: {fileID: 21300000, guid: 36f46ee158abb8b4e9db34c3f64f33b5, type: 3}
   bossSprite: {fileID: -5681640962327379480, guid: 7c0d8504e799f8b4aac01b3f1213aba0, type: 3}
   scaleMultiplier: 1.15
   animationDuration: 0.7

@@ -226,6 +226,6 @@ public class CardView : MonoBehaviour,
 
     private bool IsPlayArea()
     {
-        return transform.position.y > Screen.height * 0.4f;
+        return transform.position.y > Screen.height * 0.37f;
     }
 }

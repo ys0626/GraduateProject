@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CheeseData
   cheeseName: "\uC791\uC740 \uCE58\uC988"
   cheeseType: 0
-  icon: {fileID: 6808049481694032497, guid: d2fb2dce42e38c5408d04f785c279122, type: 3}
+  icon: {fileID: 21300000, guid: 69e3a396b911a924abf9e9cfefe61367, type: 3}
   effectAmount: 10

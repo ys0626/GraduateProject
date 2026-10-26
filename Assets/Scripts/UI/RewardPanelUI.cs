@@ -1,4 +1,3 @@
-
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -6,6 +5,7 @@ using UnityEngine.UI;
 public class RewardPanelUI : MonoBehaviour
 {
     [Header("Reward Panel")]
+    [SerializeField] private GameObject backgroundDimmer;
     [SerializeField] private GameObject panel;
     [SerializeField] private Transform rewardContent;
     [SerializeField] private RewardItemUI rewardItemPrefab;
@@ -87,6 +87,11 @@ public class RewardPanelUI : MonoBehaviour
             cardChoicePanel.SetActive(false);
         }
 
+        if (backgroundDimmer != null)
+        {
+            backgroundDimmer.SetActive(true);
+        }
+
         if (panel != null)
         {
             panel.SetActive(true);
@@ -100,6 +105,11 @@ public class RewardPanelUI : MonoBehaviour
         if (panel != null)
         {
             panel.SetActive(false);
+        }
+
+        if (backgroundDimmer != null)
+        {
+            backgroundDimmer.SetActive(false);
         }
 
         if (cardChoicePanel != null)
@@ -158,7 +168,6 @@ public class RewardPanelUI : MonoBehaviour
                     break;
 
                 case RewardType.Card:
-                    // 카드가 여러 장이어도 보상 항목은 하나만 표시
                     if (!cardRewardDisplayed)
                     {
                         cardRewardItem = CreateRewardItem(
@@ -315,7 +324,6 @@ public class RewardPanelUI : MonoBehaviour
                 reward.RelicReward.Source
             );
 
-        // 실제 획득에 성공했을 때만 보상 항목 제거
         if (acquiredRelic != null)
         {
             RemoveReward(reward, item);
@@ -446,7 +454,6 @@ public class RewardPanelUI : MonoBehaviour
             return;
         }
 
-        // 실제 덱에는 선택한 카드 한 장만 추가
         PlayerDeckManager.instance.AddCardToPlayerDeck(
             cardData
         );
@@ -484,8 +491,6 @@ public class RewardPanelUI : MonoBehaviour
             return;
         }
 
-        // 카드를 획득하지 않고 선택 창만 닫는다.
-        // 카드 보상 버튼과 보상 데이터는 유지한다.
         cardChoiceOpen = false;
 
         if (cardChoicePanel != null)
@@ -494,10 +499,8 @@ public class RewardPanelUI : MonoBehaviour
         }
     }
 
-
     private void CompleteCardReward()
     {
-        // 카드 보상 선택지 전체 제거
         for (int i = currentRewards.Count - 1; i >= 0; i--)
         {
             Reward reward = currentRewards[i];

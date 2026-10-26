@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: d0e1e22c71c522f4dae7fac6572a501f
+guid: 64d55b1238bc6664d9b4f43a0e47fe9b
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 67889581787853513
-    second: Large Normal Cheese_0
+      213: -6725206303404788246
+    second: Small Rotten Cheese_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -37,7 +37,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -46,7 +46,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 2
+  spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -74,7 +74,7 @@ TextureImporter:
     buildTarget: DefaultTexturePlatform
     maxTextureSize: 2048
     resizeAlgorithm: 0
-    textureFormat: -1
+    textureFormat: 4
     textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Large Normal Cheese_0
+      name: Small Rotten Cheese_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 287
-        height: 294
+        x: 13
+        y: 4
+        width: 108
+        height: 121
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 9c23a66073131f000800000000000000
-      internalID: 67889581787853513
+      spriteID: ae5f65caf744ba2a0800000000000000
+      internalID: -6725206303404788246
       vertices: []
       indices: 
       edges: []
@@ -125,7 +125,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 5e97eb03825dee720800000000000000
     internalID: 0
     vertices: []
     indices: 
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Large Normal Cheese_0: 67889581787853513
+      Small Rotten Cheese_0: -6725206303404788246
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
