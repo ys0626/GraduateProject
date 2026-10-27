@@ -1,3 +1,4 @@
+using UnityEngine.InputSystem;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -54,6 +55,15 @@ public class CardView : MonoBehaviour,
 
     private void Update()
     {
+        // 좌클릭 드래그 중 우클릭하면 카드 사용 취소
+        if (isDragging &&
+        Mouse.current != null &&
+        Mouse.current.rightButton.wasPressedThisFrame)
+        {
+            CancelDrag();
+            return;
+        }
+
         if (isDragging)
         {
             // 드래그 중 위치 추적
@@ -217,6 +227,24 @@ public class CardView : MonoBehaviour,
 
         transform.SetParent(startParent);
 
+        HandManager.instance.UpdateLayout();
+    }
+
+    // =====================================================
+    // 우클릭으로 드래그 취소
+    // =====================================================
+
+    private void CancelDrag()
+    {
+        isDragging = false;
+
+        // 원래 손패의 부모 오브젝트로 복귀
+        transform.SetParent(startParent);
+
+        // 카드 크기 원상 복구
+        AnimateScale(originalScale, 0.1f);
+
+        // 손패 배치 갱신
         HandManager.instance.UpdateLayout();
     }
 
