@@ -1,4 +1,5 @@
 
+using UnityEngine.SceneManagement;
 using System.Collections;
 using TMPro;
 using UnityEngine;
@@ -8,6 +9,9 @@ public class PersistentUI : MonoBehaviour
 {
     private static PersistentUI instance;
     public static PersistentUI Instance => instance;
+
+    [Header("Visibility")]
+    [SerializeField] private GameObject gameUIRoot;
 
     [Header("HP")]
     [SerializeField] private TMP_Text hpText;
@@ -31,6 +35,10 @@ public class PersistentUI : MonoBehaviour
     [Header("Deck")]
     [SerializeField] private TMP_Text deckCountText;
     [SerializeField] private Transform deckCountTransform;
+
+    [Header("Settings")]
+    [SerializeField] private Button settingButton;
+    [SerializeField] private SettingPanelUI settingPanelUI;
 
     private Entity player;
     private GameData subscribedGameData;
@@ -65,10 +73,35 @@ public class PersistentUI : MonoBehaviour
         {
             cheeseFullPopup.SetActive(false);
         }
+
+        // 설정 버튼 이벤트 등록
+        if (settingButton != null && settingPanelUI != null)
+        {
+            settingButton.onClick.AddListener(settingPanelUI.Toggle);
+        }
+        else
+        {
+            Debug.LogWarning(
+                "[PersistentUI] Setting Button 또는 SettingPanelUI가 연결되지 않았습니다."
+            );
+        }
+    }
+
+    private void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
     private void Start()
     {
+        // 현재 씬에 맞게 UI 표시 상태 설정
+        UpdateVisibility(SceneManager.GetActiveScene().name);
+
         SetupCheeseSlots();
 
         BindPlayer();
@@ -76,6 +109,29 @@ public class PersistentUI : MonoBehaviour
 
         UpdateAll(false);
         RefreshCheeseSlots();
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        UpdateVisibility(scene.name);
+    }
+
+    private void UpdateVisibility(string sceneName)
+    {
+        if (gameUIRoot == null)
+        {
+            Debug.LogWarning(
+                "[PersistentUI] Game UI Root가 연결되지 않았습니다."
+            );
+            return;
+        }
+
+        bool shouldShow = sceneName != "MainMenuScene";
+
+        if (gameUIRoot.activeSelf != shouldShow)
+        {
+            gameUIRoot.SetActive(shouldShow);
+        }
     }
 
     private void Update()

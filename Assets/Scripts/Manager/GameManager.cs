@@ -38,7 +38,12 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        InitNewGame();
+        if (GameSessionManager.instance == null)
+        {
+            Debug.LogError(
+                "[GameManager] GameSessionManager가 없습니다."
+            );
+        }
     }
 
     private void OnDestroy()

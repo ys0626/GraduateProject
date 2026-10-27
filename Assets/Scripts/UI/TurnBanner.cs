@@ -43,7 +43,7 @@ public class TurnBanner : MonoBehaviour
         bool isPlayerTurn =
             phase == BattleManager.BattlePhase.PlayerTurn;
 
-        string phaseText = isPlayerTurn ? "Player" : "Enemy";
+        string phaseText = isPlayerTurn ? "플레이어 차례" : "적 차례";
 
         Color phaseColor =
             isPlayerTurn ? playerTurnColor : enemyTurnColor;
@@ -53,7 +53,7 @@ public class TurnBanner : MonoBehaviour
 
         // 한 줄 + 부분 색상 적용
         turnText.text =
-            $"Turn {turnCount} <color=#{colorHex}>{phaseText}</color>";
+            $"턴 {turnCount} <color=#{colorHex}>{phaseText}</color>";
 
         routine = StartCoroutine(ShowRoutine());
     }

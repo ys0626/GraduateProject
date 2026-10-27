@@ -70,11 +70,39 @@ public class SceneChanger : MonoBehaviour
     {
         ChangeScene("RestScene");
     }
+    public void GoToMainMenuScene()
+    {
+        ChangeScene("MainMenuScene");
+    }
+
+    public void ResumeGame()
+    {
+        if (GameSessionManager.instance == null)
+        {
+            Debug.LogError(
+                "[SceneChanger] GameSessionManager가 없습니다."
+            );
+
+            return;
+        }
+
+        string sceneName =
+            GameSessionManager.instance.GetResumeSceneName();
+
+        ChangeScene(sceneName);
+    }
 
     public void ChangeScene(string sceneName)
     {
         if (isChangingScene)
             return;
+
+        if (GameSessionManager.instance != null)
+        {
+            GameSessionManager.instance.RecordCurrentScene(
+                SceneManager.GetActiveScene().name
+            );
+        }
 
         StartCoroutine(ChangeSceneRoutine(sceneName));
     }

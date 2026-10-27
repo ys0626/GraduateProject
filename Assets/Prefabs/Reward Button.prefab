@@ -296,8 +296,8 @@ MonoBehaviour:
   button: {fileID: 4747589667343936652}
   rewardText: {fileID: 2189404288345266815}
   rewardIcon: {fileID: 6147559169907631825}
-  goldRewardIcon: {fileID: 21300042, guid: 1eaee135ce037439d925cee5e41ce026, type: 3}
-  cardRewardIcon: {fileID: 3236690982541634959, guid: 2dfea4a51896446408cfb5bd25b171ba, type: 3}
+  goldRewardIcon: {fileID: 21300000, guid: 6245437517051ca4e9e0ff4c46bc3e03, type: 3}
+  cardRewardIcon: {fileID: 21300000, guid: 7b34065c2ab66b044848f758a14e3054, type: 3}
 --- !u!1 &954120322396064410
 GameObject:
   m_ObjectHideFlags: 0

@@ -153,7 +153,7 @@ public class RewardPanelUI : MonoBehaviour
                 case RewardType.Gold:
                     CreateRewardItem(
                         reward,
-                        "+" + reward.GoldAmount + " Gold"
+                        "+" + reward.GoldAmount + " 골드"
                     );
                     break;
 
