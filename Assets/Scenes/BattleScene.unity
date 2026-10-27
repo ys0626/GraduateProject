@@ -3426,14 +3426,14 @@ MonoBehaviour:
   autoSimulation: 1
   totalBattleCount: 300
   timeScale: 100
-  enableDynamicSearch: 0
+  enableDynamicSearch: 1
   enableHeuristicRollout: 0
-  enableEarlyStop: 0
-  enableCaching: 0
+  enableEarlyStop: 1
+  enableCaching: 1
   earlyCutoffVisitThreshold: 30
-  enableTreeReuse: 0
+  enableTreeReuse: 1
   enableHeuristicActionPruning: 0
-  enableLethalCheck: 0
+  enableLethalCheck: 1
   enableImprovedEvaluation: 1
   searchBudgetMode: 0
   fixedSimulationBudget: 1000

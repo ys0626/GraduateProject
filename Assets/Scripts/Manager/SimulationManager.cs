@@ -61,10 +61,12 @@ public class SimulationManager : MonoBehaviour
     [SerializeField] private bool enableImprovedEvaluation = false;
 
     [Header("Search Budget")]
-    [Tooltip("MCTS는 동적 탐색을 끈 경우에만 사용합니다. MCTSVanilla는 항상 Fixed Simulation Budget을 사용합니다.")]
+    [Tooltip("MCTS는 동적 탐색을 끈 경우에만 사용합니다. MCTSVanilla는 아래 Vanilla Simulation Budget을 사용합니다.")]
     [SerializeField] private MCTSSearchBudgetMode searchBudgetMode = MCTSSearchBudgetMode.FixedSimulationCount;
-    [Min(1)] [SerializeField] private int fixedSimulationBudget = 100;
+    [Min(1)] [SerializeField] private int fixedSimulationBudget = 100; // MCTS 전용
     [Min(0.1f)] [SerializeField] private float timeBudgetMilliseconds = 5f;
+    [Tooltip("MCTSVanilla의 탐색당 반복 횟수입니다. MCTS 설정과 무관하게 항상 이 값을 사용합니다.")]
+    [Min(1)] [SerializeField] private int vanillaSimulationBudget = 1000;
 
     private int currentBattle;
 
@@ -123,7 +125,8 @@ public class SimulationManager : MonoBehaviour
         !enableDynamicSearch && searchBudgetMode == MCTSSearchBudgetMode.FixedSimulationCount;
     public bool UseTimeBudget =>
         !enableDynamicSearch && searchBudgetMode == MCTSSearchBudgetMode.TimeLimit;
-    public int FixedSimulationBudget => Mathf.Max(1, fixedSimulationBudget); // MCTSVanilla도 이 값을 사용
+    public int FixedSimulationBudget => Mathf.Max(1, fixedSimulationBudget); // MCTS 전용
+    public int VanillaSimulationBudget => Mathf.Max(1, vanillaSimulationBudget); // MCTSVanilla 전용
     public double TimeBudgetMilliseconds => Mathf.Max(0.1f, timeBudgetMilliseconds);
 
     /// <summary>
@@ -159,7 +162,7 @@ public class SimulationManager : MonoBehaviour
             if (playerControllerType == ControllerType.MCTSVanilla ||
                 enemyControllerType == ControllerType.MCTSVanilla)
             {
-                label += $"_Vanilla{FixedSimulationBudget}";
+                label += $"_Vanilla{VanillaSimulationBudget}";
             }
 
             return label;

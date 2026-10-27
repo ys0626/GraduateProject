@@ -6,7 +6,7 @@ using Stopwatch = System.Diagnostics.Stopwatch;
 /// 바닐라 MCTS 알고리즘
 /// 동적 탐색, 휴리스틱 롤아웃, 조기 종료, 캐싱, Tree Reuse를 모두 사용하지 않는 기본 구조의 MCTS
 /// 기법별 효과를 비교하기 위한 기준선이며, 기존 MCTS 클래스(MCTSSearch, MCTSNode 등)는 사용하지 않는다.
-/// 탐색 방식 관련 플래그는 참조하지 않고, 반복 횟수만 SimulationManager의 고정 반복 횟수를 따른다.
+/// 탐색 방식 관련 플래그는 참조하지 않고, 반복 횟수만 SimulationManager의 바닐라 전용 반복 횟수(VanillaSimulationBudget)를 따른다.
 /// </summary>
 public class MCTSVanillaController : IEntityController
 {
@@ -14,7 +14,7 @@ public class MCTSVanillaController : IEntityController
     // 설정값
     // =====================================================
 
-    private const int FIXED_ITERATIONS = 1000; // SimulationManager가 없을 때 사용하는 반복 횟수, 있을 때는 SimulationManager의 고정 반복 횟수를 따름
+    private const int FIXED_ITERATIONS = 1000; // SimulationManager가 없을 때 사용하는 반복 횟수, 있을 때는 SimulationManager의 VanillaSimulationBudget을 따름
     private const float EXPLORATION_CONSTANT = 1.41421356f; // UCT 탐험 상수 (√2, 보상 범위가 [0, 1]일 때의 표준값)
     private const int ROLLOUT_MAX_STEPS = 200; // 롤아웃 최대 진행 횟수 (카드 사용 + 턴 종료), 승패가 나지 않아도 롤아웃이 끝나도록 하는 안전 상한
 
@@ -87,7 +87,7 @@ public class MCTSVanillaController : IEntityController
 
         int iterations =
             SimulationManager.instance != null
-            ? SimulationManager.instance.FixedSimulationBudget
+            ? SimulationManager.instance.VanillaSimulationBudget
             : FIXED_ITERATIONS;
 
         // =================================================
