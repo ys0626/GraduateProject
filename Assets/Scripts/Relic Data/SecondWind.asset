@@ -15,5 +15,5 @@ MonoBehaviour:
   relicId: second_wind
   displayName: Second Wind
   description: At the start of your 2nd turn, gain 14 Block.
-  icon: {fileID: 21300196, guid: 7a90fcdada22c9b429479d5933a03692, type: 3}
+  icon: {fileID: -2273675466988272856, guid: 2b08bb883b3668a498528e309fca6764, type: 3}
   effectType: 9

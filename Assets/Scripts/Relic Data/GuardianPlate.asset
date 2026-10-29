@@ -15,5 +15,5 @@ MonoBehaviour:
   relicId: guardian_plate
   displayName: Guardian Plate
   description: Start each combat with 10 Block.
-  icon: {fileID: 21300176, guid: 7a90fcdada22c9b429479d5933a03692, type: 3}
+  icon: {fileID: -6672341960482427949, guid: 2b08bb883b3668a498528e309fca6764, type: 3}
   effectType: 2

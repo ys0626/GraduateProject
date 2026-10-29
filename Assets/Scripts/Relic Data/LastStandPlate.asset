@@ -15,5 +15,5 @@ MonoBehaviour:
   relicId: last_stand_plate
   displayName: Last Stand Plate
   description: At the end of your turn, if you have no Block, gain 6 Block.
-  icon: {fileID: 21300178, guid: 7a90fcdada22c9b429479d5933a03692, type: 3}
+  icon: {fileID: 7357511471458751604, guid: 2b08bb883b3668a498528e309fca6764, type: 3}
   effectType: 5

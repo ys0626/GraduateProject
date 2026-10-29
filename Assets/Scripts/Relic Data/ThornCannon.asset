@@ -15,5 +15,5 @@ MonoBehaviour:
   relicId: thorn_cannon
   displayName: Thorn Cannon
   description: At the start of your turn, deal 5 damage to the enemy.
-  icon: {fileID: 21300200, guid: 7a90fcdada22c9b429479d5933a03692, type: 3}
+  icon: {fileID: -6242870131932353593, guid: 2b08bb883b3668a498528e309fca6764, type: 3}
   effectType: 10

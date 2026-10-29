@@ -15,5 +15,5 @@ MonoBehaviour:
   relicId: warrior_emblem
   displayName: Warrior Emblem
   description: Start each combat with 1 Strength.
-  icon: {fileID: 21300204, guid: 7a90fcdada22c9b429479d5933a03692, type: 3}
+  icon: {fileID: -4088661093440307702, guid: 2b08bb883b3668a498528e309fca6764, type: 3}
   effectType: 1

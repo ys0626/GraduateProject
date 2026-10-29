@@ -15,5 +15,5 @@ MonoBehaviour:
   relicId: cycle_battery
   displayName: Cycle Battery
   description: Every 3rd turn, gain 1 Energy.
-  icon: {fileID: 21300172, guid: 7a90fcdada22c9b429479d5933a03692, type: 3}
+  icon: {fileID: 1138959466136996873, guid: 2b08bb883b3668a498528e309fca6764, type: 3}
   effectType: 7
