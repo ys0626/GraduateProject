@@ -11,6 +11,9 @@ public abstract class Status
     // 아이콘
     public abstract Sprite Icon { get; }
 
+    //툴팁으로 보여줄 설명
+    public abstract string Description { get; }
+
     // 수치
     // Buff = 효과 수치
     // Debuff = 지속 턴

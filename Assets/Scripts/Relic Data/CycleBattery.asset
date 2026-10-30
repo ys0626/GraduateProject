@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: CycleBattery
   m_EditorClassIdentifier: Assembly-CSharp::RelicData
   relicId: cycle_battery
-  displayName: Cycle Battery
-  description: Every 3rd turn, gain 1 Energy.
+  displayName: "\uC21C\uD658 \uC804\uC9C0"
+  description: "\uB9E4 3\uBC88\uC9F8 \uD134 \uC2DC\uC791 \uC2DC \uC5D0\uB108\uC9C0\uB97C
+    1 \uC5BB\uC2B5\uB2C8\uB2E4."
   icon: {fileID: 1138959466136996873, guid: 2b08bb883b3668a498528e309fca6764, type: 3}
   effectType: 7

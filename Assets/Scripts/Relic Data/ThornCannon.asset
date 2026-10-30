@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: ThornCannon
   m_EditorClassIdentifier: Assembly-CSharp::RelicData
   relicId: thorn_cannon
-  displayName: Thorn Cannon
-  description: At the start of your turn, deal 5 damage to the enemy.
+  displayName: "\uAC00\uC2DC\uD3EC"
+  description: "\uB9E4 \uD134 \uC2DC\uC791 \uC2DC \uC801\uC5D0\uAC8C \uD53C\uD574\uB97C
+    5 \uC90D\uB2C8\uB2E4."
   icon: {fileID: -6242870131932353593, guid: 2b08bb883b3668a498528e309fca6764, type: 3}
   effectType: 10

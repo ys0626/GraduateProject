@@ -1,3 +1,4 @@
+
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -48,15 +49,28 @@ public class RelicInventoryUI : MonoBehaviour
             if (relic == null || relic.Data == null)
                 continue;
 
-            GameObject iconObject = Instantiate(
-                relicIconPrefab, relicContainer);
+            GameObject iconObject = Instantiate(relicIconPrefab, relicContainer);
 
+            // 유물 아이콘 설정
             Image iconImage = iconObject.GetComponent<Image>();
 
             if (iconImage != null)
             {
                 iconImage.sprite = relic.Data.Icon;
                 iconImage.preserveAspect = true;
+            }
+
+            // 툴팁 내용 설정
+            TooltipTrigger trigger =
+                iconObject.GetComponent<TooltipTrigger>();
+
+            if (trigger != null)
+            {
+                trigger.SetContent(
+                    relic.Data.DisplayName,
+                    relic.Data.Description,
+                    relic.Data.Icon
+                );
             }
         }
     }

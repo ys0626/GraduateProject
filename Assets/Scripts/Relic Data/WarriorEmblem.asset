@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: WarriorEmblem
   m_EditorClassIdentifier: Assembly-CSharp::RelicData
   relicId: warrior_emblem
-  displayName: Warrior Emblem
-  description: Start each combat with 1 Strength.
+  displayName: "\uC804\uC0AC\uC758 \uBB38\uC7A5"
+  description: "\uC804\uD22C \uC2DC\uC791 \uC2DC \uD798\uC744 1 \uC5BB\uC2B5\uB2C8\uB2E4."
   icon: {fileID: -4088661093440307702, guid: 2b08bb883b3668a498528e309fca6764, type: 3}
   effectType: 1

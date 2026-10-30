@@ -421,6 +421,7 @@ public class PersistentUI : MonoBehaviour
         }
     }
 
+
     public void RefreshCheeseSlots()
     {
         if (GameData.instance == null ||
@@ -444,6 +445,28 @@ public class PersistentUI : MonoBehaviour
             {
                 // 빈 슬롯은 클릭 불가
                 cheeseSlotButtons[i].interactable = cheese != null;
+
+                // 툴팁 설정
+                TooltipTrigger trigger =
+                    cheeseSlotButtons[i].GetComponent<TooltipTrigger>();
+
+                if (trigger != null)
+                {
+                    if (cheese != null)
+                    {
+                        trigger.SetContent(
+                            cheese.cheeseName,
+                            cheese.GetDescription()
+                        );
+                    }
+                    else
+                    {
+                        trigger.SetContent(
+                            "빈 치즈 슬롯",
+                            "치즈를 획득하면 이곳에 보관됩니다."
+                        );
+                    }
+                }
             }
 
             Image icon = null;
@@ -471,6 +494,7 @@ public class PersistentUI : MonoBehaviour
             }
         }
     }
+
 
     // =====================================================
     // 치즈 인벤토리 가득 참 알림

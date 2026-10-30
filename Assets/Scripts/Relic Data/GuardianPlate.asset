@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: GuardianPlate
   m_EditorClassIdentifier: Assembly-CSharp::RelicData
   relicId: guardian_plate
-  displayName: Guardian Plate
-  description: Start each combat with 10 Block.
+  displayName: "\uC218\uD638\uC758 \uD310\uAE08"
+  description: "\uC804\uD22C \uC2DC\uC791 \uC2DC \uBC29\uC5B4\uB3C4\uB97C 10 \uC5BB\uC2B5\uB2C8\uB2E4."
   icon: {fileID: -6672341960482427949, guid: 2b08bb883b3668a498528e309fca6764, type: 3}
   effectType: 2

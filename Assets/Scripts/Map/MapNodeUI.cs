@@ -34,9 +34,12 @@ public class MapNodeUI : MonoBehaviour
     private Vector3 originalScale;
     private Coroutine scaleCoroutine;
 
+    private TooltipTrigger tooltipTrigger;
+
     private void Awake()
     {
         button = GetComponent<Button>();
+        tooltipTrigger = GetComponent<TooltipTrigger>();
         originalScale = transform.localScale;
     }
 
@@ -45,6 +48,8 @@ public class MapNodeUI : MonoBehaviour
         node = mapNode;
 
         SetNodeSprite(mapNode.type);
+
+        SetupTooltip(mapNode.type);
 
         if (background != null)
         {
@@ -170,5 +175,54 @@ public class MapNodeUI : MonoBehaviour
         }
 
         background.sprite = selectedSprite;
+    }
+
+    private void SetupTooltip(MapNodeType type)
+    {
+        if (tooltipTrigger == null)
+            return;
+
+        string title = "";
+        string description = "";
+
+        switch (type)
+        {
+            case MapNodeType.Start:
+                title = "시작 지점";
+                description = "모험이 시작되는 지점입니다.";
+                break;
+
+            case MapNodeType.Combat:
+                title = "일반 전투";
+                description = "적과 전투를 진행합니다.";
+                break;
+
+            case MapNodeType.Elite:
+                title = "정예 전투";
+                description = "강력한 정예 적과 전투합니다. 특별한 보상을 얻을 수 있습니다.";
+                break;
+
+            case MapNodeType.Event:
+                title = "이벤트";
+                description = "다양한 사건을 만나며 선택에 따라 결과가 달라집니다.";
+                break;
+
+            case MapNodeType.Shop:
+                title = "상점";
+                description = "골드를 사용하여 카드와 아이템을 구매할 수 있습니다.";
+                break;
+
+            case MapNodeType.Rest:
+                title = "휴식";
+                description = "체력을 회복하거나 덱의 카드를 강화할 수 있습니다.";
+                break;
+
+            case MapNodeType.Boss:
+                title = "보스 전투";
+                description = "강력한 보스와 최종 전투를 진행합니다.";
+                break;
+        }
+
+        tooltipTrigger.SetContent(title, description);
     }
 }

@@ -9,6 +9,9 @@ public class WeakStatus : Debuff
         Resources.Load<Sprite>(
             "StatusIcons/Weak");
 
+    public override string Description =>
+    "공격 카드로 주는 피해량이 25% 감소합니다.";
+
     public WeakStatus(int turns)
         : base(turns)
     {

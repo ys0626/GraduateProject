@@ -9,6 +9,9 @@ public class VulnerableStatus : Debuff
         Resources.Load<Sprite>(
             "StatusIcons/Vulnerable");
 
+    public override string Description =>
+    "공격 카드로 받는 피해량이 25% 증가합니다.";
+
     public VulnerableStatus(int turns)
         : base(turns)
     {

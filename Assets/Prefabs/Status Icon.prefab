@@ -222,6 +222,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3807544526642977628}
   - component: {fileID: 8154504974249607517}
+  - component: {fileID: 8437602521057042248}
   m_Layer: 5
   m_Name: Status Icon
   m_TagString: Untagged
@@ -264,3 +265,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::StatusIconUI
   iconImage: {fileID: 8872256233109161675}
   valueText: {fileID: 3787432242406532726}
+--- !u!114 &8437602521057042248
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8947970518751659002}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5711bab2edbe7c746b9d9767b3b923e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TooltipTrigger
+  tooltipTitle: 
+  tooltipDescription: 

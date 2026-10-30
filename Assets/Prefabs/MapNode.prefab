@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5112047770198327880}
   - component: {fileID: 9046979073015616902}
   - component: {fileID: 1706706780333156925}
+  - component: {fileID: 1687297017051534062}
   m_Layer: 5
   m_Name: MapNode
   m_TagString: Untagged
@@ -145,3 +146,17 @@ MonoBehaviour:
   animationDuration: 0.7
   animationStartDelay: 0.3
   visitedColor: {r: 0.7, g: 0.7, b: 0.7, a: 1}
+--- !u!114 &1687297017051534062
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 80124039955088487}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5711bab2edbe7c746b9d9767b3b923e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TooltipTrigger
+  tooltipTitle: 
+  tooltipDescription: 
