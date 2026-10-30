@@ -21,12 +21,19 @@ public class StatusIconUI : MonoBehaviour
 
         valueText.text = status.Value.ToString();
 
-        TooltipTrigger trigger = GetComponent<TooltipTrigger>();
-
-        if (trigger != null)
+        if (tooltipTrigger != null)
         {
-            trigger.SetContent(
-                status.Type.ToString(),
+            string statusName = status.Type switch
+            {
+                StatusType.Vulnerable => "취약",
+                StatusType.Dexterity => "민첩",
+                StatusType.Strength => "힘",
+                StatusType.Weak => "약화",
+                _ => status.Type.ToString()
+            };
+
+            tooltipTrigger.SetContent(
+                statusName,
                 status.Description,
                 status.Icon
             );

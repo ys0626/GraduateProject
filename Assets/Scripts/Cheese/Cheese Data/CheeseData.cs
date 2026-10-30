@@ -32,14 +32,15 @@ public class CheeseData : ScriptableObject
         }
     }
 
+
     public string GetDescription()
     {
         if (IsRotten)
         {
-            return "최대 HP +" + effectAmount +
-                   ", 현재 HP +" + effectAmount;
+            return "최대 체력이 " + effectAmount + " 증가합니다.";
         }
 
-        return "현재 HP +" + effectAmount;
+        return "체력을 " + effectAmount + " 회복합니다.";
     }
+
 }

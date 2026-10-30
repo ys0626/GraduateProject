@@ -151,6 +151,7 @@ GameObject:
   - component: {fileID: 4747589667343936652}
   - component: {fileID: 449182855042483182}
   - component: {fileID: 1524565144281392142}
+  - component: {fileID: 2964894820497537908}
   m_Layer: 0
   m_Name: Reward Button
   m_TagString: Untagged
@@ -298,6 +299,26 @@ MonoBehaviour:
   rewardIcon: {fileID: 6147559169907631825}
   goldRewardIcon: {fileID: 21300000, guid: 6245437517051ca4e9e0ff4c46bc3e03, type: 3}
   cardRewardIcon: {fileID: 21300000, guid: 7b34065c2ab66b044848f758a14e3054, type: 3}
+  tooltipTrigger: {fileID: 2964894820497537908}
+  cheeseTooltipPrefab: {fileID: -5153897727455444795, guid: ad6174de830fe7d4ea3b94e7370ac521, type: 3}
+  relicTooltipPrefab: {fileID: -5153897727455444795, guid: 9d98ae74baf2137468453a63d32cb84f, type: 3}
+--- !u!114 &2964894820497537908
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 408987959180824002}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5711bab2edbe7c746b9d9767b3b923e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TooltipTrigger
+  tooltipPrefab: {fileID: 0}
+  tooltipTitle: 
+  tooltipDescription: 
+  tooltipIcon: {fileID: 0}
+  positionOffset: {x: 0, y: -100}
 --- !u!1 &954120322396064410
 GameObject:
   m_ObjectHideFlags: 0

@@ -141,7 +141,14 @@ MonoBehaviour:
   eventSprite: {fileID: 21300000, guid: b724c74a45276634091793cfe1e5a4f9, type: 3}
   shopSprite: {fileID: 21300000, guid: 9aec32c1b04f7dd4cbac8c7fc17174c4, type: 3}
   restSprite: {fileID: 21300000, guid: 36f46ee158abb8b4e9db34c3f64f33b5, type: 3}
-  bossSprite: {fileID: -5681640962327379480, guid: 7c0d8504e799f8b4aac01b3f1213aba0, type: 3}
+  bossSprite: {fileID: 21300000, guid: 7c0d8504e799f8b4aac01b3f1213aba0, type: 3}
+  startTooltipPrefab: {fileID: -5153897727455444795, guid: a761a629275651f4fb1ff5d1a853c20f, type: 3}
+  combatTooltipPrefab: {fileID: -5153897727455444795, guid: f7da5985e8b0db74da31e2e3b20af77e, type: 3}
+  eliteTooltipPrefab: {fileID: -5153897727455444795, guid: bbbe880d799822141a4f9e1db841df33, type: 3}
+  eventTooltipPrefab: {fileID: -5153897727455444795, guid: 24bedfe3175d7544db2411750d80943d, type: 3}
+  shopTooltipPrefab: {fileID: -5153897727455444795, guid: 4eb6800f42f6aa94ba3e17948e299601, type: 3}
+  restTooltipPrefab: {fileID: -5153897727455444795, guid: 1f9c0ccaee5561f41b61b69fa13020d6, type: 3}
+  bossTooltipPrefab: {fileID: -5153897727455444795, guid: e05caf6042807bb46949e0d1a52c4389, type: 3}
   scaleMultiplier: 1.15
   animationDuration: 0.7
   animationStartDelay: 0.3
@@ -158,5 +165,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5711bab2edbe7c746b9d9767b3b923e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TooltipTrigger
+  tooltipPrefab: {fileID: -5153897727455444795, guid: f7da5985e8b0db74da31e2e3b20af77e, type: 3}
   tooltipTitle: 
   tooltipDescription: 
+  tooltipIcon: {fileID: 0}
+  positionOffset: {x: 0, y: 70}

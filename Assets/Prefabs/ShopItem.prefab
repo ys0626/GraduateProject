@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 6016630816980599623}
   - component: {fileID: 667545403318438238}
   - component: {fileID: 5009569130606323033}
+  - component: {fileID: 7089266774371918994}
   m_Layer: 5
   m_Name: Item Icon
   m_TagString: Untagged
@@ -120,6 +121,23 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &7089266774371918994
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4534396381192634987}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5711bab2edbe7c746b9d9767b3b923e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TooltipTrigger
+  tooltipPrefab: {fileID: 0}
+  tooltipTitle: 
+  tooltipDescription: 
+  tooltipIcon: {fileID: 0}
+  positionOffset: {x: 0, y: 150}
 --- !u!1 &5422086189862037453
 GameObject:
   m_ObjectHideFlags: 0

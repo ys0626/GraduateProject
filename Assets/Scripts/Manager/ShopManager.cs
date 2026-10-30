@@ -59,6 +59,10 @@ public class ShopManager : MonoBehaviour
     [SerializeField]
     private Button leaveShopButton;
 
+    [Header("Tooltip Prefabs")]
+    [SerializeField] private TooltipView relicTooltipPrefab;
+    [SerializeField] private TooltipView cheeseTooltipPrefab;
+
     private readonly List<ShopItemUI> relicItems =
         new List<ShopItemUI>();
 
@@ -282,17 +286,15 @@ public class ShopManager : MonoBehaviour
 
             int price = relicPrice.GetRandomPrice();
 
-            ShopItemUI item = Instantiate(
-                shopItemPrefab,
-                relicContainer
-            );
+            ShopItemUI item = Instantiate(shopItemPrefab, relicContainer);
 
             item.Setup(
                 relic.Icon,
                 relic.DisplayName,
                 relic.Description,
                 price,
-                () => TryBuyRelic(item, relic, price)
+                () => TryBuyRelic(item, relic, price),
+                relicTooltipPrefab
             );
 
             relicItems.Add(item);
@@ -363,17 +365,15 @@ public class ShopManager : MonoBehaviour
 
             int price = cheesePrice.GetRandomPrice();
 
-            ShopItemUI item = Instantiate(
-                shopItemPrefab,
-                cheeseContainer
-            );
+            ShopItemUI item = Instantiate(shopItemPrefab, cheeseContainer);
 
             item.Setup(
                 cheese.icon,
                 cheese.cheeseName,
                 cheese.GetDescription(),
                 price,
-                () => TryBuyCheese(item, cheese, price)
+                () => TryBuyCheese(item, cheese, price),
+                cheeseTooltipPrefab
             );
 
             cheeseItems.Add(item);
@@ -552,12 +552,6 @@ public class ShopManager : MonoBehaviour
         if (!hasEmptySlot)
         {
             Debug.Log("치즈 인벤토리가 가득 찼습니다.");
-
-            if (PersistentUI.Instance != null)
-            {
-                PersistentUI.Instance.ShowCheeseInventoryFullPopup();
-            }
-
             return;
         }
 

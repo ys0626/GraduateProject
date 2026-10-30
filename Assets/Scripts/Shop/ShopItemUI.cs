@@ -15,6 +15,8 @@ public class ShopItemUI : MonoBehaviour
     private bool isPurchased;
     private Action onBuy;
 
+    private TooltipTrigger tooltipTrigger;
+
     public bool IsPurchased => isPurchased;
 
     private void Awake()
@@ -23,6 +25,11 @@ public class ShopItemUI : MonoBehaviour
         {
             iconButton.onClick.AddListener(OnIconClicked);
         }
+
+        if (itemIcon != null)
+        {
+            tooltipTrigger = itemIcon.GetComponent<TooltipTrigger>();
+        }
     }
 
     public void Setup(
@@ -30,7 +37,8 @@ public class ShopItemUI : MonoBehaviour
         string itemName,
         string description,
         int price,
-        Action buyCallback)
+        Action buyCallback,
+        TooltipView tooltipPrefab)
     {
         isPurchased = false;
         onBuy = buyCallback;
@@ -58,6 +66,17 @@ public class ShopItemUI : MonoBehaviour
         {
             iconButton.interactable = true;
         }
+
+        if (tooltipTrigger != null)
+        {
+            tooltipTrigger.enabled = true;
+            tooltipTrigger.SetTooltipPrefab(tooltipPrefab);
+            tooltipTrigger.SetContent(
+                itemName,
+                description,
+                icon
+            );
+        }
     }
 
     private void OnIconClicked()
@@ -78,6 +97,16 @@ public class ShopItemUI : MonoBehaviour
         }
 
         isPurchased = true;
+
+        if (tooltipTrigger != null)
+        {
+            if (TooltipManager.Instance != null)
+            {
+                TooltipManager.Instance.Hide(tooltipTrigger);
+            }
+
+            tooltipTrigger.enabled = false;
+        }
 
         if (iconButton != null)
         {

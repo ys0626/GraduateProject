@@ -14,6 +14,11 @@ public class RewardItemUI : MonoBehaviour
     [SerializeField] private Sprite goldRewardIcon;
     [SerializeField] private Sprite cardRewardIcon;
 
+    [Header("Tooltip")]
+    [SerializeField] private TooltipTrigger tooltipTrigger;
+    [SerializeField] private TooltipView cheeseTooltipPrefab;
+    [SerializeField] private TooltipView relicTooltipPrefab;
+
     private Reward reward;
     private RewardPanelUI rewardPanel;
 
@@ -31,6 +36,7 @@ public class RewardItemUI : MonoBehaviour
         }
 
         UpdateRewardIcon();
+        SetupTooltip();
 
         if (button == null)
         {
@@ -44,7 +50,6 @@ public class RewardItemUI : MonoBehaviour
             button.interactable = true;
         }
     }
-
 
     private void UpdateRewardIcon()
     {
@@ -88,7 +93,62 @@ public class RewardItemUI : MonoBehaviour
         rewardIcon.enabled = icon != null;
     }
 
+    private void SetupTooltip()
+    {
+        if (tooltipTrigger == null)
+        {
+            return;
+        }
 
+        TooltipView selectedTooltipPrefab = null;
+        string title = "";
+        string description = "";
+        Sprite icon = null;
+
+        if (reward == null)
+        {
+            tooltipTrigger.enabled = false;
+            return;
+        }
+
+        switch (reward.RewardType)
+        {
+            case RewardType.Cheese:
+                if (reward.CheeseData == null)
+                {
+                    tooltipTrigger.enabled = false;
+                    return;
+                }
+
+                selectedTooltipPrefab = cheeseTooltipPrefab;
+                title = reward.CheeseData.cheeseName;
+                description = reward.CheeseData.GetDescription();
+                icon = reward.CheeseData.icon;
+                break;
+
+            case RewardType.Relic:
+                if (reward.RelicReward == null ||
+                    reward.RelicReward.Relic == null)
+                {
+                    tooltipTrigger.enabled = false;
+                    return;
+                }
+
+                selectedTooltipPrefab = relicTooltipPrefab;
+                title = reward.RelicReward.Relic.DisplayName;
+                description = reward.RelicReward.Relic.Description;
+                icon = reward.RelicReward.Relic.Icon;
+                break;
+
+            default:
+                tooltipTrigger.enabled = false;
+                return;
+        }
+
+        tooltipTrigger.enabled = true;
+        tooltipTrigger.SetTooltipPrefab(selectedTooltipPrefab);
+        tooltipTrigger.SetContent(title, description, icon);
+    }
 
     private void OnClicked()
     {
@@ -120,4 +180,12 @@ public class RewardItemUI : MonoBehaviour
         }
     }
 
+    private void OnDisable()
+    {
+        if (tooltipTrigger != null &&
+            TooltipManager.Instance != null)
+        {
+            TooltipManager.Instance.Hide(tooltipTrigger);
+        }
+    }
 }

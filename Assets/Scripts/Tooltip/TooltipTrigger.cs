@@ -5,6 +5,9 @@ public class TooltipTrigger : MonoBehaviour,
     IPointerEnterHandler,
     IPointerExitHandler
 {
+    [Header("Tooltip Prefab")]
+    [SerializeField] private TooltipView tooltipPrefab;
+
     [Header("Tooltip Content")]
     [SerializeField] private string tooltipTitle;
 
@@ -16,15 +19,17 @@ public class TooltipTrigger : MonoBehaviour,
     [Header("Tooltip Position")]
     [SerializeField] private Vector2 positionOffset = new Vector2(0f, 50f);
 
-    [Header("Tooltip Size")]
-    [SerializeField] private bool useCustomSize = true;
-    [SerializeField] private Vector2 tooltipSize = new Vector2(250f, 120f);
+    public TooltipView TooltipPrefab => tooltipPrefab;
+    public string TooltipTitle => tooltipTitle;
+    public string TooltipDescription => tooltipDescription;
+    public Sprite TooltipIcon => tooltipIcon;
+    public Vector2 PositionOffset => positionOffset;
 
-    private RectTransform targetRect;
+    public RectTransform TargetRect { get; private set; }
 
     private void Awake()
     {
-        targetRect = GetComponent<RectTransform>();
+        TargetRect = GetComponent<RectTransform>();
     }
 
     public void SetContent(
@@ -37,27 +42,29 @@ public class TooltipTrigger : MonoBehaviour,
         tooltipIcon = icon;
     }
 
+    public void SetTooltipPrefab(TooltipView prefab)
+    {
+        tooltipPrefab = prefab;
+    }
+
     public void OnPointerEnter(PointerEventData eventData)
     {
         if (TooltipManager.Instance == null)
             return;
 
-        TooltipManager.Instance.Show(
-            tooltipTitle,
-            tooltipDescription,
-            tooltipIcon,
-            targetRect,
-            positionOffset,
-            useCustomSize,
-            tooltipSize
-        );
+        TooltipManager.Instance.Show(this);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
+        HideTooltip();
+    }
+
+    public void HideTooltip()
+    {
         if (TooltipManager.Instance == null)
             return;
 
-        TooltipManager.Instance.Hide();
+        TooltipManager.Instance.Hide(this);
     }
 }

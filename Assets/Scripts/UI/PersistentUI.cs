@@ -1,4 +1,3 @@
-
 using UnityEngine.SceneManagement;
 using System.Collections;
 using TMPro;
@@ -26,12 +25,6 @@ public class PersistentUI : MonoBehaviour
     [SerializeField] private Image[] cheeseSlotIcons;
     [SerializeField] private Sprite emptyCheeseSlotIcon;
 
-    [Header("Cheese Full Notice")]
-    [SerializeField] private GameObject cheeseFullPopup;
-    [SerializeField] private TMP_Text cheeseFullPopupText;
-
-    [SerializeField] private float cheeseFullNoticeDuration = 2f;
-
     [Header("Deck")]
     [SerializeField] private TMP_Text deckCountText;
     [SerializeField] private Transform deckCountTransform;
@@ -54,9 +47,6 @@ public class PersistentUI : MonoBehaviour
     private Coroutine goldPunchRoutine;
     private Coroutine deckPunchRoutine;
 
-    // 치즈 알림 Coroutine
-    private Coroutine cheeseFullPopupCoroutine;
-
     private void Awake()
     {
         if (instance != null && instance != this)
@@ -68,11 +58,6 @@ public class PersistentUI : MonoBehaviour
         instance = this;
 
         DontDestroyOnLoad(gameObject);
-
-        if (cheeseFullPopup != null)
-        {
-            cheeseFullPopup.SetActive(false);
-        }
 
         // 설정 버튼 이벤트 등록
         if (settingButton != null && settingPanelUI != null)
@@ -170,9 +155,6 @@ public class PersistentUI : MonoBehaviour
 
         if (deckPunchRoutine != null)
             StopCoroutine(deckPunchRoutine);
-
-        if (cheeseFullPopupCoroutine != null)
-            StopCoroutine(cheeseFullPopupCoroutine);
 
         if (instance == this)
         {
@@ -421,7 +403,6 @@ public class PersistentUI : MonoBehaviour
         }
     }
 
-
     public void RefreshCheeseSlots()
     {
         if (GameData.instance == null ||
@@ -452,18 +433,26 @@ public class PersistentUI : MonoBehaviour
 
                 if (trigger != null)
                 {
-                    if (cheese != null)
+                    if (cheese == null)
                     {
-                        trigger.SetContent(
-                            cheese.cheeseName,
-                            cheese.GetDescription()
-                        );
+                        // 치즈가 사라졌다면 현재 표시 중인 툴팁 숨기기
+                        if (TooltipManager.Instance != null)
+                        {
+                            TooltipManager.Instance.Hide(trigger);
+                        }
+
+                        // 빈 슬롯은 툴팁 비활성화
+                        trigger.enabled = false;
                     }
                     else
                     {
+                        // 치즈가 있으면 툴팁 활성화 및 내용 설정
+                        trigger.enabled = true;
+
                         trigger.SetContent(
-                            "빈 치즈 슬롯",
-                            "치즈를 획득하면 이곳에 보관됩니다."
+                            cheese.cheeseName,
+                            cheese.GetDescription(),
+                            cheese.icon
                         );
                     }
                 }
@@ -493,50 +482,6 @@ public class PersistentUI : MonoBehaviour
                 icon.enabled = emptyCheeseSlotIcon != null;
             }
         }
-    }
-
-
-    // =====================================================
-    // 치즈 인벤토리 가득 참 알림
-    // =====================================================
-
-    public void ShowCheeseInventoryFullPopup()
-    {
-        if (cheeseFullPopup == null)
-        {
-            Debug.LogWarning(
-                "Cheese Full Notice가 연결되지 않았습니다."
-            );
-            return;
-        }
-
-        if (cheeseFullPopupText != null)
-        {
-            cheeseFullPopupText.text = "더 이상 치즈를 가질 수 없어!";
-        }
-
-        // 이미 알림이 표시 중이면 시간을 다시 시작
-        if (cheeseFullPopupCoroutine != null)
-        {
-            StopCoroutine(cheeseFullPopupCoroutine);
-        }
-
-        cheeseFullPopupCoroutine =
-            StartCoroutine(ShowCheeseFullNoticeRoutine());
-    }
-
-    private IEnumerator ShowCheeseFullNoticeRoutine()
-    {
-        cheeseFullPopup.SetActive(true);
-
-        yield return new WaitForSeconds(cheeseFullNoticeDuration);
-
-        if (cheeseFullPopup != null)
-        {
-            cheeseFullPopup.SetActive(false);
-        }
-
-        cheeseFullPopupCoroutine = null;
     }
 
     // =====================================================

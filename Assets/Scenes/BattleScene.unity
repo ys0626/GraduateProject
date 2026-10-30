@@ -812,7 +812,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 451.6329, y: 132.3578}
+  m_SizeDelta: {x: 236, y: 168}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &226917138
 MonoBehaviour:
@@ -828,13 +828,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 11bc77c9ed0609a42bd7b1468b9b7a76, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 2dc2a291ddadb65469da182dce3424f4, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1535,12 +1535,14 @@ MonoBehaviour:
   playerBlockUI: {fileID: 652597676}
   playerBlockText: {fileID: 716329040}
   playerBlockTransform: {fileID: 716329039}
+  playerBlockTooltip: {fileID: 652597680}
   enemyHPBarText: {fileID: 928320374}
   enemyHPBarTextTransform: {fileID: 928320373}
   enemyHPBarUI: {fileID: 610340748}
   enemyBlockUI: {fileID: 515071658}
   enemyBlockText: {fileID: 1259189331}
   enemyBlockTransform: {fileID: 1259189330}
+  enemyBlockTooltip: {fileID: 515071662}
   warningBubble: {fileID: 1778039504}
   warningBubbleRect: {fileID: 1778039505}
   warningText: {fileID: 672380220}
@@ -1571,6 +1573,7 @@ GameObject:
   - component: {fileID: 515071659}
   - component: {fileID: 515071661}
   - component: {fileID: 515071660}
+  - component: {fileID: 515071662}
   m_Layer: 5
   m_Name: Enemy Block
   m_TagString: Untagged
@@ -1636,6 +1639,24 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 515071658}
   m_CullTransparentMesh: 1
+--- !u!114 &515071662
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 515071658}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5711bab2edbe7c746b9d9767b3b923e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TooltipTrigger
+  tooltipPrefab: {fileID: -5153897727455444795, guid: 7fdda6548e72800469238fb7ae3a28bd, type: 3}
+  tooltipTitle: 
+  tooltipDescription: "\uC801\uC758 \uACF5\uACA9\uC73C\uB85C \uC778\uD55C \uD53C\uD574\uB97C
+    \n\uBC29\uC5B4\uB3C4\uB9CC\uD07C \uD761\uC218\uD569\uB2C8\uB2E4."
+  tooltipIcon: {fileID: 0}
+  positionOffset: {x: 0, y: 70}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -2312,6 +2333,7 @@ GameObject:
   - component: {fileID: 652597677}
   - component: {fileID: 652597679}
   - component: {fileID: 652597678}
+  - component: {fileID: 652597680}
   m_Layer: 5
   m_Name: Player Block
   m_TagString: Untagged
@@ -2377,6 +2399,24 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 652597676}
   m_CullTransparentMesh: 1
+--- !u!114 &652597680
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 652597676}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5711bab2edbe7c746b9d9767b3b923e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TooltipTrigger
+  tooltipPrefab: {fileID: -5153897727455444795, guid: 7fdda6548e72800469238fb7ae3a28bd, type: 3}
+  tooltipTitle: 
+  tooltipDescription: "\uC801\uC758 \uACF5\uACA9\uC73C\uB85C \uC778\uD55C \uD53C\uD574\uB97C
+    \n\uBC29\uC5B4\uB3C4\uB9CC\uD07C \uD761\uC218\uD569\uB2C8\uB2E4."
+  tooltipIcon: {fileID: 0}
+  positionOffset: {x: 0, y: 70}
 --- !u!1 &672380218
 GameObject:
   m_ObjectHideFlags: 0
@@ -2437,7 +2477,7 @@ MonoBehaviour:
   m_text: New Text
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 3a987b75906a559488859c9d6d1b16ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: -4892729583515330214, guid: 3a987b75906a559488859c9d6d1b16ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -4061,8 +4101,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278190080
-  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
+    rgba: 4282985744
+  m_fontColor: {r: 0.0627451, g: 0.1764706, b: 0.28627452, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -5038,6 +5078,7 @@ GameObject:
   - component: {fileID: 1534468916}
   - component: {fileID: 1534468918}
   - component: {fileID: 1534468917}
+  - component: {fileID: 1534468919}
   m_Layer: 5
   m_Name: Energy
   m_TagString: Untagged
@@ -5103,6 +5144,25 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1534468915}
   m_CullTransparentMesh: 1
+--- !u!114 &1534468919
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1534468915}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5711bab2edbe7c746b9d9767b3b923e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TooltipTrigger
+  tooltipPrefab: {fileID: -5153897727455444795, guid: 08c20f3987338304889393dc6eeba8d6, type: 3}
+  tooltipTitle: 
+  tooltipDescription: "\uD134\uC774 \uC2DC\uC791\uB418\uBA74 \uC5D0\uB108\uC9C0\uB97C
+    \uC5BB\uC2B5\uB2C8\uB2E4.\n\uC5D0\uB108\uC9C0\uB97C \uC18C\uBAA8\uD574 \uCE74\uB4DC\uB97C
+    \uC0AC\uC6A9\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4. "
+  tooltipIcon: {fileID: 0}
+  positionOffset: {x: 50, y: 130}
 --- !u!1001 &1540711561
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5686,14 +5746,13 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 226917137}
-  - {fileID: 1799876335}
   - {fileID: 672380219}
   m_Father: {fileID: 2066027389}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -430, y: 183}
-  m_SizeDelta: {x: 100, y: 100}
+  m_AnchoredPosition: {x: -214, y: 264}
+  m_SizeDelta: {x: 225, y: 22}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1792079121
 GameObject:
@@ -5769,81 +5828,6 @@ CanvasRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1792079121}
-  m_CullTransparentMesh: 1
---- !u!1 &1799876334
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1799876335}
-  - component: {fileID: 1799876337}
-  - component: {fileID: 1799876336}
-  m_Layer: 5
-  m_Name: outline
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &1799876335
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1799876334}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1778039505}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 451.6329, y: 132.3578}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1799876336
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1799876334}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
-  m_Material: {fileID: 0}
-  m_Color: {r: 0.1, g: 0.1, b: 0.1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 4a6d13b4adff97e4d800a522afb4a338, type: 3}
-  m_Type: 1
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
---- !u!222 &1799876337
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1799876334}
   m_CullTransparentMesh: 1
 --- !u!1 &1819070664
 GameObject:

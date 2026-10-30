@@ -1264,6 +1264,8 @@ MonoBehaviour:
     minPrice: 15
     maxPrice: 30
   leaveShopButton: {fileID: 494478995}
+  relicTooltipPrefab: {fileID: -5153897727455444795, guid: 9d98ae74baf2137468453a63d32cb84f, type: 3}
+  cheeseTooltipPrefab: {fileID: -5153897727455444795, guid: ad6174de830fe7d4ea3b94e7370ac521, type: 3}
 --- !u!4 &1316274198
 Transform:
   m_ObjectHideFlags: 0

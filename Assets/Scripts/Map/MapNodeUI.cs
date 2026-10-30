@@ -18,6 +18,19 @@ public class MapNodeUI : MonoBehaviour
     [SerializeField] private Sprite restSprite;
     [SerializeField] private Sprite bossSprite;
 
+    [Header("Tooltip Prefabs")]
+    [SerializeField] private TooltipView startTooltipPrefab;
+    [SerializeField] private TooltipView combatTooltipPrefab;
+    [SerializeField] private TooltipView eliteTooltipPrefab;
+    [SerializeField] private TooltipView eventTooltipPrefab;
+    [SerializeField] private TooltipView shopTooltipPrefab;
+    [SerializeField] private TooltipView restTooltipPrefab;
+    [SerializeField] private TooltipView bossTooltipPrefab;
+
+    [Header("Node Size")]
+    [SerializeField] private float normalNodeScale = 1f;
+    [SerializeField] private float bossNodeScale = 1.6f;
+
     [Header("Scale Animation")]
     [SerializeField] private float scaleMultiplier = 1.15f;
     [SerializeField] private float animationDuration = 0.7f;
@@ -57,7 +70,12 @@ public class MapNodeUI : MonoBehaviour
             background.color = mapNode.visited ? visitedColor : Color.white;
         }
 
-        originalScale = transform.localScale;
+        // 노드 종류에 따라 기본 크기 설정
+        float nodeScale = mapNode.type == MapNodeType.Boss
+            ? bossNodeScale
+            : normalNodeScale;
+
+        originalScale = Vector3.one * nodeScale;
         transform.localScale = originalScale;
 
         SetInteractable(false);
@@ -184,45 +202,54 @@ public class MapNodeUI : MonoBehaviour
 
         string title = "";
         string description = "";
+        TooltipView selectedTooltipPrefab = null;
 
         switch (type)
         {
             case MapNodeType.Start:
                 title = "시작 지점";
                 description = "모험이 시작되는 지점입니다.";
+                selectedTooltipPrefab = startTooltipPrefab;
                 break;
 
             case MapNodeType.Combat:
                 title = "일반 전투";
                 description = "적과 전투를 진행합니다.";
+                selectedTooltipPrefab = combatTooltipPrefab;
                 break;
 
             case MapNodeType.Elite:
                 title = "정예 전투";
-                description = "강력한 정예 적과 전투합니다. 특별한 보상을 얻을 수 있습니다.";
+                description = "강력한 정예 적과 전투합니다. \n특별한 보상을 얻을 수 있습니다.";
+                selectedTooltipPrefab = eliteTooltipPrefab;
                 break;
 
             case MapNodeType.Event:
                 title = "이벤트";
                 description = "다양한 사건을 만나며 선택에 따라 결과가 달라집니다.";
+                selectedTooltipPrefab = eventTooltipPrefab;
                 break;
 
             case MapNodeType.Shop:
                 title = "상점";
-                description = "골드를 사용하여 카드와 아이템을 구매할 수 있습니다.";
+                description = "골드를 사용하여 카드와 유물, 치즈를 구매할 수 있습니다.";
+                selectedTooltipPrefab = shopTooltipPrefab;
                 break;
 
             case MapNodeType.Rest:
                 title = "휴식";
                 description = "체력을 회복하거나 덱의 카드를 강화할 수 있습니다.";
+                selectedTooltipPrefab = restTooltipPrefab;
                 break;
 
             case MapNodeType.Boss:
                 title = "보스 전투";
                 description = "강력한 보스와 최종 전투를 진행합니다.";
+                selectedTooltipPrefab = bossTooltipPrefab;
                 break;
         }
 
+        tooltipTrigger.SetTooltipPrefab(selectedTooltipPrefab);
         tooltipTrigger.SetContent(title, description);
     }
 }

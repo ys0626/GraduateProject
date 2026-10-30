@@ -292,11 +292,7 @@ public class RewardPanelUI : MonoBehaviour
         }
         else
         {
-            if (PersistentUI.Instance != null)
-            {
-                PersistentUI.Instance
-                    .ShowCheeseInventoryFullPopup();
-            }
+
         }
     }
 

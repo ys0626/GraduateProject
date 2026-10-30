@@ -39,6 +39,7 @@ public class BattleUIManager : MonoBehaviour
     [SerializeField] private GameObject playerBlockUI;
     [SerializeField] private TMP_Text playerBlockText;
     [SerializeField] private Transform playerBlockTransform;
+    [SerializeField] private TooltipTrigger playerBlockTooltip;
 
 
     [Header("Enemy HP Gauge")]
@@ -51,6 +52,7 @@ public class BattleUIManager : MonoBehaviour
     [SerializeField] private GameObject enemyBlockUI;
     [SerializeField] private TMP_Text enemyBlockText;
     [SerializeField] private Transform enemyBlockTransform;
+    [SerializeField] private TooltipTrigger enemyBlockTooltip;
 
 
     [Header("Warning UI")]
@@ -332,19 +334,24 @@ public class BattleUIManager : MonoBehaviour
         if (playerBlockUI == null)
             return;
 
-
         bool active = value > 0;
 
-        playerBlockUI.SetActive(active);
+        if (!active)
+        {
+            if (playerBlockTooltip != null &&
+                TooltipManager.Instance != null)
+            {
+                TooltipManager.Instance.Hide(playerBlockTooltip);
+            }
+        }
 
+        playerBlockUI.SetActive(active);
 
         if (!active)
             return;
 
-
         if (playerBlockText != null)
             playerBlockText.text = value.ToString();
-
 
         PlayPunchAnimation(playerBlockTransform);
     }
@@ -359,19 +366,24 @@ public class BattleUIManager : MonoBehaviour
         if (enemyBlockUI == null)
             return;
 
-
         bool active = value > 0;
 
-        enemyBlockUI.SetActive(active);
+        if (!active)
+        {
+            if (enemyBlockTooltip != null &&
+                TooltipManager.Instance != null)
+            {
+                TooltipManager.Instance.Hide(enemyBlockTooltip);
+            }
+        }
 
+        enemyBlockUI.SetActive(active);
 
         if (!active)
             return;
 
-
         if (enemyBlockText != null)
             enemyBlockText.text = value.ToString();
-
 
         PlayPunchAnimation(enemyBlockTransform);
     }
@@ -537,13 +549,13 @@ public class BattleUIManager : MonoBehaviour
         string message = type switch
         {
             WarningType.NotEnoughEnergy =>
-                "I don't have enough energy..",
+                "에너지가 부족해..",
 
             WarningType.HandFull =>
-                "My hand is full!",
+                "손패가 가득 찼어!",
 
             WarningType.NoCardsToDraw =>
-                "There are no cards to draw!",
+                "뽑을 카드가 없어!",
 
             _ => ""
         };

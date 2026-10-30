@@ -88,5 +88,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5711bab2edbe7c746b9d9767b3b923e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TooltipTrigger
+  tooltipPrefab: {fileID: -5153897727455444795, guid: 9d98ae74baf2137468453a63d32cb84f, type: 3}
   tooltipTitle: 
   tooltipDescription: 
+  tooltipIcon: {fileID: 0}
+  positionOffset: {x: 0, y: -125}

@@ -92,6 +92,16 @@ public class EntityStatusUI : MonoBehaviour
     {
         foreach (GameObject obj in spawnedIcons)
         {
+            // 상태이상 아이콘의 TooltipTrigger 가져오기
+            TooltipTrigger trigger =
+                obj.GetComponent<TooltipTrigger>();
+
+            // 해당 아이콘의 툴팁 숨기기
+            if (trigger != null)
+            {
+                trigger.HideTooltip();
+            }
+
             Destroy(obj);
         }
 
