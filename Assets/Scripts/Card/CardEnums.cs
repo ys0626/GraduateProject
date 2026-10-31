@@ -1,6 +1,7 @@
 /// <summary>
 /// 구체적인 카드 종류 ex)타격, 수비, 강타, ...
 /// </summary>
+
 public enum CardEffectType
 {
     Bash,
@@ -18,22 +19,43 @@ public enum CardEffectType
     LimitBreak,
     DoubleTap,
 
-    //Field Mouse Bandit
+    // Field Mouse Bandit
     ClawSwipe,
     DustCloud,
     StoneThrow,
     TakeOver,
 
-    //Green Slime
+    // Green Slime
     GreenSlime_BodySlam,
     SlimeShield,
     SlimeShot,
     StickySlime,
 
-    //
+    // Ember Boar
+    BlazingCharge,
+    BlazingCounter, 
+    Charge,
+    GroundStomp,
+    SavageRush,
+    TuskSwing,
 
+    // Ironback Beetle
+    CrushingPincer,
+    IronStance,
+    PincerStrike,
+    ShellGuard,
+    ShieldBash,
+    SpinningShell,
 
+    // Mushroom Shaman
+    BlindingSpores,
+    GiantSporeBurst,
+    MyceliumBarrier,
+    RottingBurst,
+    SporeShot,
+    VulnerabilitySpores,
 }
+
 
 public enum CardRarity
 {

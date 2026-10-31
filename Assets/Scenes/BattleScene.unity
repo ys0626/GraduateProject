@@ -1302,7 +1302,7 @@ Transform:
   m_GameObject: {fileID: 404136415}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.79, y: 0.74, z: 0}
+  m_LocalPosition: {x: 2.79, y: 0.54, z: 0}
   m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5381,6 +5381,8 @@ MonoBehaviour:
   battlePhase: 0
   drawPerTurn: 5
   turnCount: 1
+  enemyCardPreviewDuration: 1.3
+  enemyCardActionInterval: 0.4
   deathAnimationWait: 2
 --- !u!1 &1615103631
 GameObject:
