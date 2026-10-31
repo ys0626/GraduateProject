@@ -12,8 +12,8 @@ public class DustCloudEffect : ICardEffect
     /// </summary>
     public void Execute(IBattleEntity cardUser, IBattleEntity cardTarget)
     {
-        //약화를 1 부여합니다.
-        int weakTurns = 1;
-        cardTarget.AddStatus(new WeakStatus(weakTurns));
+        //취약을 1 부여합니다.
+        int vulnerableTurns = 1;
+        cardTarget.AddStatus(new VulnerableStatus(vulnerableTurns));
     }
 }
