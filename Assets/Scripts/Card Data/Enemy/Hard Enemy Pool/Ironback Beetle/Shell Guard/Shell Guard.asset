@@ -12,14 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0449c7d05e32ebb409b263d234c09d38, type: 3}
   m_Name: Shell Guard
   m_EditorClassIdentifier: Assembly-CSharp::CardData
-  cardName: "\uC55E\uBC1C \uD718\uB450\uB974\uAE30"
-  description: "\uD53C\uD574\uB97C 5 \uC90D\uB2C8\uB2E4."
-  artwork: {fileID: 21300000, guid: d940655931acfb94b94bd78624f3e6a5, type: 3}
+  cardName: "\uB4F1\uAECD\uC9C8 \uC6C5\uD06C\uB9AC\uAE30"
+  description: "\uBC29\uC5B4\uB3C4\uB97C 7 \uC5BB\uC2B5\uB2C8\uB2E4."
+  artwork: {fileID: 21300000, guid: b7afe9df6a0a3604485c73a2bc23beb5, type: 3}
   upgradeType: 0
-  upgradedDescription: "\uD53C\uD574\uB97C 5 \uC90D\uB2C8\uB2E4."
+  upgradedDescription: "\uBC29\uC5B4\uB3C4\uB97C 7 \uC5BB\uC2B5\uB2C8\uB2E4."
   cost: 1
-  cardType: 0
+  cardType: 1
   rarity: 0
   targetType: 1
-  cardEffectType: 14
+  cardEffectType: 31
   tags: 0

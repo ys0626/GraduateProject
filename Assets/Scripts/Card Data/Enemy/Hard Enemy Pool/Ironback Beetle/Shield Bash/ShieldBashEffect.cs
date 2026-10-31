@@ -12,9 +12,14 @@ public class ShieldBashEffect : ICardEffect
     /// </summary>
     public void Execute(IBattleEntity cardUser, IBattleEntity cardTarget)
     {
-        //피해를 5 줍니다.
-        int damage = 5;
+        //피해를 7 줍니다.
+        int damage = 7;
         damage = cardUser.CalculateDamage(damage);
         cardTarget.TakeDamage(damage);
+
+        //방어도를 7 얻습니다.
+        int block = 7;
+        block = cardUser.CalculateBlock(block);
+        cardUser.GetBlock(block);
     }
 }

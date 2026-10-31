@@ -15,7 +15,7 @@ MonoBehaviour:
   enemyName: Ember Boar
   sprite: {fileID: 21300000, guid: b0802a51b9bb39b47a98f7bc23cd14fa, type: 3}
   animatorController: {fileID: 9100000, guid: dbd2bd615768bb5438b4fdcadfdfa5de, type: 2}
-  maxHP: 42
+  maxHP: 55
   maxEnergy: 3
   starterDeck:
   - {fileID: 11400000, guid: aec673b5dc058334a9a03b869972bb1a, type: 2}

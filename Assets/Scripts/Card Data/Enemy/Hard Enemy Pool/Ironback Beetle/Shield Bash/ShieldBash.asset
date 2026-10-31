@@ -12,14 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0449c7d05e32ebb409b263d234c09d38, type: 3}
   m_Name: ShieldBash
   m_EditorClassIdentifier: Assembly-CSharp::CardData
-  cardName: "\uC55E\uBC1C \uD718\uB450\uB974\uAE30"
-  description: "\uD53C\uD574\uB97C 5 \uC90D\uB2C8\uB2E4."
-  artwork: {fileID: 21300000, guid: d940655931acfb94b94bd78624f3e6a5, type: 3}
+  cardName: "\uBC29\uD328 \uBC00\uCE58\uAE30"
+  description: "\uD53C\uD574\uB97C 7 \uC90D\uB2C8\uB2E4.\n\uBC29\uC5B4\uB3C4\uB97C
+    7 \uC5BB\uC2B5\uB2C8\uB2E4."
+  artwork: {fileID: 21300000, guid: f671626907f789e4c92623bd16c3bebd, type: 3}
   upgradeType: 0
-  upgradedDescription: "\uD53C\uD574\uB97C 5 \uC90D\uB2C8\uB2E4."
-  cost: 1
+  upgradedDescription: "\uD53C\uD574\uB97C 7 \uC90D\uB2C8\uB2E4.\n\uBC29\uC5B4\uB3C4\uB97C
+    7 \uC5BB\uC2B5\uB2C8\uB2E4."
+  cost: 2
   cardType: 0
   rarity: 0
   targetType: 1
-  cardEffectType: 14
+  cardEffectType: 32
   tags: 0

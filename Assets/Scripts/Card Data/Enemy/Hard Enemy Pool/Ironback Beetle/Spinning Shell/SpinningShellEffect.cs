@@ -12,9 +12,14 @@ public class SpinningShellEffect : ICardEffect
     /// </summary>
     public void Execute(IBattleEntity cardUser, IBattleEntity cardTarget)
     {
-        //피해를 5 줍니다.
-        int damage = 5;
+        //피해를 12 줍니다.
+        int damage = 12;
         damage = cardUser.CalculateDamage(damage);
         cardTarget.TakeDamage(damage);
+
+        //방어도를 10 얻습니다.
+        int block = 10;
+        block = cardUser.CalculateBlock(block);
+        cardUser.GetBlock(block);
     }
 }

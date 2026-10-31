@@ -12,9 +12,8 @@ public class BlindingSporesEffect : ICardEffect
     /// </summary>
     public void Execute(IBattleEntity cardUser, IBattleEntity cardTarget)
     {
-        //피해를 5 줍니다.
-        int damage = 5;
-        damage = cardUser.CalculateDamage(damage);
-        cardTarget.TakeDamage(damage);
+        //약화를 1 부여합니다.
+        int weakTurns = 1;
+        cardTarget.AddStatus(new WeakStatus(weakTurns));
     }
 }

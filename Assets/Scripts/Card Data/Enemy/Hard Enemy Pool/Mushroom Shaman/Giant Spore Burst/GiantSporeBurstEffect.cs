@@ -12,9 +12,13 @@ public class GiantSporeBurstEffect : ICardEffect
     /// </summary>
     public void Execute(IBattleEntity cardUser, IBattleEntity cardTarget)
     {
-        //피해를 5 줍니다.
-        int damage = 5;
+        //피해를 14 줍니다.
+        int damage = 14;
         damage = cardUser.CalculateDamage(damage);
         cardTarget.TakeDamage(damage);
+
+        //취약을 1 부여합니다.
+        int vulnerableTurns = 1;
+        cardTarget.AddStatus(new VulnerableStatus(vulnerableTurns));
     }
 }

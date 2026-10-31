@@ -12,14 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0449c7d05e32ebb409b263d234c09d38, type: 3}
   m_Name: Blinding Spores
   m_EditorClassIdentifier: Assembly-CSharp::CardData
-  cardName: "\uC55E\uBC1C \uD718\uB450\uB974\uAE30"
-  description: "\uD53C\uD574\uB97C 5 \uC90D\uB2C8\uB2E4."
-  artwork: {fileID: 21300000, guid: d940655931acfb94b94bd78624f3e6a5, type: 3}
+  cardName: "\uD750\uB9BF\uD55C \uD3EC\uC790"
+  description: "\uC57D\uD654\uB97C 1 \uBD80\uC5EC\uD569\uB2C8\uB2E4."
+  artwork: {fileID: 21300000, guid: 4b86524a3573873488feac4aa1734200, type: 3}
   upgradeType: 0
-  upgradedDescription: "\uD53C\uD574\uB97C 5 \uC90D\uB2C8\uB2E4."
+  upgradedDescription: "\uC57D\uD654\uB97C 1 \uBD80\uC5EC\uD569\uB2C8\uB2E4."
   cost: 1
-  cardType: 0
+  cardType: 1
   rarity: 0
   targetType: 1
-  cardEffectType: 14
-  tags: 0
+  cardEffectType: 34
+  tags: 1

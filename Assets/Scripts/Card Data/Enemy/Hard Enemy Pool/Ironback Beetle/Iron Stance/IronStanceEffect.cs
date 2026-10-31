@@ -12,9 +12,9 @@ public class IronStanceEffect : ICardEffect
     /// </summary>
     public void Execute(IBattleEntity cardUser, IBattleEntity cardTarget)
     {
-        //피해를 5 줍니다.
-        int damage = 5;
-        damage = cardUser.CalculateDamage(damage);
-        cardTarget.TakeDamage(damage);
+        //방어도를 12 얻습니다.
+        int block = 12;
+        block = cardUser.CalculateBlock(block);
+        cardUser.GetBlock(block);
     }
 }
