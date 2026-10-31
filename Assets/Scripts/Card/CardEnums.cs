@@ -17,6 +17,14 @@ public enum CardEffectType
     Uppercut,
     LimitBreak,
     DoubleTap,
+
+    //Field Mouse Bandit
+    ClawSwipe,
+    DustCloud,
+    StoneThrow,
+    TakeOver,
+
+
 }
 
 public enum CardRarity

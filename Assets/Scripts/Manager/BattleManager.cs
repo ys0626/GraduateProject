@@ -435,13 +435,11 @@ public class BattleManager : MonoBehaviour
             if (selectedCard == null || selectedCard.data == null)
                 break;
 
-            // 2. Preview 표시 (적 턴일 때만)
+            // 2. 카드 사용 가능 여부를 확인하고 연출 실행
             if (showPreview)
             {
+                // 카드 프리뷰 표시
                 EnemyCardPreviewUIManager.instance.Show(selectedCard);
-
-                // 연출 대기
-                yield return new WaitForSeconds(0.8f);
             }
 
             // 3. 카드 사용
@@ -450,9 +448,11 @@ public class BattleManager : MonoBehaviour
             if (!success)
                 break;
 
-            // 4. UI 정리
+            // 4. 적 애니메이션 연출 대기
             if (showPreview)
             {
+                yield return new WaitForSeconds(0.8f);
+
                 EnemyCardPreviewUIManager.instance.Hide();
             }
 

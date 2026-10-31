@@ -83,8 +83,6 @@ public class CharacterAnimationController : MonoBehaviour
         animator.ResetTrigger(AttackTrigger);
         animator.ResetTrigger(PowerTrigger);
         animator.ResetTrigger(DeathTrigger);
-
-        animator.Play("Idle", 0, 0f);
     }
 
 

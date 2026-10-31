@@ -47,6 +47,16 @@ public static class CardEffectFactory
             case CardEffectType.Uppercut:
                 return new UppercutEffect(card);
 
+            //Field Mouse Bandit
+            case CardEffectType.ClawSwipe:
+                return new ClawSwipeEffect(card);
+            case CardEffectType.DustCloud:
+                return new DustCloudEffect(card);
+            case CardEffectType.StoneThrow:
+                return new StoneThrowEffect(card);
+            case CardEffectType.TakeOver:
+                return new TakeOverEffect(card);
+
             default:
                 Debug.Log("Unknown card type!");
                 return null;
