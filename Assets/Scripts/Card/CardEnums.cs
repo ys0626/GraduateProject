@@ -24,6 +24,14 @@ public enum CardEffectType
     StoneThrow,
     TakeOver,
 
+    //Green Slime
+    GreenSlime_BodySlam,
+    SlimeShield,
+    SlimeShot,
+    StickySlime,
+
+    //
+
 
 }
 

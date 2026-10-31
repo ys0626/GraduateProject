@@ -13,7 +13,8 @@ public class GameData : MonoBehaviour
     [SerializeField] private CardData[] playerStartDeck;
 
     [Header("Normal Game - Enemy Pools")]
-    [SerializeField] private EnemyData[] normalEnemyPool;
+    [SerializeField] private EnemyData[] easyEnemyPool;
+    [SerializeField] private EnemyData[] hardEnemyPool;
     [SerializeField] private EnemyData[] eliteEnemyPool;
     [SerializeField] private EnemyData[] bossEnemyPool;
 
@@ -32,15 +33,35 @@ public class GameData : MonoBehaviour
 
     [Header("Cheese Pool")]
     [SerializeField] private CheeseData[] cheesePool;
+
     private readonly CheeseData[] cheeseInventory = new CheeseData[3];
+
     public CheeseData[] CheesePool => cheesePool;
     public CheeseData[] CheeseInventory => cheeseInventory;
+
     public event Action OnCheeseInventoryChanged;
 
     [Header("Relic Pool")]
     [SerializeField] private List<RelicData> relicPool = new List<RelicData>();
 
     private BattleType currentBattleType = BattleType.Normal;
+
+    // =========================================================
+    // Enemy Selection History
+    // =========================================================
+
+    // 일반 전투 진행 횟수
+    private int normalBattleCount;
+
+    // Easy 적 등장 순서
+    private readonly List<EnemyData> easyEnemyOrder =
+        new List<EnemyData>();
+
+    // Hard 적 마지막 등장 기록
+    private EnemyData lastHardEnemy;
+
+    // Elite 적 마지막 등장 기록
+    private EnemyData lastEliteEnemy;
 
     // =========================================================
     // Runtime Entity
@@ -75,7 +96,9 @@ public class GameData : MonoBehaviour
     // Enemy Pool Properties
     // =========================================================
 
-    public EnemyData[] NormalEnemyPool => normalEnemyPool;
+    public EnemyData[] EasyEnemyPool => easyEnemyPool;
+
+    public EnemyData[] HardEnemyPool => hardEnemyPool;
 
     public EnemyData[] EliteEnemyPool => eliteEnemyPool;
 
@@ -141,6 +164,9 @@ public class GameData : MonoBehaviour
     {
         ClearAllData();
 
+        // Easy 적 등장 순서 생성
+        PrepareEasyEnemyOrder();
+
         // Player HP
         player.MaxHP = playerStartHP;
         player.CurrentHP = playerStartHP;
@@ -175,6 +201,74 @@ public class GameData : MonoBehaviour
             $"HP: {player.CurrentHP}, " +
             $"Gold: {player.Gold}, " +
             $"Deck: {player.deck.Count}"
+        );
+    }
+
+    // =========================================================
+    // Easy Enemy Order
+    // =========================================================
+
+    private void PrepareEasyEnemyOrder()
+    {
+        easyEnemyOrder.Clear();
+
+        if (easyEnemyPool == null || easyEnemyPool.Length != 2)
+        {
+            Debug.LogError(
+                "[GameData] Easy Enemy Pool must contain exactly 2 enemies."
+            );
+
+            return;
+        }
+
+        foreach (EnemyData enemyData in easyEnemyPool)
+        {
+            if (enemyData == null)
+            {
+                Debug.LogError(
+                    "[GameData] Easy Enemy Pool contains null entries."
+                );
+
+                easyEnemyOrder.Clear();
+
+                return;
+            }
+
+            // 같은 에셋이 중복 등록되었는지 확인
+            if (easyEnemyOrder.Contains(enemyData))
+            {
+                Debug.LogError(
+                    "[GameData] Easy Enemy Pool contains duplicate enemies."
+                );
+
+                easyEnemyOrder.Clear();
+
+                return;
+            }
+
+            easyEnemyOrder.Add(enemyData);
+        }
+
+        // Fisher-Yates Shuffle
+        for (int i = easyEnemyOrder.Count - 1; i > 0; i--)
+        {
+            int randomIndex = UnityEngine.Random.Range(0, i + 1);
+
+            EnemyData temp = easyEnemyOrder[i];
+
+            easyEnemyOrder[i] = easyEnemyOrder[randomIndex];
+
+            easyEnemyOrder[randomIndex] = temp;
+        }
+
+        Debug.Log(
+            "[GameData] Easy Enemy Order: " +
+            string.Join(
+                ", ",
+                easyEnemyOrder.ConvertAll(
+                    enemyData => enemyData.enemyName
+                )
+            )
         );
     }
 
@@ -217,23 +311,90 @@ public class GameData : MonoBehaviour
 
     public EnemyData GetRandomEnemy(BattleType battleType)
     {
-        EnemyData[] selectedPool;
+        EnemyData selectedEnemy = null;
 
         switch (battleType)
         {
+            // -----------------------------------------
+            // Normal Battle
+            // -----------------------------------------
+
             case BattleType.Normal:
-                selectedPool = normalEnemyPool;
+
+                // 첫 번째와 두 번째 일반 전투
+                if (normalBattleCount < 2)
+                {
+                    if (easyEnemyOrder.Count != 2)
+                    {
+                        Debug.LogError(
+                            "[GameData] Easy Enemy Order is not initialized."
+                        );
+
+                        return null;
+                    }
+
+                    selectedEnemy = easyEnemyOrder[normalBattleCount];
+
+                    normalBattleCount++;
+                }
+
+                // 세 번째 일반 전투부터
+                else
+                {
+                    selectedEnemy = GetRandomEnemyWithoutRepeat(
+                        hardEnemyPool,
+                        lastHardEnemy,
+                        "Hard Enemy Pool"
+                    );
+
+                    if (selectedEnemy == null)
+                    {
+                        return null;
+                    }
+
+                    lastHardEnemy = selectedEnemy;
+
+                    normalBattleCount++;
+                }
+
                 break;
+
+            // -----------------------------------------
+            // Elite Battle
+            // -----------------------------------------
 
             case BattleType.Elite:
-                selectedPool = eliteEnemyPool;
+
+                selectedEnemy = GetRandomEnemyWithoutRepeat(
+                    eliteEnemyPool,
+                    lastEliteEnemy,
+                    "Elite Enemy Pool"
+                );
+
+                if (selectedEnemy == null)
+                {
+                    return null;
+                }
+
+                lastEliteEnemy = selectedEnemy;
+
                 break;
 
+            // -----------------------------------------
+            // Boss Battle
+            // -----------------------------------------
+
             case BattleType.Boss:
-                selectedPool = bossEnemyPool;
+
+                selectedEnemy = GetRandomEnemyFromPool(
+                    bossEnemyPool,
+                    "Boss Enemy Pool"
+                );
+
                 break;
 
             default:
+
                 Debug.LogError(
                     $"[GameData] Unsupported BattleType: {battleType}"
                 );
@@ -241,10 +402,96 @@ public class GameData : MonoBehaviour
                 return null;
         }
 
+        if (selectedEnemy != null)
+        {
+            Debug.Log(
+                $"[GameData] BattleType: {battleType}, " +
+                $"Normal Battle Count: {normalBattleCount}, " +
+                $"Selected Enemy: {selectedEnemy.enemyName}"
+            );
+        }
+
+        return selectedEnemy;
+    }
+
+    // =========================================================
+    // Random Enemy Without Consecutive Duplicate
+    // =========================================================
+
+    private EnemyData GetRandomEnemyWithoutRepeat(
+        EnemyData[] selectedPool,
+        EnemyData lastEnemy,
+        string poolName)
+    {
         if (selectedPool == null || selectedPool.Length == 0)
         {
             Debug.LogError(
-                $"[GameData] {battleType} Enemy Pool is empty."
+                $"[GameData] {poolName} is empty."
+            );
+
+            return null;
+        }
+
+        List<EnemyData> validEnemies = new List<EnemyData>();
+
+        foreach (EnemyData enemyData in selectedPool)
+        {
+            if (enemyData != null && !validEnemies.Contains(enemyData))
+            {
+                validEnemies.Add(enemyData);
+            }
+        }
+
+        if (validEnemies.Count == 0)
+        {
+            Debug.LogError(
+                $"[GameData] No valid EnemyData found in {poolName}."
+            );
+
+            return null;
+        }
+
+        List<EnemyData> availableEnemies = new List<EnemyData>();
+
+        foreach (EnemyData enemyData in validEnemies)
+        {
+            if (enemyData != lastEnemy)
+            {
+                availableEnemies.Add(enemyData);
+            }
+        }
+
+        // 대체할 적이 없는 경우
+        if (availableEnemies.Count == 0)
+        {
+            Debug.LogWarning(
+                $"[GameData] {poolName} has no alternative enemy. " +
+                "The same enemy may appear consecutively."
+            );
+
+            availableEnemies = validEnemies;
+        }
+
+        int index = UnityEngine.Random.Range(
+            0,
+            availableEnemies.Count
+        );
+
+        return availableEnemies[index];
+    }
+
+    // =========================================================
+    // Random Enemy From Pool
+    // =========================================================
+
+    private EnemyData GetRandomEnemyFromPool(
+        EnemyData[] selectedPool,
+        string poolName)
+    {
+        if (selectedPool == null || selectedPool.Length == 0)
+        {
+            Debug.LogError(
+                $"[GameData] {poolName} is empty."
             );
 
             return null;
@@ -263,23 +510,18 @@ public class GameData : MonoBehaviour
         if (validEnemies.Count == 0)
         {
             Debug.LogError(
-                $"[GameData] No valid EnemyData found in " +
-                $"{battleType} Enemy Pool."
+                $"[GameData] No valid EnemyData found in {poolName}."
             );
 
             return null;
         }
 
-        int index = UnityEngine.Random.Range(0, validEnemies.Count);
-
-        EnemyData selectedEnemy = validEnemies[index];
-
-        Debug.Log(
-            $"[GameData] BattleType: {battleType}, " +
-            $"Selected Enemy: {selectedEnemy.enemyName}"
+        int index = UnityEngine.Random.Range(
+            0,
+            validEnemies.Count
         );
 
-        return selectedEnemy;
+        return validEnemies[index];
     }
 
     // =========================================================
@@ -327,6 +569,15 @@ public class GameData : MonoBehaviour
         currentEnemyAnimatorController = null;
 
         currentBattleType = BattleType.Normal;
+
+        // Enemy Selection History 초기화
+        normalBattleCount = 0;
+
+        easyEnemyOrder.Clear();
+
+        lastHardEnemy = null;
+
+        lastEliteEnemy = null;
     }
 
     private void ClearEntity(Entity entity)
@@ -367,14 +618,16 @@ public class GameData : MonoBehaviour
     }
 
     // =========================================================
-    // 치즈 관련 함수들
+    // Cheese
     // =========================================================
 
     // 치즈를 왼쪽부터 빈 슬롯에 추가
     public bool AddCheese(CheeseData cheeseData)
     {
         if (cheeseData == null)
+        {
             return false;
+        }
 
         for (int i = 0; i < cheeseInventory.Length; i++)
         {
@@ -403,7 +656,9 @@ public class GameData : MonoBehaviour
         CheeseData cheese = cheeseInventory[slotIndex];
 
         if (cheese == null || player == null)
+        {
             return false;
+        }
 
         if (cheese.IsRotten)
         {

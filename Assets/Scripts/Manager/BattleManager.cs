@@ -55,7 +55,7 @@ public class BattleManager : MonoBehaviour
     // =====================================================
 
     [Header("Turn Setting")]
-    public int drawPerTurn = 5;
+    [HideInInspector] public int drawPerTurn = 5;
 
     // =====================================================
     // 현재 턴 수
@@ -69,6 +69,10 @@ public class BattleManager : MonoBehaviour
 
     private bool isBusy;
     public bool IsBusy => isBusy;
+
+    [Header("Enemy Card Preview")]
+    [SerializeField] private float enemyCardPreviewDuration = 1.3f;
+    [SerializeField] private float enemyCardActionInterval = 0.4f;
 
     // =====================================================
     // Unity
@@ -451,13 +455,13 @@ public class BattleManager : MonoBehaviour
             // 4. 적 애니메이션 연출 대기
             if (showPreview)
             {
-                yield return new WaitForSeconds(0.8f);
+                yield return new WaitForSeconds(enemyCardPreviewDuration);
 
                 EnemyCardPreviewUIManager.instance.Hide();
             }
 
             // 5. 다음 행동 간격
-            yield return new WaitForSeconds(0.4f);
+            yield return new WaitForSeconds(enemyCardActionInterval);
         }
 
         // 마지막 정리

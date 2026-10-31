@@ -57,6 +57,16 @@ public static class CardEffectFactory
             case CardEffectType.TakeOver:
                 return new TakeOverEffect(card);
 
+            //Green Slime
+            case CardEffectType.GreenSlime_BodySlam:
+                return new GreenSlime_BodySlamEffect(card);
+            case CardEffectType.SlimeShield:
+                return new SlimeShieldEffect(card);
+            case CardEffectType.SlimeShot:
+                return new SlimeShotEffect(card);
+            case CardEffectType.StickySlime:
+                return new StickySlimeEffect(card);
+
             default:
                 Debug.Log("Unknown card type!");
                 return null;
