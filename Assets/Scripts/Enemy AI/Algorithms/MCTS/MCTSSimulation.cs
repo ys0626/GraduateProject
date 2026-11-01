@@ -42,7 +42,7 @@ public static class MCTSSimulation
 
     // =====================================================
     // 진입점 1: 노드 기준 (캐싱 + 시뮬레이션 생략 + 이력 이어받기)
-    // 전위 테이블(EnableTranspositionCache)과 시뮬레이션 생략(EnableEarlyCutoff)은 각각 켜고 끔
+    // 전위 테이블(EnableTranspositionCache), 시뮬레이션 생략(EnableEarlyCutoff), 생략 값 저장(EnableSkippedValueStore)은 각각 켜고 끔
     // =====================================================
 
     // =====================================================
@@ -71,7 +71,11 @@ public static class MCTSSimulation
             SimulationSkipCount++;
 
             float avg = node.AverageReward;
-            if (cachingOn) MCTSTranspositionTable.Store(hash, avg);
+            // 생략한 노드 평균을 테이블에 표본으로 저장할지 (끄면 테이블에는 실제 롤아웃 결과만 저장)
+            bool skippedValueStoreOn =
+                SimulationManager.instance == null || SimulationManager.instance.EnableSkippedValueStore;
+
+            if (cachingOn && skippedValueStoreOn) MCTSTranspositionTable.Store(hash, avg);
             return avg;
         }
 

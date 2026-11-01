@@ -45,15 +45,19 @@ public class SimulationManager : MonoBehaviour
     [SerializeField] private bool enableHeuristicRollout = true;
     [Tooltip("최다 방문 child가 2위 child보다 일정 배수 이상 방문되면 탐색을 중단합니다.")]
     [SerializeField] private bool enableEarlyStop = true;
-    // 캐싱은 전위 테이블과 시뮬레이션 생략 두 기능으로 나뉨. 둘 다 켜면 기존 캐싱과 같음
+    [Tooltip("같은 턴의 다음 탐색에서 이전 트리를 재사용하고, 재사용 노드의 방문 수를 1로 초기화합니다(Fast Expansion).")]
+    [SerializeField] private bool enableTreeReuse = true;
+
+    // 캐싱은 세 토글로 나뉨. 세 개 모두 켜면 분리 전 캐싱(TC1)과 같음
+    [Header("MCTS Caching")]
     [Tooltip("같은 상태(상태 + 이번 턴 이력)의 롤아웃 평균을 저장해 재사용합니다. 3번 재사용한 뒤 4번째에 새 롤아웃을 수행합니다.")]
     [FormerlySerializedAs("enableCaching")]
     [SerializeField] private bool enableTranspositionCache = true;
     [Tooltip("아래 기준 횟수 이상 방문한 노드는 롤아웃 없이 노드의 평균 보상을 사용합니다.")]
     [SerializeField] private bool enableSimulationSkip = false;
     [SerializeField][Range(5, 200)] private int earlyCutoffVisitThreshold = 30; // 시뮬레이션 생략 기준 방문 수
-    [Tooltip("같은 턴의 다음 탐색에서 이전 트리를 재사용하고, 재사용 노드의 방문 수를 1로 초기화합니다(Fast Expansion).")]
-    [SerializeField] private bool enableTreeReuse = true;
+    [Tooltip("시뮬레이션을 생략할 때 노드 평균을 전위 테이블에 표본으로 저장합니다. 끄면 테이블에는 실제 롤아웃 결과만 저장됩니다. 전위 테이블과 시뮬레이션 생략이 모두 켜져 있을 때만 의미가 있습니다.")]
+    [SerializeField] private bool enableSkippedValueStore = true;
 
     [Header("MCTS Etc")]
     [Tooltip("트리 확장 단계에서 휴리스틱 규칙에 걸리는 카드를 후보에서 제외합니다.")]
@@ -114,10 +118,13 @@ public class SimulationManager : MonoBehaviour
     public bool EnableDynamicSearch => enableDynamicSearch;
     public bool EnableHeuristicRollout => enableHeuristicRollout;
     public bool EnableSearchEarlyStop => enableEarlyStop;
-    public bool EnableTranspositionCache => enableTranspositionCache; // 캐싱: 전위 테이블
-    public bool EnableEarlyCutoff => enableSimulationSkip; // 캐싱: 시뮬레이션 생략
-    public int EarlyCutoffVisitThreshold => earlyCutoffVisitThreshold;
     public bool EnableTreeReuse => enableTreeReuse;
+
+    // ===== MCTS 캐싱 =====
+    public bool EnableTranspositionCache => enableTranspositionCache; // 전위 테이블
+    public bool EnableEarlyCutoff => enableSimulationSkip; // 시뮬레이션 생략
+    public int EarlyCutoffVisitThreshold => earlyCutoffVisitThreshold;
+    public bool EnableSkippedValueStore => enableSkippedValueStore; // 생략 시 노드 평균을 전위 테이블에 저장
 
     // ===== MCTS 기타 =====
     public bool EnableHeuristicActionPruning => enableHeuristicActionPruning;
@@ -150,6 +157,7 @@ public class SimulationManager : MonoBehaviour
                 $"ES{(enableEarlyStop ? 1 : 0)}_" +
                 $"TT{(enableTranspositionCache ? 1 : 0)}_" +
                 $"SK{(enableSimulationSkip ? 1 : 0)}_" +
+                $"SS{(enableSkippedValueStore ? 1 : 0)}_" +
                 $"TR{(enableTreeReuse ? 1 : 0)}_" +
                 $"LC{(enableLethalCheck ? 1 : 0)}_" +
                 $"AP{(enableHeuristicActionPruning ? 1 : 0)}_" +
