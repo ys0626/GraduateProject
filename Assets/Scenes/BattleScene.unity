@@ -3421,23 +3421,24 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 53c7444e9e1e99547ad3bbe063645680, type: 2}
   enemyMaxHP: 100
   enemyMaxEnergy: 4
-  playerControllerType: 6
-  enemyControllerType: 1
+  playerControllerType: 1
+  enemyControllerType: 6
   autoSimulation: 1
   totalBattleCount: 300
   timeScale: 100
   enableDynamicSearch: 1
   enableHeuristicRollout: 0
   enableEarlyStop: 1
-  enableCaching: 1
+  enableCaching: 0
   earlyCutoffVisitThreshold: 30
   enableTreeReuse: 1
   enableHeuristicActionPruning: 0
   enableLethalCheck: 1
   enableImprovedEvaluation: 1
   searchBudgetMode: 0
-  fixedSimulationBudget: 1000
+  fixedSimulationBudget: 215
   timeBudgetMilliseconds: 5
+  vanillaSimulationBudget: 1000
 --- !u!4 &776499466
 Transform:
   m_ObjectHideFlags: 0

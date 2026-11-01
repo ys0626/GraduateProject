@@ -61,9 +61,10 @@ public class SimulationManager : MonoBehaviour
     [SerializeField] private bool enableImprovedEvaluation = false;
 
     [Header("Search Budget")]
-    [Tooltip("MCTS는 동적 탐색을 끈 경우에만 사용합니다. MCTSVanilla는 아래 Vanilla Simulation Budget을 사용합니다.")]
+    [Tooltip("동적 탐색을 끈 MCTS의 예산 방식입니다. MCTSVanilla는 아래 Vanilla Simulation Budget을 사용합니다.")]
     [SerializeField] private MCTSSearchBudgetMode searchBudgetMode = MCTSSearchBudgetMode.FixedSimulationCount;
-    [Min(1)] [SerializeField] private int fixedSimulationBudget = 100; // MCTS 전용
+    [Tooltip("MCTS 예산입니다. 동적 탐색을 끄면 이 횟수만큼 반복하고, 켜면 최대 반복 횟수로 쓰입니다. 동적 탐색 목표와 조기 종료 기준은 이 값/1000 비율로 조정됩니다(1000이면 기존과 같음).")]
+    [Min(1)] [SerializeField] private int fixedSimulationBudget = 1000; // MCTS 전용
     [Min(0.1f)] [SerializeField] private float timeBudgetMilliseconds = 5f;
     [Tooltip("MCTSVanilla의 탐색당 반복 횟수입니다. MCTS 설정과 무관하게 항상 이 값을 사용합니다.")]
     [Min(1)] [SerializeField] private int vanillaSimulationBudget = 1000;
@@ -120,7 +121,7 @@ public class SimulationManager : MonoBehaviour
     // ===== MCTS 평가 =====
     public bool EnableImprovedEvaluation => enableImprovedEvaluation;
 
-    // ===== 탐색 예산 (동적 탐색이 꺼진 경우에만 MCTS에 적용) =====
+    // ===== 탐색 예산 (FixedSimulationBudget은 동적 탐색이 켜져 있으면 최대 반복 횟수로 쓰임) =====
     public bool UseFixedSimulationBudget =>
         !enableDynamicSearch && searchBudgetMode == MCTSSearchBudgetMode.FixedSimulationCount;
     public bool UseTimeBudget =>
@@ -131,7 +132,7 @@ public class SimulationManager : MonoBehaviour
 
     /// <summary>
     /// 대결 구도와 MCTS 기법 on/off 조합을 나타내는 라벨 (CSV 파일명, Mode 컬럼에 사용)
-    /// 예: MCTS_vs_MCTSVanilla_DS1_HR1_ES1_TC1_TR1_LC1_AP1_EV0_Vanilla100
+    /// 예: MCTS_vs_MCTSVanilla_DS1_HR0_ES1_TC0_TR1_LC1_AP0_EV1_Budget1000_Vanilla1000
     /// </summary>
     public string MCTSModeLabel
     {
@@ -148,12 +149,12 @@ public class SimulationManager : MonoBehaviour
                 $"AP{(enableHeuristicActionPruning ? 1 : 0)}_" +
                 $"EV{(enableImprovedEvaluation ? 1 : 0)}";
 
-            // 동적 탐색이 꺼져 있으면 MCTS가 사용하는 예산 표시
+            // MCTS 예산 표시 (TimeLimit이면 시간, 그 외에는 Fixed Simulation Budget)
             if (UseTimeBudget)
             {
                 label += $"_Time{TimeBudgetMilliseconds:F1}ms";
             }
-            else if (UseFixedSimulationBudget)
+            else
             {
                 label += $"_Budget{FixedSimulationBudget}";
             }

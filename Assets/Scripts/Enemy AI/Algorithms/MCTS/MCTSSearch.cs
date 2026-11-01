@@ -110,6 +110,10 @@ public static class MCTSSearch
         // 탐색 예산 결정
         // =================================================
 
+        // MCTS 예산 비율 (Fixed Simulation Budget / 1000), 동적 탐색 목표와 조기 종료 기준에 곱함
+        float budgetScale =
+            GetBudgetScale();
+
         bool useFixedBudget =
             SimulationManager.instance != null
             ? SimulationManager.instance.UseFixedSimulationBudget
@@ -124,7 +128,7 @@ public static class MCTSSearch
             ? (SimulationManager.instance != null
                 ? SimulationManager.instance.FixedSimulationBudget
                 : FIXED_TEST_ITERATIONS)
-            : (useTimeBudget ? -1 : GetDynamicIterations(rootState, playableCardCount));
+            : (useTimeBudget ? -1 : GetDynamicIterations(rootState, playableCardCount, budgetScale));
 
         double timeBudgetMs =
             useTimeBudget
@@ -134,6 +138,13 @@ public static class MCTSSearch
         string budgetMode = useTimeBudget
             ? "TimeLimit"
             : (useFixedBudget ? "FixedSimulationCount" : "Dynamic");
+
+        // 조기 종료 기준도 예산 비율에 맞춤 (예산 1000이면 200회부터 100회마다 확인)
+        int earlyStopMinIterations =
+            Mathf.Max(1, Mathf.RoundToInt(MIN_ITERATIONS * budgetScale));
+
+        int convergenceCheckInterval =
+            Mathf.Max(1, Mathf.RoundToInt(CONVERGENCE_CHECK_INTERVAL * budgetScale));
 
         // =================================================
         // MCTS 반복
@@ -275,8 +286,8 @@ public static class MCTSSearch
                 : !DISABLE_EARLY_STOP_FOR_TEST;
 
             if (searchEarlyStopOn &&
-                executedIterations >= MIN_ITERATIONS &&
-                executedIterations % CONVERGENCE_CHECK_INTERVAL == 0 &&
+                executedIterations >= earlyStopMinIterations &&
+                executedIterations % convergenceCheckInterval == 0 &&
                 IsConverged(root))
             {
                 break;
@@ -514,7 +525,8 @@ public static class MCTSSearch
     /// </summary>
     private static int GetDynamicIterations(
         SimGameState rootState,
-        int playableCardCount)
+        int playableCardCount,
+        float budgetScale)
     {
         // 선택지가 많을수록 더 많은 반복이 필요
         int actionBonus =
@@ -540,7 +552,25 @@ public static class MCTSSearch
         int iterations =
             MIN_ITERATIONS + actionBonus + closeFightBonus;
 
-        return Mathf.Clamp(iterations, MIN_ITERATIONS, MAX_ITERATIONS);
+        int clampedIterations =
+            Mathf.Clamp(iterations, MIN_ITERATIONS, MAX_ITERATIONS);
+
+        // 예산 비율에 맞춰 축소 (예산 1000이면 그대로)
+        return Mathf.Max(1, Mathf.RoundToInt(clampedIterations * budgetScale));
+    }
+
+    /// <summary>
+    /// MCTS 예산 비율. Fixed Simulation Budget을 최대 반복 횟수(1000) 대비 비율로 환산
+    /// 동적 탐색 목표 반복과 조기 종료 기준(시작 반복, 확인 주기)에 곱해, 예산 크기와 무관하게 같은 형태로 동작하게 함
+    /// SimulationManager가 없거나 TimeLimit 모드면 1
+    /// </summary>
+    private static float GetBudgetScale()
+    {
+        if (SimulationManager.instance == null ||
+            SimulationManager.instance.UseTimeBudget)
+            return 1f;
+
+        return (float)SimulationManager.instance.FixedSimulationBudget / MAX_ITERATIONS;
     }
 
     // =====================================================
