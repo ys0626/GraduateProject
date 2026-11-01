@@ -164,6 +164,8 @@ public static class MCTSSearch
         int nodeCount = 0;
         int cacheHitsBefore = MCTSTranspositionTable.hitCount;
         int cacheLookupsBefore = MCTSTranspositionTable.totalLookups;
+        int rolloutsBefore = MCTSSimulation.RolloutCount;
+        int simulationSkipsBefore = MCTSSimulation.SimulationSkipCount;
 
         Stopwatch stopwatch =
             Stopwatch.StartNew();
@@ -206,7 +208,9 @@ public static class MCTSSearch
                     cacheHitsBefore,
                     cacheLookupsBefore,
                     false,
-                    0);
+                    0,
+                    rolloutsBefore,
+                    simulationSkipsBefore);
 
                 return lethalSequence[0];
             }
@@ -325,7 +329,9 @@ public static class MCTSSearch
             cacheHitsBefore,
             cacheLookupsBefore,
             treeReused,
-            reusedNodeCount);
+            reusedNodeCount,
+            rolloutsBefore,
+            simulationSkipsBefore);
         // =================================================
         // 최종 선택
         // =================================================
@@ -388,12 +394,18 @@ public static class MCTSSearch
         int cacheHitsBefore,
         int cacheLookupsBefore,
         bool treeReused,
-        int reusedNodeCount)
+        int reusedNodeCount,
+        int rolloutsBefore,
+        int simulationSkipsBefore)
     {
         int cacheHitsThisSearch =
             MCTSTranspositionTable.hitCount - cacheHitsBefore;
         int cacheLookupsThisSearch =
             MCTSTranspositionTable.totalLookups - cacheLookupsBefore;
+        int rolloutsThisSearch =
+            MCTSSimulation.RolloutCount - rolloutsBefore;
+        int simulationSkipsThisSearch =
+            MCTSSimulation.SimulationSkipCount - simulationSkipsBefore;
 
         SimulationManager.RecordSearchTime(elapsedMs);
 
@@ -439,7 +451,9 @@ public static class MCTSSearch
             rootState.turnCount,
             rootState.self.Block,
             rootState.opponent.Block,
-            MCTSLogger.GetCardLabel(selectedAction.cardKey.data, selectedAction.cardKey.upgraded)
+            MCTSLogger.GetCardLabel(selectedAction.cardKey.data, selectedAction.cardKey.upgraded),
+            rolloutsThisSearch,
+            simulationSkipsThisSearch
         );
     }
 

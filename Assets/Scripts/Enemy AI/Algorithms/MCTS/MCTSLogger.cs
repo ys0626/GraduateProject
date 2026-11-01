@@ -102,7 +102,9 @@ public static class MCTSLogger
         int turnNumber,
         int selfBlock,
         int opponentBlock,
-        string selectedCard)
+        string selectedCard,
+        int rolloutCount,
+        int simulationSkips)
     {
         bool fileExists =
             File.Exists(searchLogPath);
@@ -120,7 +122,8 @@ public static class MCTSLogger
                     "NodeCount,MemoryDeltaBytes,IsMemorySample,LethalSequenceUsed," +
                     "CacheHits,CacheLookups,CacheHitRate,CacheEntryCount," +
                     "TreeReused,ReusedNodeCount," +
-                    "Side,TurnNumber,SelfBlock,OpponentBlock,SelectedCard"
+                    "Side,TurnNumber,SelfBlock,OpponentBlock,SelectedCard," +
+                    "RolloutCount,SimulationSkips"
                 );
             }
 
@@ -160,7 +163,9 @@ public static class MCTSLogger
                 $"{turnNumber}," +
                 $"{selfBlock}," +
                 $"{opponentBlock}," +
-                $"{selectedCard}"
+                $"{selectedCard}," +
+                $"{rolloutCount}," +
+                $"{simulationSkips}"
             );
         }
     }

@@ -42,8 +42,15 @@ public static class MCTSSimulation
 
     // =====================================================
     // 진입점 1: 노드 기준 (캐싱 + 시뮬레이션 생략 + 이력 이어받기)
-    // 캐싱 토글(EnableTranspositionCache, EnableEarlyCutoff)이 두 기능을 함께 켜고 끔
+    // 전위 테이블(EnableTranspositionCache)과 시뮬레이션 생략(EnableEarlyCutoff)은 각각 켜고 끔
     // =====================================================
+
+    // =====================================================
+    // 측정용 카운터 (MCTSSearch가 탐색 전후 차이로 탐색당 횟수를 계산)
+    // =====================================================
+
+    public static int RolloutCount; // 실제 롤아웃을 수행한 횟수
+    public static int SimulationSkipCount; // 시뮬레이션 생략으로 롤아웃 없이 노드 평균을 사용한 횟수
 
     public static float Simulate(MCTSNode node, int maxDepth = 20)
     {
@@ -61,6 +68,8 @@ public static class MCTSSimulation
 
         if (node.ShouldSkipSimulation())
         {
+            SimulationSkipCount++;
+
             float avg = node.AverageReward;
             if (cachingOn) MCTSTranspositionTable.Store(hash, avg);
             return avg;
@@ -91,6 +100,8 @@ public static class MCTSSimulation
         TurnPlayHistory initialHistory,
         int maxDepth)
     {
+        RolloutCount++;
+
         // =================================================
         // 원본 상태 복사
         // =================================================
