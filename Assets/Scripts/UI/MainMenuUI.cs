@@ -7,6 +7,7 @@ public class MainMenuUI : MonoBehaviour
     [Header("Buttons")]
     [SerializeField] private Button startGameButton;
     [SerializeField] private Button continueGameButton;
+    [SerializeField] private Button exitGameButton;
 
     private void Start()
     {
@@ -62,5 +63,12 @@ public class MainMenuUI : MonoBehaviour
         }
 
         SceneChanger.instance.ResumeGame();
+    }
+
+    public void OnExitGameClicked()
+    {
+        Debug.Log("[MainMenuUI] 게임을 종료합니다.");
+
+        Application.Quit();
     }
 }

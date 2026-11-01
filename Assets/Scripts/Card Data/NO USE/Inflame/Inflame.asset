@@ -13,8 +13,10 @@ MonoBehaviour:
   m_Name: Inflame
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Inflame
-  description: Gain 2 Strength
+  description: "\uD798\uC744 2 \uC5BB\uC2B5\uB2C8\uB2E4."
   artwork: {fileID: -6932747087132080230, guid: b1533dd18973e394399c83e38c4ddebb, type: 3}
+  upgradeType: 0
+  upgradedDescription: "\uD798\uC744 2 \uC5BB\uC2B5\uB2C8\uB2E4."
   cost: 1
   cardType: 2
   rarity: 1

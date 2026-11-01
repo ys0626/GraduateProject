@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af1b4f9afa4a82940a50d4787765d0fb, type: 3}
+  m_Name: Ancient Doom Dragon
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyData
+  enemyName: Ancient Doom Dragon
+  sprite: {fileID: 21300000, guid: a5caa2a3c774ee14b8ff35c346ee1bd1, type: 3}
+  animatorController: {fileID: 9100000, guid: d663bbea13b20d54b92d53d847305c2a, type: 2}
+  maxHP: 190
+  maxEnergy: 3
+  starterDeck:
+  - {fileID: 11400000, guid: 191b332d8abcb854ab7a50bf92267556, type: 2}
+  - {fileID: 11400000, guid: 191b332d8abcb854ab7a50bf92267556, type: 2}
+  - {fileID: 11400000, guid: 1f4088d19ae4c7545bbbec4e01a687b2, type: 2}
+  - {fileID: 11400000, guid: 7f651e8aab9d1d04e84d4e51e4157868, type: 2}
+  - {fileID: 11400000, guid: 7f651e8aab9d1d04e84d4e51e4157868, type: 2}
+  - {fileID: 11400000, guid: 8495ff2b43e21b243a207456e9560405, type: 2}
+  - {fileID: 11400000, guid: 8495ff2b43e21b243a207456e9560405, type: 2}
+  - {fileID: 11400000, guid: 70a7521e552f1ff46b92def6a99e634e, type: 2}
+  - {fileID: 11400000, guid: 97713c56d53506d4d887fa032f642f2a, type: 2}
+  - {fileID: 11400000, guid: 97713c56d53506d4d887fa032f642f2a, type: 2}
+  - {fileID: 11400000, guid: 3ce5bd828bf2d99428528f1b70da6f25, type: 2}
+  - {fileID: 11400000, guid: 3ce5bd828bf2d99428528f1b70da6f25, type: 2}
+  - {fileID: 11400000, guid: 7235a90dc559ee14fba58653a82245a4, type: 2}

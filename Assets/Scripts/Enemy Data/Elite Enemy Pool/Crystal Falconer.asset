@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af1b4f9afa4a82940a50d4787765d0fb, type: 3}
+  m_Name: Crystal Falconer
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyData
+  enemyName: Crystal Falconer
+  sprite: {fileID: 21300000, guid: 9c4b7e9d12afc6640bdfb36b5966025e, type: 3}
+  animatorController: {fileID: 9100000, guid: c5217303b9d14df4e9aba17932766f35, type: 2}
+  maxHP: 95
+  maxEnergy: 3
+  starterDeck:
+  - {fileID: 11400000, guid: 388bc0730ce8e8749b21cdb62e8f1bcf, type: 2}
+  - {fileID: 11400000, guid: 388bc0730ce8e8749b21cdb62e8f1bcf, type: 2}
+  - {fileID: 11400000, guid: 388bc0730ce8e8749b21cdb62e8f1bcf, type: 2}
+  - {fileID: 11400000, guid: 803d286da8edf7e4e87c2bf24bdd414c, type: 2}
+  - {fileID: 11400000, guid: 803d286da8edf7e4e87c2bf24bdd414c, type: 2}
+  - {fileID: 11400000, guid: e6d05a2a4ae603841a7b697e8b216883, type: 2}
+  - {fileID: 11400000, guid: ec906439ce6f4384d92f353a2b41ffcf, type: 2}
+  - {fileID: 11400000, guid: ec906439ce6f4384d92f353a2b41ffcf, type: 2}
+  - {fileID: 11400000, guid: c9de5cbfb71a35e449706f13d4cc72d5, type: 2}
+  - {fileID: 11400000, guid: c9de5cbfb71a35e449706f13d4cc72d5, type: 2}
+  - {fileID: 11400000, guid: 6e96b62ee48053c40bff638adc9065d7, type: 2}
+  - {fileID: 11400000, guid: 6e96b62ee48053c40bff638adc9065d7, type: 2}
+  - {fileID: 11400000, guid: c0d6ae5fa1bd6174f8d3e8ac0d3fb2f1, type: 2}

@@ -133,6 +133,75 @@ public static class CardEffectFactory
             case CardEffectType.GiantSporeBurst:
                 return new GiantSporeBurstEffect(card);
 
+            // Corrupted Knight
+            case CardEffectType.BattleFervor:
+                return new BattleFervorEffect(card);
+
+            case CardEffectType.ShieldAccumulation:
+                return new ShieldAccumulationEffect(card);
+
+            case CardEffectType.CorruptedKnight_ShieldBash:
+                return new CorruptedKnight_ShieldBashEffect(card);
+
+            case CardEffectType.DoubleStrike:
+                return new DoubleStrikeEffect(card);
+
+            case CardEffectType.IroncladStance:
+                return new IroncladStanceEffect(card);
+
+            case CardEffectType.CrushingBlow:
+                return new CrushingBlowEffect(card);
+
+
+            // Crystal Falconer
+            case CardEffectType.WindSense:
+                return new WindSenseEffect(card);
+
+            case CardEffectType.EvasiveStance:
+                return new EvasiveStanceEffect(card);
+
+            case CardEffectType.RapidFire:
+                return new RapidFireEffect(card);
+
+            case CardEffectType.FeatherBarrier:
+                return new FeatherBarrierEffect(card);
+
+            case CardEffectType.MarkedArrow:
+                return new MarkedArrowEffect(card);
+
+            case CardEffectType.GaleFlurry:
+                return new GaleFlurryEffect(card);
+
+            case CardEffectType.RetreatingLeap:
+                return new RetreatingLeapEffect(card);
+
+
+            // Ancient Doom Dragon
+            case CardEffectType.WarInstinct:
+                return new WarInstinctEffect(card);
+
+            case CardEffectType.EvasionInstinct:
+                return new EvasionInstinctEffect(card);
+
+            case CardEffectType.ScaleBarrier:
+                return new ScaleBarrierEffect(card);
+
+            case CardEffectType.DragonBarrage:
+                return new DragonBarrageEffect(card);
+
+            case CardEffectType.DefenseConversion:
+                return new DefenseConversionEffect(card);
+
+            case CardEffectType.RendingClaw:
+                return new RendingClawEffect(card);
+
+            case CardEffectType.ApocalypticRoar:
+                return new ApocalypticRoarEffect(card);
+
+            case CardEffectType.AncientScales:
+                return new AncientScalesEffect(card);
+
+
             default:
                 Debug.Log("Unknown card type!");
                 return null;

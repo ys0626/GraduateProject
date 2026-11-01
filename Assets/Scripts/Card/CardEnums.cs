@@ -54,6 +54,33 @@ public enum CardEffectType
     RottingBurst,
     SporeShot,
     VulnerabilitySpores,
+
+    // Corrupted Knight
+    BattleFervor,
+    ShieldAccumulation,
+    CorruptedKnight_ShieldBash,
+    DoubleStrike,
+    IroncladStance,
+    CrushingBlow,
+
+    // Crystal Falconer
+    WindSense,
+    EvasiveStance,
+    RapidFire,
+    FeatherBarrier,
+    MarkedArrow,
+    GaleFlurry,
+    RetreatingLeap,
+
+    // Ancient Doom Dragon
+    WarInstinct,
+    EvasionInstinct,
+    ScaleBarrier,
+    DragonBarrage,
+    DefenseConversion,
+    RendingClaw,
+    ApocalypticRoar,
+    AncientScales,
 }
 
 
