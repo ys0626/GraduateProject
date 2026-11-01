@@ -199,11 +199,54 @@ public class SceneChanger : MonoBehaviour
 
 
 
-    //테스트용
+    // =========================================================
+    // Debug
+    // =========================================================
+
     [ContextMenu("Debug/Force Move To ShopScene")]
     private void ForceMoveToShopScene()
     {
         isChangingScene = false;
         ChangeScene("ShopScene");
+    }
+
+    [ContextMenu("Debug/Force Move To Elite Battle")]
+    private void ForceMoveToEliteBattle()
+    {
+        if (GameData.instance == null)
+        {
+            Debug.LogError(
+                "[SceneChanger] GameData가 없습니다."
+            );
+
+            return;
+        }
+
+        GameData.instance.CurrentBattleType = BattleType.Elite;
+
+        isChangingScene = false;
+        ChangeScene("BattleScene");
+
+        Debug.Log("[SceneChanger] Elite Battle Debug Started");
+    }
+
+    [ContextMenu("Debug/Force Move To Boss Battle")]
+    private void ForceMoveToBossBattle()
+    {
+        if (GameData.instance == null)
+        {
+            Debug.LogError(
+                "[SceneChanger] GameData가 없습니다."
+            );
+
+            return;
+        }
+
+        GameData.instance.CurrentBattleType = BattleType.Boss;
+
+        isChangingScene = false;
+        ChangeScene("BattleScene");
+
+        Debug.Log("[SceneChanger] Boss Battle Debug Started");
     }
 }
