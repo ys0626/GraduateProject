@@ -1294,12 +1294,12 @@ MonoBehaviour:
   spriteRenderer: {fileID: 2105840397}
   animationController: {fileID: 2105840398}
   spriteVisual: {fileID: 2105840396}
-  normalPosition: {x: 2.79, y: 0.54, z: 0}
+  normalPosition: {x: 2.79, y: 0.088, z: 0}
   normalScale: {x: 0.9, y: 0.9, z: 0.9}
-  elitePosition: {x: 2.45, y: 1.46, z: 0}
-  crystalFalconerElitePosition: {x: 2.94, y: 1.19, z: 0}
+  elitePosition: {x: 2.45, y: 0.86, z: 0}
+  crystalFalconerElitePosition: {x: 2.94, y: 0.53, z: 0}
   eliteScale: {x: 1.5, y: 1.5, z: 1.5}
-  bossPosition: {x: 3.36, y: 1.86, z: 0}
+  bossPosition: {x: 3.36, y: 1.37, z: 0}
   bossScale: {x: 1.8, y: 1.8, z: 1.8}
 --- !u!4 &404136417
 Transform:
@@ -2111,7 +2111,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 318, y: -81}
+  m_AnchoredPosition: {x: 318, y: -138.8}
   m_SizeDelta: {x: 200, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &610340747
@@ -2272,11 +2272,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1187609941570300576, guid: 6877fb649746c674d8fbbcf60d41892b, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -4
+      value: -3.526
       objectReference: {fileID: 0}
     - target: {fileID: 1187609941570300576, guid: 6877fb649746c674d8fbbcf60d41892b, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.71
+      value: 0.13
       objectReference: {fileID: 0}
     - target: {fileID: 1187609941570300576, guid: 6877fb649746c674d8fbbcf60d41892b, type: 3}
       propertyPath: m_LocalPosition.z
@@ -3454,6 +3454,7 @@ GameObject:
   m_Component:
   - component: {fileID: 945406935}
   - component: {fileID: 945406934}
+  - component: {fileID: 945406936}
   m_Layer: 0
   m_Name: Background
   m_TagString: Untagged
@@ -3510,7 +3511,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: -100
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -1955448553306655712, guid: 5d7f952534a43394281404f30e2eb33d, type: 3}
+  m_Sprite: {fileID: 21300000, guid: d6129d7a2a16c584d865e1a4481b0d67, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -3529,12 +3530,28 @@ Transform:
   m_GameObject: {fileID: 945406933}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.77, z: 0}
-  m_LocalScale: {x: 1.1608939, y: 1.1608939, z: 1.1608939}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 2.6567698, y: 2.6567698, z: 2.6567698}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &945406936
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 945406933}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8a9daba324021d46990dd329dfa2fb3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BattleBackgroundController
+  backgroundRenderer: {fileID: 945406934}
+  normalBackground: {fileID: 21300000, guid: d6129d7a2a16c584d865e1a4481b0d67, type: 3}
+  eliteBackground: {fileID: 21300000, guid: fa8c4a7836de09843b1c4ea111a7bb26, type: 3}
+  bossBackground: {fileID: 21300000, guid: 76a695f80aca2364ab06e02682333382, type: 3}
 --- !u!1 &976261521
 GameObject:
   m_ObjectHideFlags: 0
@@ -5765,7 +5782,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -214, y: 264}
+  m_AnchoredPosition: {x: -120, y: 260}
   m_SizeDelta: {x: 225, y: 22}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1792079121
@@ -6485,7 +6502,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -429, y: -81}
+  m_AnchoredPosition: {x: -374.1, y: -138.8}
   m_SizeDelta: {x: 200, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2010167673

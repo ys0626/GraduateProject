@@ -153,6 +153,22 @@ public class GameManager : MonoBehaviour
             return;
         }
 
+        // Battle Background 설정
+        BattleBackgroundController backgroundController =
+            FindFirstObjectByType<BattleBackgroundController>();
+
+        if (backgroundController != null)
+        {
+            backgroundController.SetBackground();
+        }
+        else
+        {
+            Debug.LogError(
+                "[GameManager] BattleBackgroundController가 없습니다."
+            );
+        }
+
+
         SimulationManager simulationManager =
             SimulationManager.instance;
 
