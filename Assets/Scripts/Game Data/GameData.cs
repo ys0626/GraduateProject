@@ -580,16 +580,32 @@ public class GameData : MonoBehaviour
         lastEliteEnemy = null;
     }
 
+
     private void ClearEntity(Entity entity)
     {
+        // 카드 더미 초기화
         entity.hand.Clear();
         entity.drawPile.Clear();
         entity.discardPile.Clear();
         entity.exhaustPile.Clear();
         entity.deck.Clear();
+
+        // 상태 및 전투 임시 데이터 초기화
         entity.ClearStatuses();
         entity.Block = 0;
+        entity.DoubleTapCharges = 0;
+        entity.CurrentEnergy = 0;
+
+        // 카드 더미 개수 초기화
+        entity.DeckCount = 0;
+        entity.DrawPileCount = 0;
+        entity.DiscardPileCount = 0;
+        entity.ExhaustPileCount = 0;
+
+        // 골드 초기화
+        entity.Gold = 0;
     }
+
 
     // =========================================================
     // Pile Count

@@ -590,6 +590,7 @@ public class BattleManager : MonoBehaviour
         FinishBattle(playerWin);
     }
 
+
     private void FinishBattle(bool playerWin)
     {
         if (battleEnded)
@@ -621,11 +622,38 @@ public class BattleManager : MonoBehaviour
         // 일반 게임에서 패배
         if (!playerWin)
         {
-            // 추후 게임 오버 UI 및 런 종료 처리를 추가할 위치
+            if (GameEndManager.instance != null)
+            {
+                GameEndManager.instance.ShowDefeat();
+            }
+            else
+            {
+                Debug.LogError(
+                    "GameEndManager.instance가 없습니다."
+                );
+            }
+
             return;
         }
 
-        // 일반 게임에서 승리
+        // 최종 보스 전투 승리
+        if (GameData.instance.CurrentBattleType == BattleType.Boss)
+        {
+            if (GameEndManager.instance != null)
+            {
+                GameEndManager.instance.ShowVictory();
+            }
+            else
+            {
+                Debug.LogError(
+                    "GameEndManager.instance가 없습니다."
+                );
+            }
+
+            return;
+        }
+
+        // 일반 전투 및 엘리트 전투 승리
         if (RewardManager.Instance != null)
         {
             RewardManager.Instance.ShowRewards();
@@ -637,6 +665,7 @@ public class BattleManager : MonoBehaviour
             );
         }
     }
+
 
 
 
