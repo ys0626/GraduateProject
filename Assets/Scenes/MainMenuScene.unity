@@ -1099,6 +1099,11 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 413bd878af68d9b459409356d62c452b, type: 2}
   - {fileID: 11400000, guid: 413bd878af68d9b459409356d62c452b, type: 2}
   - {fileID: 11400000, guid: 413bd878af68d9b459409356d62c452b, type: 2}
+  - {fileID: 11400000, guid: 99fc643c6a5dd494189cada6ba2df985, type: 2}
+  - {fileID: 11400000, guid: 99fc643c6a5dd494189cada6ba2df985, type: 2}
+  - {fileID: 11400000, guid: d7cb432f20e776d47bac64d6388bc1b5, type: 2}
+  - {fileID: 11400000, guid: d7cb432f20e776d47bac64d6388bc1b5, type: 2}
+  - {fileID: 11400000, guid: 0aae2a385a56bab448a3da0a34b44cea, type: 2}
   easyEnemyPool:
   - {fileID: 11400000, guid: fa68dc8460f8fa04d88ff4f5f789c9ec, type: 2}
   - {fileID: 11400000, guid: 2b92f037a7b1cc84eab2b2eef12cc521, type: 2}
