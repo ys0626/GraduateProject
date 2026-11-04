@@ -562,6 +562,7 @@ public class GameData : MonoBehaviour
         ClearCheeseInventory();
 
         RelicManager.EnsureInstance().ClearRunRelics();
+        ClearAppearedEvents();
 
         currentEnemyData = null;
         currentEnemyName = null;
@@ -694,6 +695,32 @@ public class GameData : MonoBehaviour
         return true;
     }
 
+    // 치즈를 무작위로 하나 제거
+    public bool RemoveRandomCheese()
+    {
+        List<int> availableSlots = new List<int>();
+
+        for (int i = 0; i < cheeseInventory.Length; i++)
+        {
+            if (cheeseInventory[i] != null)
+            {
+                availableSlots.Add(i);
+            }
+        }
+
+        if (availableSlots.Count == 0)
+            return false;
+
+        int randomIndex = UnityEngine.Random.Range(0, availableSlots.Count);
+        int slotIndex = availableSlots[randomIndex];
+
+        cheeseInventory[slotIndex] = null;
+
+        OnCheeseInventoryChanged?.Invoke();
+
+        return true;
+    }
+
     // 새 게임 시작 시 인벤토리 초기화
     private void ClearCheeseInventory()
     {
@@ -703,5 +730,38 @@ public class GameData : MonoBehaviour
         }
 
         OnCheeseInventoryChanged?.Invoke();
+    }
+
+
+
+
+
+
+
+    // =====================================================
+    // Event Data
+    // =====================================================
+
+    private readonly HashSet<string> appearedEventIds = new HashSet<string>();
+
+    // 이벤트가 이미 등장했는지 확인
+    public bool HasAppearedEvent(string eventId)
+    {
+        return appearedEventIds.Contains(eventId);
+    }
+
+    // 이벤트 등장 기록 추가
+    public void MarkEventAppeared(string eventId)
+    {
+        if (string.IsNullOrEmpty(eventId))
+            return;
+
+        appearedEventIds.Add(eventId);
+    }
+
+    // 모든 이벤트 등장 기록 초기화
+    public void ClearAppearedEvents()
+    {
+        appearedEventIds.Clear();
     }
 }

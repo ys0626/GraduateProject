@@ -249,4 +249,13 @@ public class SceneChanger : MonoBehaviour
 
         Debug.Log("[SceneChanger] Boss Battle Debug Started");
     }
+
+    [ContextMenu("Debug/Force Move To EventScene")]
+    private void ForceMoveToEventScene()
+    {
+        isChangingScene = false;
+        ChangeScene("EventScene");
+
+        Debug.Log("[SceneChanger] Event Scene Debug Started");
+    }
 }

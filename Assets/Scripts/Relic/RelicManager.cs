@@ -224,6 +224,29 @@ public class RelicManager : MonoBehaviour
         return results;
     }
 
+    // 획득 가능한 유물이 남아 있는지 확인
+    public bool HasAvailableRelic()
+    {
+        if (GameData.instance == null)
+            return false;
+
+        foreach (RelicData relic in GameData.instance.RelicPool)
+        {
+            if (relic == null)
+                continue;
+
+            if (string.IsNullOrEmpty(relic.RelicId))
+                continue;
+
+            if (appearedRelicIds.Contains(relic.RelicId))
+                continue;
+
+            return true;
+        }
+
+        return false;
+    }
+
 
 
 

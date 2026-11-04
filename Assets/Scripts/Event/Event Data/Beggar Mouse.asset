@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f5fdaa72aaf4b04198256c4a8dfd6a4, type: 3}
+  m_Name: Beggar Mouse
+  m_EditorClassIdentifier: Assembly-CSharp::EventData
+  eventId: beggar_mouse
+  eventName: "\uAE38 \uC704\uC758 \uB5A0\uB3CC\uC774"
+  description: "\uC232\uAE38 \uD55C\uCABD\uC5D0 \uB0A1\uC740 \uB9DD\uD1A0\uB97C \uB450\uB978
+    \uC0DD\uC950\uAC00 \uC549\uC544 \uC788\uB2E4. \n\n\uC0DD\uC950\uB294 \uC624\uB7AB\uB3D9\uC548
+    \uAD76\uC8FC\uB9B0 \uB4EF \uC9C0\uCCD0 \uBCF4\uC778\uB2E4. \n\n\uB2F9\uC2E0\uC774
+    \uB2E4\uAC00\uAC00\uC790 \uC870\uC2EC\uC2A4\uB7FD\uAC8C \uB9D0\uC744 \uAC74\uB128\uB2E4.
+    \n\n\"\uD639\uC2DC \uBA39\uC744 \uAC83\uC774 \uC870\uAE08 \uC788\uC18C? \uB0B4\uAC8C\uB294
+    \uC624\uB798\uC804\uBD80\uD130 \uAC04\uC9C1\uD574 \uC628 \uBB3C\uAC74\uC774 \uD558\uB098
+    \uC788\uB294\uB370, \uBC30\uAC00 \uACE0\uD30C \uB354\uB294 \uAC00\uC9C0\uACE0
+    \uB2E4\uB2C8\uAE30 \uD798\uB4E4 \uAC83 \uAC19\uC18C.\""
+  background: {fileID: 21300000, guid: 5d9765bb7e6ccaf49a35326303a04bc3, type: 3}
+  choices:
+  - choiceText: "\uCE58\uC988 \uD558\uB098\uB97C \uAC74\uB124\uACE0 \uBB3C\uAC74\uC744
+      \uBC1B\uB294\uB2E4 (\uBB34\uC791\uC704 \uCE58\uC988 1\uAC1C \uC18C\uBAA8, \uBB34\uC791\uC704
+      \uC720\uBB3C \uD68D\uB4DD)"
+    resultDescription: "\uC0DD\uC950\uB294 \uCE58\uC988\uB97C \uBC1B\uC544 \uB4E4\uACE0
+      \uD658\uD558\uAC8C \uC6C3\uC5C8\uB2E4. \uADF8\uB9AC\uACE0 \uB0A1\uC740 \uBCF4\uB530\uB9AC\uC5D0\uC11C
+      \uC624\uB798\uB41C \uBB3C\uAC74 \uD558\uB098\uB97C \uAEBC\uB0B4 \uB124\uAC8C
+      \uAC74\uB138\uB2E4. \"\uC774\uC81C \uB0B4\uAC8C\uB294 \uD544\uC694 \uC5C6\uC744
+      \uAC83 \uAC19\uC18C. \uB2F9\uC2E0\uC5D0\uAC8C \uB354 \uC5B4\uC6B8\uB9B4 \uBB3C\uAC74\uC774\uC624.\""
+    conditions:
+    - conditionType: 3
+      requiredValue: 0
+    - conditionType: 4
+      requiredValue: 0
+    effects:
+    - effectType: 7
+      amount: 0
+    - effectType: 6
+      amount: 0
+  - choiceText: "\uCE58\uC988\uB97C \uC544\uAEF4\uB450\uAE30\uB85C \uD55C\uB2E4"
+    resultDescription: "\uC9C0\uAE08\uC740 \uB124\uAC8C\uB3C4 \uBA39\uC744 \uAC83\uC774
+      \uD544\uC694\uD558\uB2E4. \uC0DD\uC950\uB294 \uC870\uAE08 \uC544\uC26C\uC6B4
+      \uD45C\uC815\uC744 \uC9C0\uC5C8\uC9C0\uB9CC \uC774\uB0B4 \uACE0\uAC1C\uB97C
+      \uB044\uB355\uC600\uB2E4. \"\uADF8\uB7F4 \uC218 \uC788\uC9C0. \uC870\uC2EC\uD788
+      \uAC00\uC2DC\uC624.\""
+    conditions: []
+    effects: []

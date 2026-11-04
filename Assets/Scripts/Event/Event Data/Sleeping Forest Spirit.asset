@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f5fdaa72aaf4b04198256c4a8dfd6a4, type: 3}
+  m_Name: Sleeping Forest Spirit
+  m_EditorClassIdentifier: Assembly-CSharp::EventData
+  eventId: sleeping_forest_spirit
+  eventName: "\uC7A0\uB4E0 \uC232\uC758 \uC218\uD638\uB839"
+  description: "\uB098\uBB34\uAC00 \uC6B0\uAC70\uC9C4 \uC232\uAE38\uC744 \uC9C0\uB098\uB358
+    \uC911 \uD76C\uBBF8\uD55C \uBE5B\uC774 \uC0C8\uC5B4 \uB098\uC624\uB294 \uCEE4\uB2E4\uB780
+    \uB098\uBB34\uB97C \uBC1C\uACAC\uD588\uB2E4.\n\n\uB098\uBB34 \uC548\uCABD\uC5D0\uB294
+    \uC791\uC740 \uC815\uB839 \uD55C \uB9C8\uB9AC\uAC00 \uC6C5\uD06C\uB9B0 \uCC44
+    \uC7A0\uB4E4\uC5B4 \uC788\uC5C8\uB2E4. \uC815\uB839\uC758 \uBAB8\uC5D0\uC11C\uB294
+    \uB530\uB73B\uD558\uACE0 \uBD80\uB4DC\uB7EC\uC6B4 \uBE5B\uC774 \uD758\uB7EC\uB098\uC624\uACE0
+    \uC788\uC5C8\uB2E4.\n\n\uC870\uC2EC\uC2A4\uB7FD\uAC8C \uB2E4\uAC00\uAC00\uC790
+    \uC815\uB839\uC774 \uB208\uC744 \uB728\uB354\uB2C8 \uC878\uB9B0 \uBAA9\uC18C\uB9AC\uB85C
+    \uB9D0\uD588\uB2E4.\n\n\"\uC73C\uC74C... \uC5EC\uD589\uC790\uAD6C\uB098. \uB098\uB97C
+    \uAE68\uC6B4 \uBCF4\uB2F5\uC73C\uB85C \uC791\uC740 \uC120\uBB3C\uC744 \uC904\uAC8C.\""
+  background: {fileID: 21300000, guid: c4db8cb9a37038f44b3173579126cda1, type: 3}
+  choices:
+  - choiceText: "\uC815\uB839\uC5D0\uAC8C \uCD95\uBCF5\uC744 \uBD80\uD0C1\uD55C\uB2E4
+      (\uCCB4\uB825 25 \uD68C\uBCF5)"
+    resultDescription: "\uC815\uB839\uC774 \uC791\uC740 \uC190\uC744 \uD754\uB4E4\uC790
+      \uB530\uB73B\uD55C \uBE5B\uC774 \uBAB8\uC744 \uAC10\uC30C\uB2E4. \uC9C0\uCE5C
+      \uBAB8\uC5D0 \uD65C\uB825\uC774 \uB3CC\uC544\uC654\uB2E4."
+    conditions: []
+    effects:
+    - effectType: 3
+      amount: 25
+  - choiceText: "\uC815\uB839\uC758 \uC0DD\uBA85\uB825\uC744 \uB098\uB204\uC5B4 \uBC1B\uB294\uB2E4
+      (\uCD5C\uB300 \uCCB4\uB825 5 \uC99D\uAC00)"
+    resultDescription: "\uC815\uB839\uC774 \uC0DD\uBA85\uB825\uC758 \uC77C\uBD80\uB97C
+      \uB098\uB204\uC5B4 \uC8FC\uC5C8\uB2E4. \uBAB8\uC774 \uC774\uC804\uBCF4\uB2E4
+      \uC870\uAE08 \uB354 \uD2BC\uD2BC\uD574\uC9C4 \uAC83 \uAC19\uB2E4."
+    conditions: []
+    effects:
+    - effectType: 5
+      amount: 5
