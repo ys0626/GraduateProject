@@ -258,4 +258,13 @@ public class SceneChanger : MonoBehaviour
 
         Debug.Log("[SceneChanger] Event Scene Debug Started");
     }
+
+    [ContextMenu("Debug/Force Move To RestScene")]
+    private void ForceMoveToRestScene()
+    {
+        isChangingScene = false;
+        ChangeScene("RestScene");
+
+        Debug.Log("[SceneChanger] Rest Scene Debug Started");
+    }
 }

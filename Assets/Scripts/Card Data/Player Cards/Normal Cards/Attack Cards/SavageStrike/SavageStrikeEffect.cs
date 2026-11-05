@@ -1,0 +1,24 @@
+public class SavageStrikeEffect : ICardEffect
+{
+    private CardInstance card;
+
+    public SavageStrikeEffect(CardInstance card)
+    {
+        this.card = card;
+    }
+
+    /// <summary>
+    /// 카드 사용 시의 효과
+    /// </summary>
+    public void Execute(IBattleEntity cardUser, IBattleEntity cardTarget)
+    {
+        //피해를 6(9) 줍니다.
+        int damage = card.upgraded ? 9 : 6;
+        damage = cardUser.CalculateDamage(damage);
+        cardTarget.TakeDamage(damage);
+
+        //취약을 1 부여합니다.
+        int vulnerableTurns = 1;
+        cardTarget.AddStatus(new VulnerableStatus(vulnerableTurns));
+    }
+}

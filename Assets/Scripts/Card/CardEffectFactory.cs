@@ -1,210 +1,156 @@
 
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public static class CardEffectFactory
 {
+    private static readonly Dictionary<string, Func<CardInstance, ICardEffect>> effectMap
+        = new Dictionary<string, Func<CardInstance, ICardEffect>>()
+    {
+        // =========================================================
+        // ENEMY CARDS
+        // =========================================================
+
+        // Field Mouse Bandit
+        { "ClawSwipe", card => new ClawSwipeEffect(card) },
+        { "DustCloud", card => new DustCloudEffect(card) },
+        { "StoneThrow", card => new StoneThrowEffect(card) },
+        { "TakeOver", card => new TakeOverEffect(card) },
+
+        // Green Slime
+        { "GreenSlime_BodySlam", card => new GreenSlime_BodySlamEffect(card) },
+        { "SlimeShield", card => new SlimeShieldEffect(card) },
+        { "SlimeShot", card => new SlimeShotEffect(card) },
+        { "StickySlime", card => new StickySlimeEffect(card) },
+
+        // Ember Boar
+        { "Charge", card => new ChargeEffect(card) },
+        { "TuskSwing", card => new TuskSwingEffect(card) },
+        { "BlazingCharge", card => new BlazingChargeEffect(card) },
+        { "GroundStomp", card => new GroundStompEffect(card) },
+        { "BlazingCounter", card => new BlazingCounterEffect(card) },
+        { "SavageRush", card => new SavageRushEffect(card) },
+
+        // Ironback Beetle
+        { "PincerStrike", card => new PincerStrikeEffect(card) },
+        { "ShellGuard", card => new ShellGuardEffect(card) },
+        { "IronbackBeetle_ShieldBash", card => new IronbackBeetle_ShieldBashEffect(card) },
+        { "CrushingPincer", card => new CrushingPincerEffect(card) },
+        { "IronStance", card => new IronStanceEffect(card) },
+        { "SpinningShell", card => new SpinningShellEffect(card) },
+
+        // Mushroom Shaman
+        { "SporeShot", card => new SporeShotEffect(card) },
+        { "BlindingSpores", card => new BlindingSporesEffect(card) },
+        { "VulnerabilitySpores", card => new VulnerabilitySporesEffect(card) },
+        { "RottingBurst", card => new RottingBurstEffect(card) },
+        { "MyceliumBarrier", card => new MyceliumBarrierEffect(card) },
+        { "GiantSporeBurst", card => new GiantSporeBurstEffect(card) },
+
+        // Corrupted Knight
+        { "BattleFervor", card => new BattleFervorEffect(card) },
+        { "ShieldAccumulation", card => new ShieldAccumulationEffect(card) },
+        { "CorruptedKnight_ShieldBash", card => new CorruptedKnight_ShieldBashEffect(card) },
+        { "DoubleStrike", card => new DoubleStrikeEffect(card) },
+        { "IroncladStance", card => new IroncladStanceEffect(card) },
+        { "CrushingBlow", card => new CrushingBlowEffect(card) },
+
+        // Crystal Falconer
+        { "WindSense", card => new WindSenseEffect(card) },
+        { "EvasiveStance", card => new EvasiveStanceEffect(card) },
+        { "RapidFire", card => new RapidFireEffect(card) },
+        { "FeatherBarrier", card => new FeatherBarrierEffect(card) },
+        { "MarkedArrow", card => new MarkedArrowEffect(card) },
+        { "GaleFlurry", card => new GaleFlurryEffect(card) },
+        { "RetreatingLeap", card => new RetreatingLeapEffect(card) },
+
+        // Ancient Doom Dragon
+        { "WarInstinct", card => new WarInstinctEffect(card) },
+        { "EvasionInstinct", card => new EvasionInstinctEffect(card) },
+        { "ScaleBarrier", card => new ScaleBarrierEffect(card) },
+        { "DragonBarrage", card => new DragonBarrageEffect(card) },
+        { "DefenseConversion", card => new DefenseConversionEffect(card) },
+        { "RendingClaw", card => new RendingClawEffect(card) },
+        { "ApocalypticRoar", card => new ApocalypticRoarEffect(card) },
+        { "AncientScales", card => new AncientScalesEffect(card) },
+
+        // =========================================================
+        // PLAYER CARDS
+        // =========================================================
+
+        // Start Cards
+        { "Bash", card => new BashEffect(card) },
+        { "Defend", card => new DefendEffect(card) },
+        { "Strike", card => new StrikeEffect(card) },
+
+        // Common Attack Cards
+        { "HeavyStrike", card => new HeavyStrikeEffect(card) },
+        { "PiercingThrust", card => new PiercingThrustEffect(card) },
+        { "DoubleSlash", card => new DoubleSlashEffect(card) },
+        { "HeavyBlow", card => new HeavyBlowEffect(card) },
+        { "ExploitWeakness", card => new ExploitWeaknessEffect(card) },
+        { "CrushingAdvance", card => new CrushingAdvanceEffect(card) },
+        { "QuickJab", card => new QuickJabEffect(card) },
+        { "ShieldBash", card => new ShieldBashEffect(card) },
+        { "Rend", card => new RendEffect(card) },
+        { "SavageStrike", card => new SavageStrikeEffect(card) },
+        { "Counterattack", card => new CounterattackEffect(card) },
+        { "Shatter", card => new ShatterEffect(card) },
+
+        //// Common Skill Cards
+        //{ "IronWall", card => new IronWallEffect(card) },
+        //{ "DefensiveStance", card => new DefensiveStanceEffect(card) },
+        //{ "EmergencyBarrier", card => new EmergencyBarrierEffect(card) },
+        //{ "SteadfastGuard", card => new SteadfastGuardEffect(card) },
+        //{ "WeakenedCry", card => new WeakenedCryEffect(card) },
+        //{ "ExposeWeakness", card => new ExposeWeaknessEffect(card) },
+        //{ "RallyingDefense", card => new RallyingDefenseEffect(card) },
+        //{ "RaiseShield", card => new RaiseShieldEffect(card) },
+        //{ "SurvivalInstinct", card => new SurvivalInstinctEffect(card) },
+        //{ "Phalanx", card => new PhalanxEffect(card) },
+        //{ "DisorientingBlow", card => new DisorientingBlowEffect(card) },
+        //{ "LastStand", card => new LastStandEffect(card) },
+
+        //// Common Power Cards
+        //{ "StrengthTraining", card => new StrengthTrainingEffect(card) },
+        //{ "FleetFootwork", card => new FleetFootworkEffect(card) },
+        //{ "CombatManual", card => new CombatManualEffect(card) },
+        //{ "IronResolve", card => new IronResolveEffect(card) },
+
+        //// Rare Attack Cards
+        //{ "StormOfBlades", card => new StormOfBladesEffect(card) },
+        //{ "Execution", card => new ExecutionEffect(card) },
+        //{ "Riftbreaker", card => new RiftbreakerEffect(card) },
+        //{ "FinalBlow", card => new FinalBlowEffect(card) },
+
+        //// Rare Skill Cards
+        //{ "ImpenetrableFortress", card => new ImpenetrableFortressEffect(card) },
+        //{ "WarCry", card => new WarCryEffect(card) },
+        //{ "FinalBastion", card => new FinalBastionEffect(card) },
+
+        //// Rare Power Cards
+        //{ "AvatarOfWar", card => new AvatarOfWarEffect(card) },
+        //{ "OathOfSteel", card => new OathOfSteelEffect(card) },
+        //{ "BerserkersHeart", card => new BerserkersHeartEffect(card) }
+    };
+
     public static ICardEffect Create(CardInstance card)
     {
-        switch (card.data.cardEffectType)
+        if (card == null || card.data == null)
         {
-            case CardEffectType.Bash:
-                return new BashEffect(card);
-
-            case CardEffectType.BodySlam:
-                return new BodySlamEffect(card);
-
-            case CardEffectType.Dash:
-                return new DashEffect(card);
-
-            case CardEffectType.Defend:
-                return new DefendEffect(card);
-
-            case CardEffectType.DoubleTap:
-                return new DoubleTapEffect();
-
-            case CardEffectType.Entrench:
-                return new EntrenchEffect(card);
-
-            case CardEffectType.Footwork:
-                return new FootworkEffect(card);
-
-            case CardEffectType.Inflame:
-                return new InflameEffect(card);
-
-            case CardEffectType.LimitBreak:
-                return new LimitBreakEffect();
-
-            case CardEffectType.Strike:
-                return new StrikeEffect(card);
-
-            case CardEffectType.SwordBoomerang:
-                return new SwordBoomerangEffect(card);
-
-            case CardEffectType.Taunt:
-                return new TauntEffect(card);
-
-            case CardEffectType.TwinStrike:
-                return new TwinStrikeEffect(card);
-
-            case CardEffectType.Uppercut:
-                return new UppercutEffect(card);
-
-
-            // Field Mouse Bandit
-            case CardEffectType.ClawSwipe:
-                return new ClawSwipeEffect(card);
-
-            case CardEffectType.DustCloud:
-                return new DustCloudEffect(card);
-
-            case CardEffectType.StoneThrow:
-                return new StoneThrowEffect(card);
-
-            case CardEffectType.TakeOver:
-                return new TakeOverEffect(card);
-
-            // Green Slime
-            case CardEffectType.GreenSlime_BodySlam:
-                return new GreenSlime_BodySlamEffect(card);
-
-            case CardEffectType.SlimeShield:
-                return new SlimeShieldEffect(card);
-
-            case CardEffectType.SlimeShot:
-                return new SlimeShotEffect(card);
-
-            case CardEffectType.StickySlime:
-                return new StickySlimeEffect(card);
-
-            // Ember Boar
-            case CardEffectType.Charge:
-                return new ChargeEffect(card);
-
-            case CardEffectType.TuskSwing:
-                return new TuskSwingEffect(card);
-
-            case CardEffectType.BlazingCharge:
-                return new BlazingChargeEffect(card);
-
-            case CardEffectType.GroundStomp:
-                return new GroundStompEffect(card);
-
-            case CardEffectType.BlazingCounter:
-                return new BlazingCounterEffect(card);
-
-            case CardEffectType.SavageRush:
-                return new SavageRushEffect(card);
-
-            // Ironback Beetle
-            case CardEffectType.PincerStrike:
-                return new PincerStrikeEffect(card);
-
-            case CardEffectType.ShellGuard:
-                return new ShellGuardEffect(card);
-
-            case CardEffectType.ShieldBash:
-                return new ShieldBashEffect(card);
-
-            case CardEffectType.CrushingPincer:
-                return new CrushingPincerEffect(card);
-
-            case CardEffectType.IronStance:
-                return new IronStanceEffect(card);
-
-            case CardEffectType.SpinningShell:
-                return new SpinningShellEffect(card);
-
-            // Mushroom Shaman
-            case CardEffectType.SporeShot:
-                return new SporeShotEffect(card);
-
-            case CardEffectType.BlindingSpores:
-                return new BlindingSporesEffect(card);
-
-            case CardEffectType.VulnerabilitySpores:
-                return new VulnerabilitySporesEffect(card);
-
-            case CardEffectType.RottingBurst:
-                return new RottingBurstEffect(card);
-
-            case CardEffectType.MyceliumBarrier:
-                return new MyceliumBarrierEffect(card);
-
-            case CardEffectType.GiantSporeBurst:
-                return new GiantSporeBurstEffect(card);
-
-            // Corrupted Knight
-            case CardEffectType.BattleFervor:
-                return new BattleFervorEffect(card);
-
-            case CardEffectType.ShieldAccumulation:
-                return new ShieldAccumulationEffect(card);
-
-            case CardEffectType.CorruptedKnight_ShieldBash:
-                return new CorruptedKnight_ShieldBashEffect(card);
-
-            case CardEffectType.DoubleStrike:
-                return new DoubleStrikeEffect(card);
-
-            case CardEffectType.IroncladStance:
-                return new IroncladStanceEffect(card);
-
-            case CardEffectType.CrushingBlow:
-                return new CrushingBlowEffect(card);
-
-
-            // Crystal Falconer
-            case CardEffectType.WindSense:
-                return new WindSenseEffect(card);
-
-            case CardEffectType.EvasiveStance:
-                return new EvasiveStanceEffect(card);
-
-            case CardEffectType.RapidFire:
-                return new RapidFireEffect(card);
-
-            case CardEffectType.FeatherBarrier:
-                return new FeatherBarrierEffect(card);
-
-            case CardEffectType.MarkedArrow:
-                return new MarkedArrowEffect(card);
-
-            case CardEffectType.GaleFlurry:
-                return new GaleFlurryEffect(card);
-
-            case CardEffectType.RetreatingLeap:
-                return new RetreatingLeapEffect(card);
-
-
-            // Ancient Doom Dragon
-            case CardEffectType.WarInstinct:
-                return new WarInstinctEffect(card);
-
-            case CardEffectType.EvasionInstinct:
-                return new EvasionInstinctEffect(card);
-
-            case CardEffectType.ScaleBarrier:
-                return new ScaleBarrierEffect(card);
-
-            case CardEffectType.DragonBarrage:
-                return new DragonBarrageEffect(card);
-
-            case CardEffectType.DefenseConversion:
-                return new DefenseConversionEffect(card);
-
-            case CardEffectType.RendingClaw:
-                return new RendingClawEffect(card);
-
-            case CardEffectType.ApocalypticRoar:
-                return new ApocalypticRoarEffect(card);
-
-            case CardEffectType.AncientScales:
-                return new AncientScalesEffect(card);
-
-
-            default:
-                Debug.Log("Unknown card type!");
-                return null;
+            Debug.LogError("CardEffectFactory: Card 또는 CardData가 null입니다.");
+            return null;
         }
+
+        string effectId = card.data.name;
+
+        if (effectMap.TryGetValue(effectId, out Func<CardInstance, ICardEffect> createEffect))
+        {
+            return createEffect(card);
+        }
+
+        Debug.LogError($"CardEffectFactory: 등록되지 않은 카드 효과입니다. CardData 이름: {effectId}");
+        return null;
     }
 }
