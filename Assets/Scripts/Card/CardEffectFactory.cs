@@ -114,11 +114,11 @@ public static class CardEffectFactory
         { "DisorientingBlow", card => new DisorientingBlowEffect(card) },
         { "LastStand", card => new LastStandEffect(card) },
 
-        //// Common Power Cards
-        //{ "StrengthTraining", card => new StrengthTrainingEffect(card) },
-        //{ "FleetFootwork", card => new FleetFootworkEffect(card) },
-        //{ "CombatManual", card => new CombatManualEffect(card) },
-        //{ "IronResolve", card => new IronResolveEffect(card) },
+        // Common Power Cards
+        { "StrengthTraining", card => new StrengthTrainingEffect(card) },
+        { "FleetFootwork", card => new FleetFootworkEffect(card) },
+        { "CombatManual", card => new CombatManualEffect(card) },
+        { "IronResolve", card => new IronResolveEffect(card) },
 
         //// Rare Attack Cards
         //{ "StormOfBlades", card => new StormOfBladesEffect(card) },

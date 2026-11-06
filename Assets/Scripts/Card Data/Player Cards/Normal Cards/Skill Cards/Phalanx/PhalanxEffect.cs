@@ -12,9 +12,14 @@ public class PhalanxEffect : ICardEffect
     /// </summary>
     public void Execute(IBattleEntity cardUser, IBattleEntity cardTarget)
     {
-        //방어도를 12 얻습니다.
-        int block = 12;
-        block = cardUser.CalculateBlock(block);
-        cardUser.GetBlock(block);
+        //방어도를 2만큼 3(4)번 얻습니다.
+        int block;
+        int times = card.upgraded ? 4 : 3;
+        for (int i = 0; i < times; i++)
+        {
+            block = 2;
+            block = cardUser.CalculateBlock(block);
+            cardUser.GetBlock(block);
+        }
     }
 }
