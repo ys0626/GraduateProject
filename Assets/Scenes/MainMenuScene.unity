@@ -1088,26 +1088,7 @@ MonoBehaviour:
   playerStartHP: 66
   playerStartGold: 99
   playerMaxEnergy: 3
-  playerStartDeck:
-  - {fileID: 11400000, guid: 0f954bdf650a2384db7626e729cc7a1b, type: 2}
-  - {fileID: 11400000, guid: 7e46f75922fdf264f95840ccf26ad65f, type: 2}
-  - {fileID: 11400000, guid: fba8cb78b5fb8894d98752c74aa2e6b1, type: 2}
-  - {fileID: 11400000, guid: 709d0c471c43f7944a5233b2cfbb9505, type: 2}
-  - {fileID: 11400000, guid: 19aa72dda47178b4f850d0457956fbb6, type: 2}
-  - {fileID: 11400000, guid: 77765c726c4cb92488f9f97b743c8dbe, type: 2}
-  - {fileID: 11400000, guid: 364348adc8f8ee247a10704613ca878d, type: 2}
-  - {fileID: 11400000, guid: f6b6f9f14627f2d488af0da0940199b2, type: 2}
-  - {fileID: 11400000, guid: be5d4181f7c76a64ab2243de0a3dc8a0, type: 2}
-  - {fileID: 11400000, guid: 39a71671d52dd274d923e631fc7408d6, type: 2}
-  - {fileID: 11400000, guid: 13de0e0f59bfdb449971c1fae0c93234, type: 2}
-  - {fileID: 11400000, guid: d03bc4d97653f3e43b33fdb3edf6040b, type: 2}
-  - {fileID: 11400000, guid: 45f5720786ba1974192c501cf5d9917d, type: 2}
-  - {fileID: 11400000, guid: 1c4839203dbb9bd40b6c9973b78ce344, type: 2}
-  - {fileID: 11400000, guid: 80f95a1809369e146a9e7e6517abb2ca, type: 2}
-  - {fileID: 11400000, guid: 80f95a1809369e146a9e7e6517abb2ca, type: 2}
-  - {fileID: 11400000, guid: 80f95a1809369e146a9e7e6517abb2ca, type: 2}
-  - {fileID: 11400000, guid: 80f95a1809369e146a9e7e6517abb2ca, type: 2}
-  - {fileID: 11400000, guid: 80f95a1809369e146a9e7e6517abb2ca, type: 2}
+  playerStartDeck: []
   easyEnemyPool:
   - {fileID: 11400000, guid: fa68dc8460f8fa04d88ff4f5f789c9ec, type: 2}
   - {fileID: 11400000, guid: 2b92f037a7b1cc84eab2b2eef12cc521, type: 2}
