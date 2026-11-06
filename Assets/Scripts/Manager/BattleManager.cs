@@ -498,8 +498,18 @@ public class BattleManager : MonoBehaviour
             CardView cardView =
                 hand.cards[hand.cards.Count - 1];
 
-            PlayerDeckManager.instance
-                .DiscardCard(cardView.card);
+            CardInstance card = cardView.card;
+
+            // 휘발성 카드라면 소멸 더미로 이동
+            if (card.ethereal)
+            {
+                PlayerDeckManager.instance.ExhaustCard(card);
+            }
+            // 그 외에는 버린 카드 더미로 이동
+            else
+            {
+                PlayerDeckManager.instance.DiscardCard(card);
+            }
 
             yield return new WaitForSeconds(0.08f);
         }

@@ -27,4 +27,9 @@ public class CardData : ScriptableObject
     public TargetType targetType;
 
     public CardTag tags;
+
+    [Header("Card Properties")]
+    public bool exhaust;
+
+    public bool ethereal;
 }

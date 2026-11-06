@@ -37,7 +37,7 @@ public class CardInstance
 
     public CardInstance(CardData cardData)
     {
-        instanceID = nextID++;  //카드 인스턴스에 고유 ID 발급
+        instanceID = nextID++;
 
         data = cardData;
 
@@ -45,9 +45,9 @@ public class CardInstance
 
         upgraded = false;
 
-        exhaust = false;
+        exhaust = data.exhaust;
 
-        ethereal = false;
+        ethereal = data.ethereal;
     }
 
     /// <summary>
