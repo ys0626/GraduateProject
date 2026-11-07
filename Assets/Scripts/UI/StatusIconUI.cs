@@ -8,6 +8,11 @@ public class StatusIconUI : MonoBehaviour
     [SerializeField] private Image iconImage;
     [SerializeField] private TMP_Text valueText;
 
+    [Header("Tooltip Prefabs")]
+    [SerializeField] private TooltipView defaultTooltipPrefab;
+    [SerializeField] private TooltipView blockRetentionTooltipPrefab;
+    [SerializeField] private TooltipView strengthPerTurnTooltipPrefab;
+
     private TooltipTrigger tooltipTrigger;
 
     private void Awake()
@@ -19,7 +24,10 @@ public class StatusIconUI : MonoBehaviour
     {
         iconImage.sprite = status.Icon;
 
-        valueText.text = status.Value.ToString();
+        valueText.text =
+            status.Type == StatusType.BlockRetention
+            ? ""
+            : status.Value.ToString();
 
         if (tooltipTrigger != null)
         {
@@ -29,6 +37,8 @@ public class StatusIconUI : MonoBehaviour
                 StatusType.Dexterity => "민첩",
                 StatusType.Strength => "힘",
                 StatusType.Weak => "약화",
+                StatusType.BlockRetention => "방어도 유지",
+                StatusType.StrengthPerTurn => "힘 축적",
                 _ => status.Type.ToString()
             };
 
@@ -37,6 +47,15 @@ public class StatusIconUI : MonoBehaviour
                 status.Description,
                 status.Icon
             );
+
+            TooltipView selectedPrefab = status.Type switch
+            {
+                StatusType.BlockRetention => blockRetentionTooltipPrefab,
+                StatusType.StrengthPerTurn => strengthPerTurnTooltipPrefab,
+                _ => defaultTooltipPrefab
+            };
+
+            tooltipTrigger.SetTooltipPrefab(selectedPrefab);
         }
     }
 }

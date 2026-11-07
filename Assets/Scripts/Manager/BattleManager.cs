@@ -267,8 +267,23 @@ public class BattleManager : MonoBehaviour
     {
         isBusy = true;
 
-        // 플레이어 턴 시작 시 방어도 초기화
-        currentTurnEntity.Block = 0;
+        // 방어도 유지 버프가 없다면 방어도 초기화
+        if (currentTurnEntity.GetStatusValue(
+            StatusType.BlockRetention) <= 0)
+        {
+            currentTurnEntity.Block = 0;
+        }
+
+        // 턴 시작 시 힘 증가 버프 적용
+        int strengthPerTurn =
+            currentTurnEntity.GetStatusValue(
+                StatusType.StrengthPerTurn);
+
+        if (strengthPerTurn > 0)
+        {
+            currentTurnEntity.AddStatus(
+                new StrengthStatus(strengthPerTurn));
+        }
 
         // 기본 에너지 회복
         RecoverEnergy(currentTurnEntity);

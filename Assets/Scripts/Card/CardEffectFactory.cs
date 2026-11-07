@@ -131,10 +131,10 @@ public static class CardEffectFactory
         { "WavesOfDefense", card => new WavesOfDefenseEffect(card) },
         { "FortressAmplification", card => new FortressAmplificationEffect(card) },
 
-        //// Rare Power Cards
-        //{ "AvatarOfWar", card => new AvatarOfWarEffect(card) },
-        //{ "OathOfSteel", card => new OathOfSteelEffect(card) },
-        //{ "BerserkersHeart", card => new BerserkersHeartEffect(card) }
+        // Rare Power Cards
+        { "UnyieldingBulwark", card => new UnyieldingBulwarkEffect(card) },
+        { "EndlessStruggle", card => new EndlessStruggleEffect(card) },
+        { "PerfectArmament", card => new PerfectArmamentEffect(card) }
     };
 
     public static ICardEffect Create(CardInstance card)

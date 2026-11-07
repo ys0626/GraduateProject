@@ -265,6 +265,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::StatusIconUI
   iconImage: {fileID: 8872256233109161675}
   valueText: {fileID: 3787432242406532726}
+  defaultTooltipPrefab: {fileID: -5153897727455444795, guid: fe4aed554aa82f74da94edc13d951ea9, type: 3}
+  blockRetentionTooltipPrefab: {fileID: -5153897727455444795, guid: 7d7518d0181e53a4fac78e14b5ae2147, type: 3}
+  strengthPerTurnTooltipPrefab: {fileID: -5153897727455444795, guid: a58c970780b5e8d438e11af59772c9ff, type: 3}
 --- !u!114 &8437602521057042248
 MonoBehaviour:
   m_ObjectHideFlags: 0

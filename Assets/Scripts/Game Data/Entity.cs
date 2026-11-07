@@ -374,6 +374,13 @@ public class Entity : IBattleEntity
     /// <param name="value"></param>
     public void AddStatus(Status newStatus)
     {
+        // 방어도 유지 버프는 중복 획득 불가
+        if (newStatus.Type == StatusType.BlockRetention &&
+            GetStatusValue(StatusType.BlockRetention) > 0)
+        {
+            return;
+        }
+
         // 같은 상태가 이미 있으면 합치기
         foreach (Status status in statuses)
         {

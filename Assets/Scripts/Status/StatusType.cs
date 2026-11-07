@@ -3,8 +3,10 @@
 /// </summary>
 public enum StatusType
 {
-    Dexterity,      //카드의 방어도가 민첩만큼 증가
-    Strength,       //카드의 데미지가 힘만큼 증가
-    Vulnerable,     //데미지로 입는 피해가 1.5배
-    Weak,           //데미지로 입히는 피해가 0.75배
+    Dexterity,          //카드의 방어도가 민첩만큼 증가
+    Strength,           //카드의 피해가 힘만큼 증가
+    Vulnerable,         //카드로 입는 피해가 1.5배
+    Weak,               //카드로 입히는 피해가 0.75배
+    BlockRetention,     //턴이 시작되어도 방어도를 잃지 않음
+    StrengthPerTurn,    //매 턴 시작 시 힘을 얻음
 }
