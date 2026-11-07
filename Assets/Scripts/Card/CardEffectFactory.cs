@@ -120,16 +120,16 @@ public static class CardEffectFactory
         { "CombatManual", card => new CombatManualEffect(card) },
         { "IronResolve", card => new IronResolveEffect(card) },
 
-        //// Rare Attack Cards
-        //{ "StormOfBlades", card => new StormOfBladesEffect(card) },
-        //{ "Execution", card => new ExecutionEffect(card) },
-        //{ "Riftbreaker", card => new RiftbreakerEffect(card) },
-        //{ "FinalBlow", card => new FinalBlowEffect(card) },
+        // Rare Attack Cards
+        { "StormOfBlades", card => new StormOfBladesEffect(card) },
+        { "Execution", card => new ExecutionEffect(card) },
+        { "Riftbreaker", card => new RiftbreakerEffect(card) },
+        { "SoulHarvest", card => new SoulHarvestEffect(card) },
 
-        //// Rare Skill Cards
-        //{ "ImpenetrableFortress", card => new ImpenetrableFortressEffect(card) },
-        //{ "WarCry", card => new WarCryEffect(card) },
-        //{ "FinalBastion", card => new FinalBastionEffect(card) },
+        // Rare skill cards
+        { "ImpenetrableFortress", card => new ImpenetrableFortressEffect(card) },
+        { "WavesOfDefense", card => new WavesOfDefenseEffect(card) },
+        { "FortressAmplification", card => new FortressAmplificationEffect(card) },
 
         //// Rare Power Cards
         //{ "AvatarOfWar", card => new AvatarOfWarEffect(card) },
