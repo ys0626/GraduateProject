@@ -156,12 +156,11 @@ public class MCTSNode
     //30번(중심극한정리 상 1000번 반복할 때 적당(클로드 피셜)) 이상 방문한 경우 시뮬레이션을 건너뛰도록 설정
     public bool ShouldSkipSimulation()
     {
-        if (SimulationManager.instance != null && !SimulationManager.instance.EnableEarlyCutoff)
+        // 시뮬레이션 생략 사용 여부와 기준 방문 수는 MCTSSettings(최종 구성)를 따름
+        if (!MCTSSettings.EnableSimulationSkip)
             return false;
 
-        int threshold = SimulationManager.instance != null
-            ? SimulationManager.instance.EarlyCutoffVisitThreshold
-            : 30;
+        int threshold = MCTSSettings.SimulationSkipVisitThreshold;
 
         return visitCount >= threshold;
     }

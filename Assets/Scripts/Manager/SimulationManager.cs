@@ -26,16 +26,7 @@ public class SimulationManager : MonoBehaviour
     [Header("Speed")]
     [SerializeField] private float timeScale = 1f;
 
-    [Header("MCTS Optimization")]
-    [SerializeField] private bool enableTranspositionCache = true;
-    [SerializeField] private bool enableEarlyCutoff = true;
-
-    [SerializeField]
-    [Range(5, 200)]
-    private int earlyCutoffVisitThreshold = 30;
-
-    [SerializeField] private bool enableHeuristicPruning = true;
-    [SerializeField] private bool enableLethalCheck = true;
+    // MCTS 설정은 MCTSSettings(최종 구성)로 고정. 실험용 토글은 testing 브랜치에서만 사용
 
     // =========================================================
     // Static Simulation Data
@@ -80,21 +71,6 @@ public class SimulationManager : MonoBehaviour
 
     public ControllerType EnemyControllerType =>
         enemyControllerType;
-
-    public bool EnableTranspositionCache =>
-        enableTranspositionCache;
-
-    public bool EnableEarlyCutoff =>
-        enableEarlyCutoff;
-
-    public int EarlyCutoffVisitThreshold =>
-        earlyCutoffVisitThreshold;
-
-    public bool EnableHeuristicPruning =>
-        enableHeuristicPruning;
-
-    public bool EnableLethalCheck =>
-        enableLethalCheck;
 
     public int CurrentBattle =>
         currentBattle;

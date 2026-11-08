@@ -3,7 +3,14 @@ using System.Collections.Generic;
 public static class MCTSTranspositionTable
 {
     private const int MaxEntries = 10000;
-    private const int CachedUsesBeforeRefresh = 3;
+
+    // 새 롤아웃 한 번당 재사용 횟수 (MCTSSettings 최종 구성)
+    private static int CachedUsesBeforeRefresh =>
+        MCTSSettings.TranspositionReuseCount;
+
+    // 재사용을 시작하는 최소 표본 수 (MCTSSettings 최종 구성)
+    private static int MinSamplesBeforeReuse =>
+        MCTSSettings.TranspositionMinSamples;
 
     private struct CacheEntry
     {
@@ -30,6 +37,10 @@ public static class MCTSTranspositionTable
 
         public bool ShouldUseCachedResult()
         {
+            // 표본이 충분히 쌓이기 전에는 재사용하지 않고 새 롤아웃으로 표본을 모은다.
+            if (sampleCount < MinSamplesBeforeReuse)
+                return false;
+
             cachedUsesSinceSample++;
 
             if (cachedUsesSinceSample <= CachedUsesBeforeRefresh)
