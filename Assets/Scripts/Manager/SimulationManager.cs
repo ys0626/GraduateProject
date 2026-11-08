@@ -38,36 +38,42 @@ public class SimulationManager : MonoBehaviour
     [SerializeField] private float timeScale;
 
     // MCTS 컨트롤러에만 적용되며, MCTSVanilla는 이 값들을 참조하지 않음
+    // 기본값은 최종 구성(M2): 동적 탐색, 조기 종료, Tree Reuse 사용 / 휴리스틱 롤아웃 미사용
     [Header("MCTS Techniques")]
     [Tooltip("선택지 수와 HP 차이로 반복 횟수를 계산합니다. 끄면 아래 Search Budget을 사용합니다.")]
     [SerializeField] private bool enableDynamicSearch = true;
     [Tooltip("롤아웃에서 4가지 필터 규칙과 Power 카드 가중치를 사용합니다. 끄면 사용 가능한 카드 중 균등 무작위로 고릅니다.")]
-    [SerializeField] private bool enableHeuristicRollout = true;
+    [SerializeField] private bool enableHeuristicRollout = false;
     [Tooltip("최다 방문 child가 2위 child보다 일정 배수 이상 방문되면 탐색을 중단합니다.")]
     [SerializeField] private bool enableEarlyStop = true;
     [Tooltip("같은 턴의 다음 탐색에서 이전 트리를 재사용하고, 재사용 노드의 방문 수를 1로 초기화합니다(Fast Expansion).")]
     [SerializeField] private bool enableTreeReuse = true;
 
     // 캐싱은 세 토글로 나뉨. 세 개 모두 켜면 분리 전 캐싱(TC1)과 같음
+    // 기본값은 최종 구성(M2): 전위 테이블만 사용(재사용 3회, 최소 표본 1), 시뮬레이션 생략과 생략 값 저장은 사용하지 않음
     [Header("MCTS Caching")]
-    [Tooltip("같은 상태(상태 + 이번 턴 이력)의 롤아웃 평균을 저장해 재사용합니다. 3번 재사용한 뒤 4번째에 새 롤아웃을 수행합니다.")]
+    [Tooltip("같은 상태(상태 + 이번 턴 이력)의 롤아웃 평균을 저장해 재사용합니다. 재사용 방식은 아래 두 값으로 정합니다.")]
     [FormerlySerializedAs("enableCaching")]
     [SerializeField] private bool enableTranspositionCache = true;
+    [Tooltip("새 롤아웃 한 번당 저장값을 재사용하는 횟수입니다. 3이면 3번 재사용한 뒤 4번째에 새 롤아웃을 수행합니다(기존 동작).")]
+    [Min(0)] [SerializeField] private int transpositionReuseCount = 3;
+    [Tooltip("상태별 표본이 이 개수 이상 쌓여야 재사용을 시작합니다. 1이면 첫 표본부터 재사용합니다(기존 동작).")]
+    [Min(1)] [SerializeField] private int transpositionMinSamples = 1;
     [Tooltip("아래 기준 횟수 이상 방문한 노드는 롤아웃 없이 노드의 평균 보상을 사용합니다.")]
     [SerializeField] private bool enableSimulationSkip = false;
     [SerializeField][Range(5, 200)] private int earlyCutoffVisitThreshold = 30; // 시뮬레이션 생략 기준 방문 수
     [Tooltip("시뮬레이션을 생략할 때 노드 평균을 전위 테이블에 표본으로 저장합니다. 끄면 테이블에는 실제 롤아웃 결과만 저장됩니다. 전위 테이블과 시뮬레이션 생략이 모두 켜져 있을 때만 의미가 있습니다.")]
-    [SerializeField] private bool enableSkippedValueStore = true;
+    [SerializeField] private bool enableSkippedValueStore = false;
 
     [Header("MCTS Etc")]
     [Tooltip("트리 확장 단계에서 휴리스틱 규칙에 걸리는 카드를 후보에서 제외합니다.")]
-    [SerializeField] private bool enableHeuristicActionPruning = true;
+    [SerializeField] private bool enableHeuristicActionPruning = false;
     [Tooltip("탐색 전에 이번 턴 안에 상대를 처치할 수 있는 카드 순서가 있는지 먼저 확인합니다.")]
     [SerializeField] private bool enableLethalCheck = true;
 
     [Header("MCTS Evaluation")]
     [Tooltip("승리 1, 패배 -1, 비종결 상태는 tanh 결과에 0.9를 곱하고 탐험 상수 2√2를 사용합니다. 끄면 기존 평가(승리 0.05, 패배 -0.05, tanh, 탐험 상수 1)를 사용합니다.")]
-    [SerializeField] private bool enableImprovedEvaluation = false;
+    [SerializeField] private bool enableImprovedEvaluation = true;
 
     [Header("Search Budget")]
     [Tooltip("동적 탐색을 끈 MCTS의 예산 방식입니다. MCTSVanilla는 아래 Vanilla Simulation Budget을 사용합니다.")]
@@ -122,6 +128,8 @@ public class SimulationManager : MonoBehaviour
 
     // ===== MCTS 캐싱 =====
     public bool EnableTranspositionCache => enableTranspositionCache; // 전위 테이블
+    public int TranspositionReuseCount => Mathf.Max(0, transpositionReuseCount); // 새 롤아웃 한 번당 재사용 횟수
+    public int TranspositionMinSamples => Mathf.Max(1, transpositionMinSamples); // 재사용을 시작하는 최소 표본 수
     public bool EnableEarlyCutoff => enableSimulationSkip; // 시뮬레이션 생략
     public int EarlyCutoffVisitThreshold => earlyCutoffVisitThreshold;
     public bool EnableSkippedValueStore => enableSkippedValueStore; // 생략 시 노드 평균을 전위 테이블에 저장
@@ -156,6 +164,8 @@ public class SimulationManager : MonoBehaviour
                 $"HR{(enableHeuristicRollout ? 1 : 0)}_" +
                 $"ES{(enableEarlyStop ? 1 : 0)}_" +
                 $"TT{(enableTranspositionCache ? 1 : 0)}_" +
+                $"RU{TranspositionReuseCount}_" +
+                $"MS{TranspositionMinSamples}_" +
                 $"SK{(enableSimulationSkip ? 1 : 0)}_" +
                 $"SS{(enableSkippedValueStore ? 1 : 0)}_" +
                 $"TR{(enableTreeReuse ? 1 : 0)}_" +
