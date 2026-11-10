@@ -3218,40 +3218,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4e9fb6ed626b1c4cabb7f165225041e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SimulationManager
-  simulationPlayerDeck:
-  - {fileID: 11400000, guid: 99fc643c6a5dd494189cada6ba2df985, type: 2}
-  - {fileID: 11400000, guid: 99fc643c6a5dd494189cada6ba2df985, type: 2}
-  - {fileID: 11400000, guid: 13738d55e770acf40b2beca2e384e55c, type: 2}
-  - {fileID: 11400000, guid: 13738d55e770acf40b2beca2e384e55c, type: 2}
-  - {fileID: 11400000, guid: 88e2cdd1aa25c1c418927c8abdb676ec, type: 2}
-  - {fileID: 11400000, guid: 88e2cdd1aa25c1c418927c8abdb676ec, type: 2}
-  - {fileID: 11400000, guid: 80f95a1809369e146a9e7e6517abb2ca, type: 2}
-  - {fileID: 11400000, guid: 80f95a1809369e146a9e7e6517abb2ca, type: 2}
-  - {fileID: 11400000, guid: a1d7aed4f858e8840919319f7a7df8b7, type: 2}
-  - {fileID: 11400000, guid: 1c4839203dbb9bd40b6c9973b78ce344, type: 2}
-  - {fileID: 11400000, guid: 1c4839203dbb9bd40b6c9973b78ce344, type: 2}
-  - {fileID: 11400000, guid: 1c4839203dbb9bd40b6c9973b78ce344, type: 2}
-  - {fileID: 11400000, guid: 0aae2a385a56bab448a3da0a34b44cea, type: 2}
-  - {fileID: 11400000, guid: 74a49aaad4d1f044c8fde27756b93cf2, type: 2}
-  - {fileID: 11400000, guid: 53c7444e9e1e99547ad3bbe063645680, type: 2}
+  simulationPlayerDeck: []
   simulationPlayerMaxHP: 80
   simulationPlayerMaxEnergy: 3
-  simulationEnemyDeck:
-  - {fileID: 11400000, guid: 99fc643c6a5dd494189cada6ba2df985, type: 2}
-  - {fileID: 11400000, guid: 99fc643c6a5dd494189cada6ba2df985, type: 2}
-  - {fileID: 11400000, guid: 13738d55e770acf40b2beca2e384e55c, type: 2}
-  - {fileID: 11400000, guid: 13738d55e770acf40b2beca2e384e55c, type: 2}
-  - {fileID: 11400000, guid: 88e2cdd1aa25c1c418927c8abdb676ec, type: 2}
-  - {fileID: 11400000, guid: 88e2cdd1aa25c1c418927c8abdb676ec, type: 2}
-  - {fileID: 11400000, guid: 80f95a1809369e146a9e7e6517abb2ca, type: 2}
-  - {fileID: 11400000, guid: 80f95a1809369e146a9e7e6517abb2ca, type: 2}
-  - {fileID: 11400000, guid: a1d7aed4f858e8840919319f7a7df8b7, type: 2}
-  - {fileID: 11400000, guid: 1c4839203dbb9bd40b6c9973b78ce344, type: 2}
-  - {fileID: 11400000, guid: 1c4839203dbb9bd40b6c9973b78ce344, type: 2}
-  - {fileID: 11400000, guid: 1c4839203dbb9bd40b6c9973b78ce344, type: 2}
-  - {fileID: 11400000, guid: 0aae2a385a56bab448a3da0a34b44cea, type: 2}
-  - {fileID: 11400000, guid: 74a49aaad4d1f044c8fde27756b93cf2, type: 2}
-  - {fileID: 11400000, guid: 53c7444e9e1e99547ad3bbe063645680, type: 2}
+  simulationEnemyDeck: []
   simulationEnemyMaxHP: 80
   simulationEnemyMaxEnergy: 3
   playerControllerType: 0

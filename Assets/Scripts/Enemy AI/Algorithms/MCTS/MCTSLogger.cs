@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.IO;
 using UnityEngine;
 
@@ -83,12 +84,27 @@ public static class MCTSLogger
         int playableCardCount,
         int selfHP,
         int opponentHP,
+        string budgetMode,
         int targetIterations,
+        double timeBudgetMs,
         int actualIterations,
-        long elapsedMs,
+        double elapsedMs,
         int nodeCount,
         long memoryDeltaBytes,
-        bool isMemorySample)
+        bool isMemorySample,
+        bool lethalSequenceUsed,
+        int cacheHits,
+        int cacheLookups,
+        int cacheEntryCount,
+        bool treeReused,
+        int reusedNodeCount,
+        string side,
+        int turnNumber,
+        int selfBlock,
+        int opponentBlock,
+        string selectedCard,
+        int rolloutCount,
+        int simulationSkips)
     {
         bool fileExists =
             File.Exists(searchLogPath);
@@ -102,8 +118,12 @@ public static class MCTSLogger
                 writer.WriteLine(
                     "Timestamp,BattleNumber,Mode,PlayableCardCount," +
                     "SelfHP,OpponentHP,HPDifference," +
-                    "TargetIterations,ActualIterations,ElapsedMs," +
-                    "NodeCount,MemoryDeltaBytes,IsMemorySample"
+                    "BudgetMode,TargetIterations,TimeBudgetMs,ActualIterations,ElapsedMs," +
+                    "NodeCount,MemoryDeltaBytes,IsMemorySample,LethalSequenceUsed," +
+                    "CacheHits,CacheLookups,CacheHitRate,CacheEntryCount," +
+                    "TreeReused,ReusedNodeCount," +
+                    "Side,TurnNumber,SelfBlock,OpponentBlock,SelectedCard," +
+                    "RolloutCount,SimulationSkips"
                 );
             }
 
@@ -113,6 +133,9 @@ public static class MCTSLogger
             int hpDifference =
                 Mathf.Abs(selfHP - opponentHP);
 
+            float cacheHitRate =
+                cacheLookups > 0 ? (float)cacheHits / cacheLookups : 0f;
+
             writer.WriteLine(
                 $"{DateTime.Now:yyyy-MM-dd HH:mm:ss}," +
                 $"{battleNumber}," +
@@ -121,14 +144,49 @@ public static class MCTSLogger
                 $"{selfHP}," +
                 $"{opponentHP}," +
                 $"{hpDifference}," +
+                $"{budgetMode}," +
                 $"{targetIterations}," +
+                $"{timeBudgetMs.ToString("F4", CultureInfo.InvariantCulture)}," +
                 $"{actualIterations}," +
-                $"{elapsedMs}," +
+                $"{elapsedMs.ToString("F4", CultureInfo.InvariantCulture)}," +
                 $"{nodeCount}," +
                 $"{memoryDeltaBytes}," +
-                $"{isMemorySample}"
+                $"{isMemorySample}," +
+                $"{lethalSequenceUsed}," +
+                $"{cacheHits}," +
+                $"{cacheLookups}," +
+                $"{cacheHitRate.ToString("F4", CultureInfo.InvariantCulture)}," +
+                $"{cacheEntryCount}," +
+                $"{treeReused}," +
+                $"{reusedNodeCount}," +
+                $"{side}," +
+                $"{turnNumber}," +
+                $"{selfBlock}," +
+                $"{opponentBlock}," +
+                $"{selectedCard}," +
+                $"{rolloutCount}," +
+                $"{simulationSkips}"
             );
         }
+    }
+
+    // =====================================================
+    // 선택 카드 라벨
+    // =====================================================
+
+    /// <summary>
+    /// CSV에 기록할 카드 이름. 강화 카드는 끝에 +를 붙이고, CSV 구분자(,)는 공백으로 바꿈
+    /// 카드를 고르지 않았으면 None (MCTSVanillaLogger도 같은 형식을 사용)
+    /// </summary>
+    public static string GetCardLabel(CardData data, bool upgraded)
+    {
+        if (data == null)
+            return "None";
+
+        string name =
+            string.IsNullOrEmpty(data.cardName) ? data.name : data.cardName;
+
+        return name.Replace(",", " ") + (upgraded ? "+" : "");
     }
 
     // =====================================================
