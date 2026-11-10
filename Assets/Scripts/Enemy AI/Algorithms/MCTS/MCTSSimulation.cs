@@ -1,5 +1,5 @@
+
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 /// <summary>
@@ -16,14 +16,14 @@ public static class MCTSSimulation
     private const float LEGACY_LOSE_REWARD = -0.05f;
     private const float LEGACY_EXPLORATION_CONSTANT = 1f;
 
-    // 개선 평가: 승패가 어떤 비종결 상태보다도 확실히 크거나 작도록 함
+    // 개선 평가
     private const float IMPROVED_WIN_REWARD = 1f;
     private const float IMPROVED_LOSE_REWARD = -1f;
-    private const float IMPROVED_NON_TERMINAL_SCALE = 0.9f; // 비종결 상태 점수를 [-0.9, 0.9]로 줄여 종결 값과 간격 확보
-    private const float IMPROVED_EXPLORATION_CONSTANT = 2.82842712f; // 2√2, 보상 범위 [0, 1]의 표준값 √2를 범위 폭 [-1, 1]에 맞춰 환산한 시작값
+    private const float IMPROVED_NON_TERMINAL_SCALE = 0.9f;
+    private const float IMPROVED_EXPLORATION_CONSTANT = 2.82842712f;
 
     /// <summary>
-    /// 개선 평가 사용 여부 (MCTSSettings 최종 구성)
+    /// 개선 평가 사용 여부
     /// </summary>
     private static bool IsImprovedEvaluationOn()
     {
@@ -31,7 +31,7 @@ public static class MCTSSimulation
     }
 
     /// <summary>
-    /// UCT 탐험 상수. 평가 방식의 보상 범위에 맞춘 값을 반환 (MCTSSelection에서 사용)
+    /// UCT 탐험 상수
     /// </summary>
     public static float GetExplorationConstant()
     {
@@ -41,16 +41,16 @@ public static class MCTSSimulation
     }
 
     // =====================================================
-    // 진입점 1: 노드 기준 (캐싱 + 시뮬레이션 생략 + 이력 이어받기)
-    // 전위 테이블, 시뮬레이션 생략, 생략 값 저장은 MCTSSettings(최종 구성)를 따름
+    // 측정용 카운터
     // =====================================================
 
-    // =====================================================
-    // 측정용 카운터 (MCTSSearch가 탐색 전후 차이로 탐색당 횟수를 계산)
-    // =====================================================
+    public static int RolloutCount;
+    public static int SimulationSkipCount;
 
-    public static int RolloutCount; // 실제 롤아웃을 수행한 횟수
-    public static int SimulationSkipCount; // 시뮬레이션 생략으로 롤아웃 없이 노드 평균을 사용한 횟수
+    // =====================================================
+    // 진입점 1: 노드 기준
+    // 캐싱 + 시뮬레이션 생략 + 이력 이어받기
+    // =====================================================
 
     public static float Simulate(MCTSNode node, int maxDepth = 20)
     {
@@ -71,23 +71,34 @@ public static class MCTSSimulation
             SimulationSkipCount++;
 
             float avg = node.AverageReward;
-            // 생략한 노드 평균을 테이블에 표본으로 저장할지 (끄면 테이블에는 실제 롤아웃 결과만 저장)
+
             bool skippedValueStoreOn =
                 MCTSSettings.EnableSkippedValueStore;
 
-            if (cachingOn && skippedValueStoreOn) MCTSTranspositionTable.Store(hash, avg);
+            if (cachingOn && skippedValueStoreOn)
+            {
+                MCTSTranspositionTable.Store(hash, avg);
+            }
+
             return avg;
         }
 
-        float result = Simulate(node.state, node.turnHistory, maxDepth);
+        float result = Simulate(
+            node.state,
+            node.turnHistory,
+            maxDepth
+        );
 
-        if (cachingOn) MCTSTranspositionTable.Store(hash, result);
+        if (cachingOn)
+        {
+            MCTSTranspositionTable.Store(hash, result);
+        }
 
         return result;
     }
 
     // =====================================================
-    // 진입점 2: 상태만 있을 때 (이력 없이 새로 시작)
+    // 진입점 2: 상태만 있을 때
     // =====================================================
 
     public static float Simulate(SimGameState state, int maxDepth = 20)
@@ -96,7 +107,7 @@ public static class MCTSSimulation
     }
 
     // =====================================================
-    // 실제 롤아웃 로직 (이력 추적 포함)
+    // 실제 롤아웃 로직
     // =====================================================
 
     private static float Simulate(
@@ -106,10 +117,7 @@ public static class MCTSSimulation
     {
         RolloutCount++;
 
-        // =================================================
         // 원본 상태 복사
-        // =================================================
-
         SimGameState sim = state.Clone();
 
         TurnPlayHistory history = initialHistory;
@@ -121,56 +129,82 @@ public static class MCTSSimulation
         for (int depth = 0; depth < maxDepth; depth++)
         {
             // =============================================
-            // 종료 체크
+            // 1. 종료 체크
             // =============================================
 
-            if (sim.self.CurrentHP <= 0 || sim.opponent.CurrentHP <= 0)
+            if (sim.self.CurrentHP <= 0 ||
+                sim.opponent.CurrentHP <= 0)
             {
                 return Evaluate(sim);
             }
 
             // =============================================
-            // 현재 턴 Entity
+            // 2. 현재 턴 Entity
             // =============================================
 
-            SimEntity current = sim.selfTurn ? sim.self : sim.opponent;
-            SimEntity target = sim.selfTurn ? sim.opponent : sim.self;
+            SimEntity current = sim.selfTurn
+                ? sim.self
+                : sim.opponent;
+
+            SimEntity target = sim.selfTurn
+                ? sim.opponent
+                : sim.self;
 
             // =============================================
-            // 사용 가능한 카드 찾기 (휴리스틱 필터 적용)
+            // 3. 사용 가능한 카드 찾기
             // =============================================
 
             List<CardInstance> playableCards =
                 GetHeuristicPlayableCards(current, history);
 
             // =============================================
-            // 플레이 가능한 카드 없음
+            // 4. 플레이 가능한 카드 없음
             // =============================================
 
             if (playableCards.Count == 0)
             {
                 EndTurn(sim);
                 history = default;
+
                 continue;
             }
 
             // =============================================
-            // 롤아웃 정책에 따라 카드 선택
+            // 5. 롤아웃 정책에 따라 카드 선택
             // =============================================
 
             CardInstance selectedCard =
-                SelectWeightedCard(playableCards, current, target, sim);
+                SelectWeightedCard(
+                    playableCards,
+                    current,
+                    target,
+                    sim
+                );
 
             // =============================================
-            // 카드 사용
+            // 6. 카드 사용
             // =============================================
 
-            SimBattleHelper.TryUseCard(current, target, selectedCard);
+            bool success = SimBattleHelper.TryUseCard(
+                current,
+                target,
+                selectedCard
+            );
 
+            if (!success)
+            {
+                // 카드 사용 실패 시 현재 턴 종료
+                EndTurn(sim);
+                history = default;
+
+                continue;
+            }
+
+            // 정상적으로 사용한 카드만 이력에 기록
             history = history.Extend(selectedCard.data);
 
             // =============================================
-            // 카드 사용 후
+            // 7. 카드 사용 후
             // 플레이 가능한 카드가 더 있는지 확인
             // =============================================
 
@@ -192,7 +226,7 @@ public static class MCTSSimulation
     }
 
     // =====================================================
-    // 4가지 휴리스틱 규칙 적용된 플레이 가능 카드 필터
+    // 플레이 가능 카드 필터
     // =====================================================
 
     private static List<CardInstance> GetHeuristicPlayableCards(
@@ -216,19 +250,29 @@ public static class MCTSSimulation
 
             CardData data = card.data;
 
-            if (history.hasDoubleTap && data.cardType != CardType.Attack)
+            if (history.hasDoubleTap &&
+                data.cardType != CardType.Attack)
+            {
                 continue;
+            }
 
-            if (history.hasPlainAttack && (data.tags & CardTag.Debuff) != 0)
+            if (history.hasPlainAttack &&
+                (data.tags & CardTag.Debuff) != 0)
+            {
                 continue;
+            }
 
             if ((history.hasAnyAttack || history.hasLimitBreak) &&
                 (data.tags & CardTag.StrengthGain) != 0)
+            {
                 continue;
+            }
 
             if ((data.tags & CardTag.DoubleTap) != 0 &&
                 !HasFollowUpAttack(current, card))
+            {
                 continue;
+            }
 
             result.Add(card);
         }
@@ -236,17 +280,23 @@ public static class MCTSSimulation
         return result;
     }
 
-    private static bool HasFollowUpAttack(SimEntity current, CardInstance doubleTapCard)
+    private static bool HasFollowUpAttack(
+        SimEntity current,
+        CardInstance doubleTapCard)
     {
-        int remainingEnergy = current.CurrentEnergy - doubleTapCard.currentCost;
+        int remainingEnergy =
+            current.CurrentEnergy - doubleTapCard.currentCost;
 
-        foreach (var other in current.hand)
+        foreach (CardInstance other in current.hand)
         {
-            if (other == doubleTapCard) continue;
+            if (other == doubleTapCard)
+                continue;
 
             if (other.data.cardType == CardType.Attack &&
                 other.currentCost <= remainingEnergy)
+            {
                 return true;
+            }
         }
 
         return false;
@@ -254,34 +304,97 @@ public static class MCTSSimulation
 
     // =====================================================
     // 턴 종료 + 다음 턴 시작 처리
+    // 현재 구조: self = 적, opponent = 플레이어
     // =====================================================
 
     private static void EndTurn(SimGameState sim)
     {
-        SimEntity current = sim.selfTurn ? sim.self : sim.opponent;
+        // 현재 턴 Entity
+        SimEntity current = sim.selfTurn
+            ? sim.self
+            : sim.opponent;
 
-        // 남은 에너지 제거
+        // =============================================
+        // 1. 남은 에너지 제거
+        // =============================================
+
         current.CurrentEnergy = 0;
 
-        // 손패 버리기
+        // =============================================
+        // 2. 손패 버리기
+        // Ethereal 카드는 SimEntity.DiscardHand()에서
+        // 소멸 처리해야 함
+        // =============================================
+
         current.DiscardHand();
 
-        // 상태 감소
+        // =============================================
+        // 3. 턴 종료 상태 효과 처리
+        // =============================================
+
         current.TickStatuses();
 
-        // 턴 전환
+        // =============================================
+        // 4. 턴 전환
+        // =============================================
+
+        // 현재 selfTurn이 true라면 적 턴이 끝난 것
+        bool enemyTurnEnded = sim.selfTurn;
+
         sim.selfTurn = !sim.selfTurn;
-        sim.turnCount++;
 
-        SimEntity next = sim.selfTurn ? sim.self : sim.opponent;
+        // 적 턴 종료 후 플레이어 턴이 시작될 때만 증가
+        if (enemyTurnEnded)
+        {
+            sim.turnCount++;
+        }
 
-        // Block 제거
-        next.Block = 0;
+        // 다음 턴 Entity
+        SimEntity next = sim.selfTurn
+            ? sim.self
+            : sim.opponent;
 
-        // 에너지 회복
+        // =============================================
+        // 5. 다음 턴 시작 처리
+        // =============================================
+
+        if (sim.selfTurn)
+        {
+            // 적 턴 시작
+            next.Block = 0;
+        }
+        else
+        {
+            // 플레이어 턴 시작
+
+            // 방어도 유지 버프가 없다면 방어도 초기화
+            if (next.GetStatusValue(StatusType.BlockRetention) <= 0)
+            {
+                next.Block = 0;
+            }
+
+            // 턴 시작 시 힘 증가 버프 적용
+            int strengthPerTurn =
+                next.GetStatusValue(StatusType.StrengthPerTurn);
+
+            if (strengthPerTurn > 0)
+            {
+                next.AddStatus(
+                    new StrengthStatus(strengthPerTurn)
+                );
+            }
+        }
+
+        // =============================================
+        // 6. 에너지 회복
+        // =============================================
+
         next.CurrentEnergy = next.MaxEnergy;
 
-        // 카드 드로우
+        // =============================================
+        // 7. 카드 드로우
+        // =============================================
+
         next.DrawCards(5);
     }
 
@@ -294,27 +407,46 @@ public static class MCTSSimulation
         bool improvedOn = IsImprovedEvaluationOn();
 
         // 승리
-        if (state.opponent.CurrentHP <= 0) return improvedOn ? IMPROVED_WIN_REWARD : LEGACY_WIN_REWARD;
+        if (state.opponent.CurrentHP <= 0)
+        {
+            return improvedOn
+                ? IMPROVED_WIN_REWARD
+                : LEGACY_WIN_REWARD;
+        }
 
         // 패배
-        if (state.self.CurrentHP <= 0) return improvedOn ? IMPROVED_LOSE_REWARD : LEGACY_LOSE_REWARD;
+        if (state.self.CurrentHP <= 0)
+        {
+            return improvedOn
+                ? IMPROVED_LOSE_REWARD
+                : LEGACY_LOSE_REWARD;
+        }
 
         float score = 0f;
 
         // HP 차이
-        score += (state.self.CurrentHP - state.opponent.CurrentHP) * 0.01f;
+        score +=
+            (state.self.CurrentHP - state.opponent.CurrentHP) * 0.01f;
 
         // Block 차이
-        score += (state.self.Block - state.opponent.Block) * 0.008f;
+        score +=
+            (state.self.Block - state.opponent.Block) * 0.008f;
 
-        // 상태 이상 가치
-        score += state.self.GetStatusValue(StatusType.Strength) * 0.05f;
-        score += state.self.GetStatusValue(StatusType.Dexterity) * 0.05f;
+        // 내 상태 이상 가치
+        score +=
+            state.self.GetStatusValue(StatusType.Strength) * 0.05f;
 
-        score += state.opponent.GetStatusValue(StatusType.Weak) * 0.01f;
-        score += state.opponent.GetStatusValue(StatusType.Vulnerable) * 0.01f;
+        score +=
+            state.self.GetStatusValue(StatusType.Dexterity) * 0.05f;
 
-        // 개선 평가: 비종결 상태가 승패 값(±1)에 닿지 않도록 계수를 곱함
+        // 상대 상태 이상 가치
+        score +=
+            state.opponent.GetStatusValue(StatusType.Weak) * 0.01f;
+
+        score +=
+            state.opponent.GetStatusValue(StatusType.Vulnerable) * 0.01f;
+
+        // 개선 평가
         if (improvedOn)
         {
             return Tanh(score) * IMPROVED_NON_TERMINAL_SCALE;
@@ -327,11 +459,12 @@ public static class MCTSSimulation
     {
         float ePos = Mathf.Exp(x);
         float eNeg = Mathf.Exp(-x);
+
         return (ePos - eNeg) / (ePos + eNeg);
     }
 
     // =====================================================
-    // heuristic 기반 weighted random 선택
+    // Heuristic 기반 Weighted Random 선택
     // =====================================================
 
     private static CardInstance SelectWeightedCard(
@@ -342,10 +475,13 @@ public static class MCTSSimulation
     {
         bool heuristicOn = MCTSSettings.EnableHeuristicRollout;
 
-        // 휴리스틱 롤아웃 off → 카드 가중치 없이 균등 무작위
+        // 휴리스틱 롤아웃 OFF
+        // 카드 가중치 없이 균등 무작위
         if (!heuristicOn)
         {
-            return playableCards[Random.Range(0, playableCards.Count)];
+            return playableCards[
+                Random.Range(0, playableCards.Count)
+            ];
         }
 
         List<float> scores = new List<float>();
@@ -353,7 +489,12 @@ public static class MCTSSimulation
 
         foreach (CardInstance card in playableCards)
         {
-            float score = GetCardScore(card, self, target, sim);
+            float score = GetCardScore(
+                card,
+                self,
+                target,
+                sim
+            );
 
             score = Mathf.Max(1f, score);
 
@@ -374,12 +515,12 @@ public static class MCTSSimulation
             }
         }
 
-        // fallback
+        // Fallback
         return playableCards[0];
     }
 
     // =====================================================
-    // 카드 heuristic score
+    // 카드 Heuristic Score
     // =====================================================
 
     private static float GetCardScore(
@@ -393,8 +534,8 @@ public static class MCTSSimulation
         switch (card.data.cardType)
         {
             case CardType.Power:
-                score += 100f;
 
+                score += 100f;
                 score += Mathf.Max(0, 20 - sim.turnCount);
 
                 break;

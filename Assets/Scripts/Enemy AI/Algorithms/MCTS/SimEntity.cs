@@ -377,11 +377,16 @@ public class SimEntity : IBattleEntity
     {
         while (hand.Count > 0)
         {
-            CardInstance card =
-                hand[
-                    hand.Count - 1];
+            CardInstance card = hand[hand.Count - 1];
 
-            DiscardCard(card);
+            if (card.ethereal)
+            {
+                ExhaustCard(card);
+            }
+            else
+            {
+                DiscardCard(card);
+            }
         }
     }
 }

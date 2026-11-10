@@ -325,7 +325,7 @@ public static class MCTSSearch
         // 최종 선택
         // =================================================
 
-        if (LOG_CHILD_STATS)
+        if (LOG_CHILD_STATS /*&& IsLoggingOn()*/)
         {
             Debug.Log("===== ROOT CHILDREN STATS =====");
 

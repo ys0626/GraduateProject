@@ -95,6 +95,8 @@ public class SimGameState
         hash = hash * 31 + (ulong)entity.GetStatusValue(StatusType.Dexterity);
         hash = hash * 31 + (ulong)entity.GetStatusValue(StatusType.Weak);
         hash = hash * 31 + (ulong)entity.GetStatusValue(StatusType.Vulnerable);
+        hash = hash * 31 + (ulong)entity.GetStatusValue(StatusType.BlockRetention);
+        hash = hash * 31 + (ulong)entity.GetStatusValue(StatusType.StrengthPerTurn);
         return hash;
     }
 

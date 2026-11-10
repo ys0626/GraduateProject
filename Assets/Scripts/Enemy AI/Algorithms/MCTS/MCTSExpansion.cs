@@ -1,3 +1,4 @@
+
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -33,7 +34,15 @@ public static class MCTSExpansion
         // 2. Action 적용
         // =================================================
 
-        ApplyAction(newState, action);
+        bool success = ApplyAction(newState, action);
+
+        if (!success)
+        {
+            // Action 적용 실패 시 다시 시도할 수 있도록 복구
+            node.untriedActions.Add(action);
+
+            return null;
+        }
 
         // =================================================
         // 3. child 생성
@@ -58,10 +67,12 @@ public static class MCTSExpansion
     // Action 실행 (instance resolution 포함)
     // =====================================================
 
-    internal static void ApplyAction(SimGameState state, MCTSAction action)
+    internal static bool ApplyAction(
+        SimGameState state,
+        MCTSAction action)
     {
         // =================================================
-        // CardKey → 실제 CardInstance 후보 찾기
+        // 1. CardKey → 실제 CardInstance 후보 찾기
         // =================================================
 
         List<CardInstance> candidates = state.self.hand.FindAll(card =>
@@ -73,23 +84,25 @@ public static class MCTSExpansion
         );
 
         if (candidates.Count == 0)
-            return;
+            return false;
 
         // =================================================
-        // instance 선택 (stochastic resolution)
+        // 2. instance 선택 (stochastic resolution)
         // =================================================
 
         CardInstance selected =
             candidates[Random.Range(0, candidates.Count)];
 
         // =================================================
-        // 카드 사용
+        // 3. 카드 사용
         // =================================================
 
-        SimBattleHelper.TryUseCard(
+        bool success = SimBattleHelper.TryUseCard(
             state.self,
             state.opponent,
             selected
         );
+
+        return success;
     }
 }
