@@ -15,7 +15,7 @@ MonoBehaviour:
   enemyName: Crystal Falconer
   sprite: {fileID: 21300000, guid: 9c4b7e9d12afc6640bdfb36b5966025e, type: 3}
   animatorController: {fileID: 9100000, guid: c5217303b9d14df4e9aba17932766f35, type: 2}
-  maxHP: 95
+  maxHP: 85
   maxEnergy: 3
   starterDeck:
   - {fileID: 11400000, guid: 388bc0730ce8e8749b21cdb62e8f1bcf, type: 2}

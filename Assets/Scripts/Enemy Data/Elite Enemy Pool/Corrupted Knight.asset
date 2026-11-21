@@ -15,7 +15,7 @@ MonoBehaviour:
   enemyName: Corrupted Knight
   sprite: {fileID: 21300000, guid: eb2e947fed608b44e9b3c8dc31ce85a5, type: 3}
   animatorController: {fileID: 9100000, guid: 0b92e3f121095ec4d9318e1aa2fe5137, type: 2}
-  maxHP: 105
+  maxHP: 95
   maxEnergy: 3
   starterDeck:
   - {fileID: 11400000, guid: 12bc09af8a9a39d4e9aa6193c018cd46, type: 2}

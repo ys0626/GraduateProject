@@ -15,7 +15,7 @@ MonoBehaviour:
   enemyName: Ironback Beetle
   sprite: {fileID: 21300000, guid: 097aacbe5636a894f83c389136bac4ea, type: 3}
   animatorController: {fileID: 9100000, guid: ca660d96c7dab6841b8070977d44422a, type: 2}
-  maxHP: 65
+  maxHP: 55
   maxEnergy: 3
   starterDeck:
   - {fileID: 11400000, guid: da0f412622a043c4b9000d8824c533ff, type: 2}

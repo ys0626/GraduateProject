@@ -11,11 +11,15 @@ public class SettingPanelUI : MonoBehaviour
     [SerializeField] private Button popupBackgroundButton;
     [SerializeField] private Button exitButton;
     [SerializeField] private TMP_Text exitButtonText;
+
+    [Header("BGM Settings")]
+    [SerializeField] private Slider bgmVolumeSlider;
+
+    [Header("Exit Button Colors")]
     [SerializeField] private Color enabledTextColor = Color.white;
     [SerializeField]
     private Color disabledTextColor =
         new Color(0.45f, 0.45f, 0.45f, 0.6f);
-
 
     private void Awake()
     {
@@ -28,6 +32,16 @@ public class SettingPanelUI : MonoBehaviour
         {
             exitButton.onClick.AddListener(GoToMainMenu);
         }
+
+        if (bgmVolumeSlider != null)
+        {
+            bgmVolumeSlider.onValueChanged.AddListener(OnBGMVolumeChanged);
+        }
+    }
+
+    private void Start()
+    {
+        InitializeBGMVolumeSlider();
     }
 
     private void OnEnable()
@@ -64,6 +78,39 @@ public class SettingPanelUI : MonoBehaviour
         }
     }
 
+    // BGM 볼륨 슬라이더 초기화
+    private void InitializeBGMVolumeSlider()
+    {
+        if (bgmVolumeSlider == null)
+        {
+            Debug.LogError(
+                "[SettingPanelUI] BGM Volume Slider가 연결되지 않았습니다."
+            );
+            return;
+        }
+
+        if (BGMManager.instance == null)
+        {
+            Debug.LogWarning(
+                "[SettingPanelUI] BGMManager가 아직 준비되지 않았습니다."
+            );
+            return;
+        }
+
+        bgmVolumeSlider.SetValueWithoutNotify(
+            BGMManager.instance.GetVolume()
+        );
+    }
+
+    // 슬라이더 값이 변경되었을 때 호출
+    private void OnBGMVolumeChanged(float volume)
+    {
+        if (BGMManager.instance == null)
+            return;
+
+        BGMManager.instance.SetVolume(volume);
+    }
+
     public void Toggle()
     {
         if (settingRoot == null)
@@ -75,6 +122,11 @@ public class SettingPanelUI : MonoBehaviour
         }
 
         settingRoot.SetActive(!settingRoot.activeSelf);
+
+        if (settingRoot.activeSelf)
+        {
+            InitializeBGMVolumeSlider();
+        }
     }
 
     public void Close()

@@ -107,38 +107,60 @@ public class SceneChanger : MonoBehaviour
         StartCoroutine(ChangeSceneRoutine(sceneName));
     }
 
+
     private IEnumerator ChangeSceneRoutine(string sceneName)
     {
         isChangingScene = true;
         IsReady = false;
         battleScenePrepared = false;
 
-        // 1. 현재 씬 페이드아웃
+        // 1. BGM 페이드 아웃 시작
+        Coroutine bgmFadeCoroutine = null;
+
+        if (BGMManager.instance != null)
+        {
+            bgmFadeCoroutine = BGMManager.instance.FadeOut();
+        }
+
+        // 2. 화면과 BGM을 동시에 페이드 아웃
         yield return Fade(0f, 1f);
 
-        // 2. 새 씬 로드
+        // BGM 페이드 아웃이 끝날 때까지 대기
+        if (bgmFadeCoroutine != null)
+        {
+            yield return bgmFadeCoroutine;
+        }
+
+        // 3. 새 씬 로드
         AsyncOperation operation =
             SceneManager.LoadSceneAsync(sceneName);
 
         yield return new WaitUntil(() => operation.isDone);
 
-        // 3. 새 씬의 오브젝트가 초기화될 때까지 대기
+        // 4. 새 씬의 오브젝트 초기화 대기
         yield return null;
         yield return new WaitForEndOfFrame();
 
-        // 4. 배틀씬은 전투 준비가 완료될 때까지 검은 화면 유지
+        // 5. 배틀씬은 전투 준비가 완료될 때까지 대기
         if (sceneName == "BattleScene")
         {
             yield return new WaitUntil(() => battleScenePrepared);
         }
 
-        // 5. 준비 완료 후 페이드인
+        // 6. 새 씬의 BGM 재생 시작
+        if (BGMManager.instance != null)
+        {
+            BGMManager.instance.PlaySceneBGM(sceneName);
+        }
+
+        // 7. 화면 페이드 인
         yield return Fade(1f, 0f);
 
-        // 6. 화면 표시 완료
+        // 8. 씬 전환 완료
         IsReady = true;
         isChangingScene = false;
     }
+
 
     // GameManager가 전투 준비를 끝낸 후 호출
     public void NotifyBattleScenePrepared()

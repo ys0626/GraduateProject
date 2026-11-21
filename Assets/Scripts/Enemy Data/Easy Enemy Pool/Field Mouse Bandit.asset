@@ -15,7 +15,7 @@ MonoBehaviour:
   enemyName: Field Mouse Bandit
   sprite: {fileID: 21300000, guid: 79c8870a3eb937640ad909deb02933cf, type: 3}
   animatorController: {fileID: 9100000, guid: 07389ef6ccf5cdb4ea2f92901563e114, type: 2}
-  maxHP: 35
+  maxHP: 25
   maxEnergy: 3
   starterDeck:
   - {fileID: 11400000, guid: 73b3b8f5b67aa034f9e5aa2f52d9a93f, type: 2}

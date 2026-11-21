@@ -15,7 +15,7 @@ MonoBehaviour:
   enemyName: Ancient Doom Dragon
   sprite: {fileID: 21300000, guid: a5caa2a3c774ee14b8ff35c346ee1bd1, type: 3}
   animatorController: {fileID: 9100000, guid: d663bbea13b20d54b92d53d847305c2a, type: 2}
-  maxHP: 190
+  maxHP: 170
   maxEnergy: 3
   starterDeck:
   - {fileID: 11400000, guid: 191b332d8abcb854ab7a50bf92267556, type: 2}

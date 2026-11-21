@@ -15,7 +15,7 @@ MonoBehaviour:
   enemyName: Mushroom Shaman
   sprite: {fileID: 21300000, guid: 11df50b0ae093fa43920f46ae59c3c93, type: 3}
   animatorController: {fileID: 9100000, guid: 6e5a6b81d25e66e4994df7d3095717c1, type: 2}
-  maxHP: 50
+  maxHP: 40
   maxEnergy: 3
   starterDeck:
   - {fileID: 11400000, guid: a693a16b0e3663644a0457d1a7476fdb, type: 2}
