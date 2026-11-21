@@ -12,8 +12,8 @@ public class DefendEffect : ICardEffect
     /// </summary>
     public void Execute(IBattleEntity cardUser, IBattleEntity cardTarget)
     {
-        //방어도를 5(8) 얻습니다.
-        int block = card.upgraded ? 8 : 5;
+        //방어도를 6(9) 얻습니다.
+        int block = card.upgraded ? 9 : 6;
         block = cardUser.CalculateBlock(block);
         cardUser.GetBlock(block);
     }

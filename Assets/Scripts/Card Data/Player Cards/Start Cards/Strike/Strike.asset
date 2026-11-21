@@ -13,13 +13,14 @@ MonoBehaviour:
   m_Name: Strike
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: "\uD0C0\uACA9"
-  description: "\uD53C\uD574\uB97C 6 \uC90D\uB2C8\uB2E4."
+  description: "\uD53C\uD574\uB97C 7 \uC90D\uB2C8\uB2E4."
   artwork: {fileID: 21300000, guid: dc3d8eb9b207feb46b2214caafada716, type: 3}
   upgradeType: 0
-  upgradedDescription: "\uD53C\uD574\uB97C <color=#39A96B>9</color> \uC90D\uB2C8\uB2E4."
+  upgradedDescription: "\uD53C\uD574\uB97C <color=#39A96B>10</color> \uC90D\uB2C8\uB2E4."
   cost: 1
   cardType: 0
   rarity: 0
   targetType: 1
-  cardEffectType: 7
   tags: 0
+  exhaust: 0
+  ethereal: 0

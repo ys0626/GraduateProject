@@ -1161,7 +1161,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3918ac6ea2ff72344a954ace6fdd0754, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameData
-  playerStartHP: 88
+  playerStartHP: 120
   playerStartGold: 99
   playerMaxEnergy: 3
   playerStartDeck:
@@ -1191,12 +1191,12 @@ MonoBehaviour:
   normalEnemyReward:
     minGold: 10
     maxGold: 15
-    cheeseChance: 0.4
+    cheeseChance: 0.7
     cardChoiceCount: 3
   eliteEnemyReward:
     minGold: 30
     maxGold: 45
-    cheeseChance: 0.7
+    cheeseChance: 1
     cardChoiceCount: 3
   bossEnemyReward:
     minGold: 50
@@ -2003,6 +2003,7 @@ MonoBehaviour:
   - sceneName: ShopScene
     bgmClip: {fileID: 8300000, guid: 3aa0ab976431263479441a890c9a88fb, type: 3}
   fadeDuration: 1
+  fadeInDuration: 0.5
 --- !u!82 &2110331668
 AudioSource:
   m_ObjectHideFlags: 0

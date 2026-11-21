@@ -12,8 +12,8 @@ public class BashEffect : ICardEffect
     /// </summary>
     public void Execute(IBattleEntity cardUser, IBattleEntity cardTarget)
     {
-        //피해를 8(10) 줍니다.
-        int damage = card.upgraded ? 10 : 8;
+        //피해를 9(11) 줍니다.
+        int damage = card.upgraded ? 11 : 9;
         damage = cardUser.CalculateDamage(damage);
         cardTarget.TakeDamage(damage);
 

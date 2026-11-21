@@ -12,8 +12,8 @@ public class StrikeEffect : ICardEffect
     /// </summary>
     public void Execute(IBattleEntity cardUser, IBattleEntity cardTarget)
     {
-        //피해를 6(9) 줍니다.
-        int damage = card.upgraded ? 9 : 6;
+        //피해를 7(10) 줍니다.
+        int damage = card.upgraded ? 10 : 7;
         damage = cardUser.CalculateDamage(damage);
         cardTarget.TakeDamage(damage);
     }
